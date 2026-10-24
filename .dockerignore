@@ -1,0 +1,12 @@
+.git
+**/.venv
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/.claude
+**/*.md
+!knowledge-base/**/*.md
+knowledge-base/docs/diagrams
+web-app/docs
+web-app/docker-compose.yml
+web-app/Dockerfile

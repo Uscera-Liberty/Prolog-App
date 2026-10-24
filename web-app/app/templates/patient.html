@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% from "_cards.html" import badges, chips, num %}
+{% block title %}{{ p.fio }} — Реабилитация{% endblock %}
+{% block content %}
+<a class="back" href="/patients">← Все пациенты</a>
+
+<section class="card profile group-patient">
+    <div class="profile-head">
+        <div>
+            <h1>{{ p.fio }}</h1>
+            <div class="meta">{{ p.sex }} · {{ p.age }} лет · дата рождения {{ p.birth }} · {{ p.phone }}</div>
+        </div>
+        {{ badges(p.badges) }}
+    </div>
+    <div class="profile-grid">
+        <div class="kv"><span>Рост / вес</span><b>{{ p.height }} см / {{ num(p.weight) }} кг</b></div>
+        <div class="kv"><span>ИМТ</span><b>{{ num(p.bmi) }}</b></div>
+        <div class="kv"><span>Норма веса (ИМТ 25 / 30)</span><b>{{ num(p.weight_bmi25) }} / {{ num(p.weight_bmi30) }} кг</b></div>
+        <div class="kv"><span>Уровень подготовки</span><b>{{ p.level }} из 5</b></div>
+        <div class="kv"><span>Диагноз</span>
+            <b>{% if p.diagnosis %}{{ p.diagnosis.label }} ({{ p.diagnosis.mkb }}){% else %}—{% endif %}</b></div>
+        <div class="kv"><span>Ведёт</span>
+            <b>{% if p.diagnosis and p.diagnosis.needs_doctor %}только врач-реабилитолог{% else %}реабилитолог или тренер ЛФК{% endif %}</b></div>
+        <div class="kv wide"><span>Анамнез</span><b>{{ p.history or '—' }}</b></div>
+        <div class="kv wide"><span>Особенности</span><b>{{ p.feature or '—' }}</b></div>
+    </div>
+</section>
+
+<h2>Что вывели SWRL-правила</h2>
+<section class="cards">
+    <div class="card group-goal">
+        <h3>🎯 Цель реабилитации</h3>
+        <div class="chips">{{ chips(p.goals, 'chip-goal') }}</div>
+        <h3 class="mt">👩‍⚕️ Рекомендуемые специалисты</h3>
+        <div class="chips">{% for s in p.specialists %}<span class="chip chip-patient">{{ s.label }} · {{ s.type }}</span>{% else %}—{% endfor %}</div>
+    </div>
+    <div class="card group-exercise">
+        <h3>✅ Подходит по показанию или цели</h3>
+        <div class="chips">{{ chips(p.suitable, 'chip-exercise') }}</div>
+        <h3 class="mt">⛔ Не рекомендуется</h3>
+        <div class="chips">{{ chips(p.not_recommended, 'chip-danger') }}</div>
+    </div>
+    <div class="card group-program">
+        <h3>📋 Текущая программа</h3>
+        {% if p.program %}
+            <div class="kv"><span>Название</span><b>{{ p.program.label }}</b></div>
+            <div class="kv"><span>Специалист</span><b>{{ p.program.specialist.label if p.program.specialist else '—' }}</b></div>
+            <div class="kv"><span>Режим</span><b>{{ p.program.weeks }} нед. × {{ p.program.per_week }} раз в неделю</b></div>
+            <div class="chips">{% for e in p.program.exercises %}<span class="chip {{ 'chip-danger' if e.bad else 'chip-exercise' }}">{{ '⚠ ' if e.bad }}{{ e.label }}</span>{% endfor %}</div>
+            {{ badges(p.program.badges) }}
+        {% else %}
+            <p class="text-warn"><b>Программа ещё не подобрана.</b></p>
+            <p class="muted">Нажмите «Порекомендовать программу» ниже — система найдёт шаблон среди программ похожих пациентов.</p>
+        {% endif %}
+    </div>
+</section>
+
+<h2>Рекомендации для пациента</h2>
+<p class="muted">Пациент подставляется в запрос автоматически. Результаты появятся ниже без перезагрузки страницы.</p>
+<section class="cards action-panel">
+    {% for q in queries %}
+    <div class="card action group-{{ 'warn' if q.kind == 'ask' else 'exercise' }}" data-query="{{ q.id }}">
+        <div class="action-head"><span class="icon-sm">{{ q.icon }}</span><b>{{ q.title }}</b></div>
+        {% for prm in q.params if prm.name != patient_param %}
+            <label class="mini-field">{{ prm.name|capitalize }}
+                {% if prm.type == 'individual' %}
+                    <select data-param="{{ prm.name }}">
+                        {% for o in prm.options %}<option value="{{ o.id }}" {{ 'selected' if o.id == prm.default }}>{{ o.label }}</option>{% endfor %}
+                    </select>
+                {% else %}
+                    <input type="number" step="any" min="0" data-param="{{ prm.name }}" value="{{ prm.default }}">
+                {% endif %}
+            </label>
+        {% endfor %}
+        <button type="button" class="btn-primary run-btn">{{ q.button }}</button>
+    </div>
+    {% endfor %}
+</section>
+<div class="toolbar">
+    <button type="button" class="btn-secondary" id="run-all">Запустить все</button>
+    <button type="button" class="btn-secondary" id="clear-results">Очистить результаты</button>
+</div>
+<section id="results" class="results"></section>
+
+<script id="queries-data" type="application/json">{{ queries|tojson }}</script>
+{% endblock %}
+{% block scripts %}
+<script>
+    Rehab.initPatientPage({{ p.id|tojson }}, {{ patient_param|tojson }});
+</script>
+{% endblock %}

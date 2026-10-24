@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Рекомендации — Реабилитация{% endblock %}
+{% block content %}
+<h1>Рекомендации</h1>
+<p class="muted">Выберите рекомендательный запрос, задайте параметры и нажмите кнопку. Форма строится по метаданным
+    из заголовка файла <code>.rq</code>.</p>
+
+<form id="rec-form" class="rec-form" autocomplete="off">
+    <div class="field field-query">
+        <label for="query-select">Запрос</label>
+        <select id="query-select" name="q">
+            {% for q in queries %}<option value="{{ q.id }}" {{ 'selected' if q.id == selected }}>{{ q.icon }} {{ q.title }}</option>{% endfor %}
+        </select>
+    </div>
+    <div id="param-fields" class="param-fields"></div>
+    <button type="submit" class="btn-primary" id="run-btn">Выполнить</button>
+</form>
+<p id="query-description" class="muted description"></p>
+
+<div class="toolbar view-toggle" role="group" aria-label="Вид результата">
+    <button type="button" class="btn-secondary active" data-view="cards">Карточки</button>
+    <button type="button" class="btn-secondary" data-view="table">Таблица</button>
+</div>
+<section id="results" class="results"></section>
+
+<script id="queries-data" type="application/json">{{ queries|tojson }}</script>
+{% endblock %}
+{% block scripts %}
+<script>Rehab.initRecommendPage();</script>
+{% endblock %}

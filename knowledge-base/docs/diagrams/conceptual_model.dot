@@ -1,0 +1,23 @@
+digraph C {
+graph [rankdir=LR, fontname="DejaVu Sans", fontsize=22, labelloc=t, pad=0.4, nodesep=0.5, ranksep=1.0,
+       label="Концептуальная модель: рекомендательная система подбора реабилитационной программы"];
+node [fontname="DejaVu Sans", fontsize=14, shape=box, style="rounded,filled", penwidth=1.4];
+edge [fontname="DejaVu Sans", fontsize=11, color="#444444"];
+subgraph cluster_in { label="ВХОД: кто пациент"; style="rounded,dashed"; color="#4b8f4b"; fontsize=14;
+  Пациент [fillcolor="#E2F3E1"]; Диагноз [fillcolor="#E2F3E1"]; Анамнез [label="История болезни\nи особенности", fillcolor="#E2F3E1"]; }
+subgraph cluster_kb { label="БАЗА ЗНАНИЙ: что известно о лечении"; style="rounded,dashed"; color="#2f6db3"; fontsize=14;
+  Упражнение [fillcolor="#DCEBFA"]; Показание [label="Показание /\nПротивопоказание", fillcolor="#DCEBFA"];
+  Цель [label="Цель\nреабилитации", fillcolor="#F6E1EC"]; Испытание [label="Клиническое испытание\n(эффективность, безопасность)", fillcolor="#ECE4F7"];
+  Инвентарь [label="Спортивный инвентарь\n(цена, производитель)", fillcolor="#EFEFEF"]; Специалист [label="Специалист\n(реабилитолог / тренер)", fillcolor="#E2F3E1"]; }
+subgraph cluster_out { label="ВЫХОД: рекомендация"; style="rounded,dashed"; color="#c47a12"; fontsize=14;
+  Программа [label="Реабилитационная\nпрограмма", fillcolor="#FDE9C9", penwidth=3]; }
+Пациент -> Диагноз [label="имеет"]; Пациент -> Анамнез [label="имеет"];
+Диагноз -> Цель [label="требует цели"];
+Показание -> Диагноз [label="показано / противопоказано при"];
+Упражнение -> Показание [label="имеет"]; Упражнение -> Цель [label="влияет на"];
+Упражнение -> Испытание [label="основано на"]; Упражнение -> Инвентарь [label="требует"];
+Специалист -> Диагноз [label="специализируется на"];
+Программа -> Пациент [label="предназначена для"]; Программа -> Упражнение [label="содержит"];
+Программа -> Цель [label="имеет цель"]; Программа -> Специалист [label="ведёт"];
+Программа -> Анамнез [label="основана на"];
+}

@@ -1,0 +1,2459 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix reh: <http://www.semanticweb.org/rehab/ontologies/2026/rehab-program#> .
+@prefix swrl: <http://www.w3.org/2003/11/swrl#> .
+@prefix swrlb: <http://www.w3.org/2003/11/swrlb#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://www.semanticweb.org/rehab/ontologies/2026/rehab-program> a owl:Ontology ;
+    rdfs:label "Подбор оптимальной реабилитационной программы"@ru ;
+    rdfs:comment "Вариант 22. Рекомендательная система: по диагнозу и данным пациента подбирает упражнения, готовую программу, специалиста (реабилитолога/тренера) и спортивный инвентарь. Содержит SWRL-правила (вкладка SWRLTab)."@ru .
+
+reh:R01_ДиагнозПациента a owl:NamedIndividual,
+        swrl:Imp ;
+    rdfs:label "R01_ДиагнозПациента"@ru ;
+    rdfs:comment "Цепочка Пациент → ДанныеПациента → Диагноз сокращается до прямой связи имеетДиагноз."@ru ;
+    swrl:body ( [ a swrl:ClassAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:classPredicate reh:Пациент ] [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#d> ;
+                swrl:propertyPredicate reh:имеетДанные ] [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#d> ;
+                swrl:argument2 <urn:swrl#dg> ;
+                swrl:propertyPredicate reh:содержитДиагноз ] ) ;
+    swrl:head ( [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#dg> ;
+                swrl:propertyPredicate reh:имеетДиагноз ] ) .
+
+reh:R02_ПорогиВеса a owl:NamedIndividual,
+        swrl:Imp ;
+    rdfs:label "R02_ПорогиВеса"@ru ;
+    rdfs:comment "ИМТ = вес / (рост/100)², значит ИМТ = 25 при весе 0,0025·рост², ИМТ = 30 при весе 0,003·рост². Деления нет намеренно: swrlb:divide в SWRLTab (Drools) падает на бесконечных дробях."@ru ;
+    swrl:body ( [ a swrl:ClassAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:classPredicate reh:Пациент ] [ a swrl:DatavaluedPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#h> ;
+                swrl:propertyPredicate reh:ростСм ] [ a swrl:BuiltinAtom ;
+                swrl:arguments ( <urn:swrl#h2> <urn:swrl#h> <urn:swrl#h> ) ;
+                swrl:builtin swrlb:multiply ] [ a swrl:BuiltinAtom ;
+                swrl:arguments ( <urn:swrl#a> <urn:swrl#h2> 0.0025 ) ;
+                swrl:builtin swrlb:multiply ] [ a swrl:BuiltinAtom ;
+                swrl:arguments ( <urn:swrl#b> <urn:swrl#h2> 0.003 ) ;
+                swrl:builtin swrlb:multiply ] ) ;
+    swrl:head ( [ a swrl:DatavaluedPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#a> ;
+                swrl:propertyPredicate reh:весПриИМТ25 ] [ a swrl:DatavaluedPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#b> ;
+                swrl:propertyPredicate reh:весПриИМТ30 ] ) .
+
+reh:R03_Ожирение a owl:NamedIndividual,
+        swrl:Imp ;
+    rdfs:label "R03_Ожирение"@ru ;
+    rdfs:comment "ИМТ ≥ 30, то есть вес ≥ весПриИМТ30."@ru ;
+    swrl:body ( [ a swrl:ClassAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:classPredicate reh:Пациент ] [ a swrl:DatavaluedPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#w> ;
+                swrl:propertyPredicate reh:весКг ] [ a swrl:DatavaluedPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#b> ;
+                swrl:propertyPredicate reh:весПриИМТ30 ] [ a swrl:BuiltinAtom ;
+                swrl:arguments ( <urn:swrl#w> <urn:swrl#b> ) ;
+                swrl:builtin swrlb:greaterThanOrEqual ] ) ;
+    swrl:head ( [ a swrl:ClassAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:classPredicate reh:ПациентСОжирением ] ) .
+
+reh:R04_ИзбыточныйВес a owl:NamedIndividual,
+        swrl:Imp ;
+    rdfs:label "R04_ИзбыточныйВес"@ru ;
+    rdfs:comment "25 ≤ ИМТ < 30."@ru ;
+    swrl:body ( [ a swrl:ClassAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:classPredicate reh:Пациент ] [ a swrl:DatavaluedPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#w> ;
+                swrl:propertyPredicate reh:весКг ] [ a swrl:DatavaluedPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#a> ;
+                swrl:propertyPredicate reh:весПриИМТ25 ] [ a swrl:DatavaluedPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#b> ;
+                swrl:propertyPredicate reh:весПриИМТ30 ] [ a swrl:BuiltinAtom ;
+                swrl:arguments ( <urn:swrl#w> <urn:swrl#a> ) ;
+                swrl:builtin swrlb:greaterThanOrEqual ] [ a swrl:BuiltinAtom ;
+                swrl:arguments ( <urn:swrl#w> <urn:swrl#b> ) ;
+                swrl:builtin swrlb:lessThan ] ) ;
+    swrl:head ( [ a swrl:ClassAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:classPredicate reh:ПациентСИзбыточнымВесом ] ) .
+
+reh:R05_ПожилойПациент a owl:NamedIndividual,
+        swrl:Imp ;
+    rdfs:label "R05_ПожилойПациент"@ru ;
+    rdfs:comment "Возраст ≥ 60 лет."@ru ;
+    swrl:body ( [ a swrl:ClassAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:classPredicate reh:Пациент ] [ a swrl:DatavaluedPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#a> ;
+                swrl:propertyPredicate reh:возраст ] [ a swrl:BuiltinAtom ;
+                swrl:arguments ( <urn:swrl#a> 60 ) ;
+                swrl:builtin swrlb:greaterThanOrEqual ] ) ;
+    swrl:head ( [ a swrl:ClassAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:classPredicate reh:ПожилойПациент ] ) .
+
+reh:R06_ПодходитПоПоказанию a owl:NamedIndividual,
+        swrl:Imp ;
+    rdfs:label "R06_ПодходитПоПоказанию"@ru ;
+    rdfs:comment "Упражнение показано при диагнозе пациента."@ru ;
+    swrl:body ( [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#dg> ;
+                swrl:propertyPredicate reh:имеетДиагноз ] [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#s> ;
+                swrl:argument2 <urn:swrl#dg> ;
+                swrl:propertyPredicate reh:показаноПри ] [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#u> ;
+                swrl:argument2 <urn:swrl#s> ;
+                swrl:propertyPredicate reh:имеетПоказание ] ) ;
+    swrl:head ( [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#u> ;
+                swrl:propertyPredicate reh:подходитУпражнение ] ) .
+
+reh:R07_ПодходитПоЦели a owl:NamedIndividual,
+        swrl:Imp ;
+    rdfs:label "R07_ПодходитПоЦели"@ru ;
+    rdfs:comment "Упражнение влияет на цель, которую требует диагноз пациента."@ru ;
+    swrl:body ( [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#dg> ;
+                swrl:propertyPredicate reh:имеетДиагноз ] [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#dg> ;
+                swrl:argument2 <urn:swrl#g> ;
+                swrl:propertyPredicate reh:требуетЦели ] [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#u> ;
+                swrl:argument2 <urn:swrl#g> ;
+                swrl:propertyPredicate reh:влияетНа ] ) ;
+    swrl:head ( [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#u> ;
+                swrl:propertyPredicate reh:подходитУпражнение ] ) .
+
+reh:R08_Противопоказано a owl:NamedIndividual,
+        swrl:Imp ;
+    rdfs:label "R08_Противопоказано"@ru ;
+    rdfs:comment "У упражнения есть противопоказание при диагнозе пациента."@ru ;
+    swrl:body ( [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#dg> ;
+                swrl:propertyPredicate reh:имеетДиагноз ] [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#u> ;
+                swrl:argument2 <urn:swrl#c> ;
+                swrl:propertyPredicate reh:имеетПротивопоказание ] [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#c> ;
+                swrl:argument2 <urn:swrl#dg> ;
+                swrl:propertyPredicate reh:противопоказаноПри ] ) ;
+    swrl:head ( [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#u> ;
+                swrl:propertyPredicate reh:неРекомендуетсяУпражнение ] ) .
+
+reh:R09_СлишкомСложно a owl:NamedIndividual,
+        swrl:Imp ;
+    rdfs:label "R09_СлишкомСложно"@ru ;
+    rdfs:comment "Сложность упражнения больше уровня подготовки пациента + 1."@ru ;
+    swrl:body ( [ a swrl:ClassAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:classPredicate reh:Пациент ] [ a swrl:DatavaluedPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#l> ;
+                swrl:propertyPredicate reh:уровеньПодготовки ] [ a swrl:ClassAtom ;
+                swrl:argument1 <urn:swrl#u> ;
+                swrl:classPredicate reh:Упражнение ] [ a swrl:DatavaluedPropertyAtom ;
+                swrl:argument1 <urn:swrl#u> ;
+                swrl:argument2 <urn:swrl#s> ;
+                swrl:propertyPredicate reh:уровеньСложности ] [ a swrl:BuiltinAtom ;
+                swrl:arguments ( <urn:swrl#max> <urn:swrl#l> 1 ) ;
+                swrl:builtin swrlb:add ] [ a swrl:BuiltinAtom ;
+                swrl:arguments ( <urn:swrl#s> <urn:swrl#max> ) ;
+                swrl:builtin swrlb:greaterThan ] ) ;
+    swrl:head ( [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#u> ;
+                swrl:propertyPredicate reh:неРекомендуетсяУпражнение ] ) .
+
+reh:R10_ОжирениеИСложность a owl:NamedIndividual,
+        swrl:Imp ;
+    rdfs:label "R10_ОжирениеИСложность"@ru ;
+    rdfs:comment "При ожирении — только упражнения сложности ≤ 2."@ru ;
+    swrl:body ( [ a swrl:ClassAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:classPredicate reh:ПациентСОжирением ] [ a swrl:ClassAtom ;
+                swrl:argument1 <urn:swrl#u> ;
+                swrl:classPredicate reh:Упражнение ] [ a swrl:DatavaluedPropertyAtom ;
+                swrl:argument1 <urn:swrl#u> ;
+                swrl:argument2 <urn:swrl#s> ;
+                swrl:propertyPredicate reh:уровеньСложности ] [ a swrl:BuiltinAtom ;
+                swrl:arguments ( <urn:swrl#s> 2 ) ;
+                swrl:builtin swrlb:greaterThan ] ) ;
+    swrl:head ( [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#u> ;
+                swrl:propertyPredicate reh:неРекомендуетсяУпражнение ] ) .
+
+reh:R11_ВозрастИСложность a owl:NamedIndividual,
+        swrl:Imp ;
+    rdfs:label "R11_ВозрастИСложность"@ru ;
+    rdfs:comment "Пожилым — только упражнения сложности ≤ 2."@ru ;
+    swrl:body ( [ a swrl:ClassAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:classPredicate reh:ПожилойПациент ] [ a swrl:ClassAtom ;
+                swrl:argument1 <urn:swrl#u> ;
+                swrl:classPredicate reh:Упражнение ] [ a swrl:DatavaluedPropertyAtom ;
+                swrl:argument1 <urn:swrl#u> ;
+                swrl:argument2 <urn:swrl#s> ;
+                swrl:propertyPredicate reh:уровеньСложности ] [ a swrl:BuiltinAtom ;
+                swrl:arguments ( <urn:swrl#s> 2 ) ;
+                swrl:builtin swrlb:greaterThan ] ) ;
+    swrl:head ( [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#u> ;
+                swrl:propertyPredicate reh:неРекомендуетсяУпражнение ] ) .
+
+reh:R12_ЭффективноеУпражнение a owl:NamedIndividual,
+        swrl:Imp ;
+    rdfs:label "R12_ЭффективноеУпражнение"@ru ;
+    rdfs:comment "Эффективность по испытанию ≥ 80 %."@ru ;
+    swrl:body ( [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#u> ;
+                swrl:argument2 <urn:swrl#t> ;
+                swrl:propertyPredicate reh:основаноНаИспытании ] [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#t> ;
+                swrl:argument2 <urn:swrl#e> ;
+                swrl:propertyPredicate reh:показываетЭффективность ] [ a swrl:DatavaluedPropertyAtom ;
+                swrl:argument1 <urn:swrl#e> ;
+                swrl:argument2 <urn:swrl#v> ;
+                swrl:propertyPredicate reh:процентЭффективности ] [ a swrl:BuiltinAtom ;
+                swrl:arguments ( <urn:swrl#v> 80 ) ;
+                swrl:builtin swrlb:greaterThanOrEqual ] ) ;
+    swrl:head ( [ a swrl:ClassAtom ;
+                swrl:argument1 <urn:swrl#u> ;
+                swrl:classPredicate reh:ЭффективноеУпражнение ] ) .
+
+reh:R13_БезопасноеУпражнение a owl:NamedIndividual,
+        swrl:Imp ;
+    rdfs:label "R13_БезопасноеУпражнение"@ru ;
+    rdfs:comment "Балл безопасности по испытанию ≥ 4."@ru ;
+    swrl:body ( [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#u> ;
+                swrl:argument2 <urn:swrl#t> ;
+                swrl:propertyPredicate reh:основаноНаИспытании ] [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#t> ;
+                swrl:argument2 <urn:swrl#b> ;
+                swrl:propertyPredicate reh:определяетУровеньБезопасности ] [ a swrl:DatavaluedPropertyAtom ;
+                swrl:argument1 <urn:swrl#b> ;
+                swrl:argument2 <urn:swrl#v> ;
+                swrl:propertyPredicate reh:баллБезопасности ] [ a swrl:BuiltinAtom ;
+                swrl:arguments ( <urn:swrl#v> 4 ) ;
+                swrl:builtin swrlb:greaterThanOrEqual ] ) ;
+    swrl:head ( [ a swrl:ClassAtom ;
+                swrl:argument1 <urn:swrl#u> ;
+                swrl:classPredicate reh:БезопасноеУпражнение ] ) .
+
+reh:R14_ОптимальноеУпражнение a owl:NamedIndividual,
+        swrl:Imp ;
+    rdfs:label "R14_ОптимальноеУпражнение"@ru ;
+    rdfs:comment "Эффективное и безопасное одновременно."@ru ;
+    swrl:body ( [ a swrl:ClassAtom ;
+                swrl:argument1 <urn:swrl#u> ;
+                swrl:classPredicate reh:ЭффективноеУпражнение ] [ a swrl:ClassAtom ;
+                swrl:argument1 <urn:swrl#u> ;
+                swrl:classPredicate reh:БезопасноеУпражнение ] ) ;
+    swrl:head ( [ a swrl:ClassAtom ;
+                swrl:argument1 <urn:swrl#u> ;
+                swrl:classPredicate reh:ОптимальноеУпражнение ] ) .
+
+reh:R15_СОсторожностью a owl:NamedIndividual,
+        swrl:Imp ;
+    rdfs:label "R15_СОсторожностью"@ru ;
+    rdfs:comment "Испытание упражнения приостановлено."@ru ;
+    swrl:body ( [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#u> ;
+                swrl:argument2 <urn:swrl#t> ;
+                swrl:propertyPredicate reh:основаноНаИспытании ] [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#t> ;
+                swrl:argument2 reh:Статус_Приостановлено ;
+                swrl:propertyPredicate reh:имеетСтатус ] ) ;
+    swrl:head ( [ a swrl:ClassAtom ;
+                swrl:argument1 <urn:swrl#u> ;
+                swrl:classPredicate reh:УпражнениеСОсторожностью ] ) .
+
+reh:R16_ПрограммаСРиском a owl:NamedIndividual,
+        swrl:Imp ;
+    rdfs:label "R16_ПрограммаСРиском"@ru ;
+    rdfs:comment "В программе есть упражнение, не рекомендованное её пациенту."@ru ;
+    swrl:body ( [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#pr> ;
+                swrl:argument2 <urn:swrl#p> ;
+                swrl:propertyPredicate reh:предназначенаДля ] [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#pr> ;
+                swrl:argument2 <urn:swrl#u> ;
+                swrl:propertyPredicate reh:содержитУпражнение ] [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#u> ;
+                swrl:propertyPredicate reh:неРекомендуетсяУпражнение ] ) ;
+    swrl:head ( [ a swrl:ClassAtom ;
+                swrl:argument1 <urn:swrl#pr> ;
+                swrl:classPredicate reh:ПрограммаСРиском ] ) .
+
+reh:R17_СпециалистВрач a owl:NamedIndividual,
+        swrl:Imp ;
+    rdfs:label "R17_СпециалистВрач"@ru ;
+    rdfs:comment "Реабилитолог, специализирующийся на диагнозе пациента."@ru ;
+    swrl:body ( [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#dg> ;
+                swrl:propertyPredicate reh:имеетДиагноз ] [ a swrl:ClassAtom ;
+                swrl:argument1 <urn:swrl#s> ;
+                swrl:classPredicate reh:Реабилитолог ] [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#s> ;
+                swrl:argument2 <urn:swrl#dg> ;
+                swrl:propertyPredicate reh:специализируетсяНа ] ) ;
+    swrl:head ( [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#s> ;
+                swrl:propertyPredicate reh:рекомендуемыйСпециалист ] ) .
+
+reh:R18_СпециалистТренер a owl:NamedIndividual,
+        swrl:Imp ;
+    rdfs:label "R18_СпециалистТренер"@ru ;
+    rdfs:comment "Тренер — только если диагноз не требует врача."@ru ;
+    swrl:body ( [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#dg> ;
+                swrl:propertyPredicate reh:имеетДиагноз ] [ a swrl:DatavaluedPropertyAtom ;
+                swrl:argument1 <urn:swrl#dg> ;
+                swrl:argument2 false ;
+                swrl:propertyPredicate reh:требуетВрача ] [ a swrl:ClassAtom ;
+                swrl:argument1 <urn:swrl#s> ;
+                swrl:classPredicate reh:Тренер ] [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#s> ;
+                swrl:argument2 <urn:swrl#dg> ;
+                swrl:propertyPredicate reh:специализируетсяНа ] ) ;
+    swrl:head ( [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#s> ;
+                swrl:propertyPredicate reh:рекомендуемыйСпециалист ] ) .
+
+reh:R19_ЦельПациента a owl:NamedIndividual,
+        swrl:Imp ;
+    rdfs:label "R19_ЦельПациента"@ru ;
+    rdfs:comment "Цель реабилитации следует из диагноза."@ru ;
+    swrl:body ( [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#dg> ;
+                swrl:propertyPredicate reh:имеетДиагноз ] [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#dg> ;
+                swrl:argument2 <urn:swrl#g> ;
+                swrl:propertyPredicate reh:требуетЦели ] ) ;
+    swrl:head ( [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#g> ;
+                swrl:propertyPredicate reh:рекомендуемаяЦель ] ) .
+
+reh:R20_НуженИнвентарь a owl:NamedIndividual,
+        swrl:Imp ;
+    rdfs:label "R20_НуженИнвентарь"@ru ;
+    rdfs:comment "Инвентарь для подходящих пациенту упражнений."@ru ;
+    swrl:body ( [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#u> ;
+                swrl:propertyPredicate reh:подходитУпражнение ] [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#u> ;
+                swrl:argument2 <urn:swrl#i> ;
+                swrl:propertyPredicate reh:требуетИнвентарь ] ) ;
+    swrl:head ( [ a swrl:IndividualPropertyAtom ;
+                swrl:argument1 <urn:swrl#p> ;
+                swrl:argument2 <urn:swrl#i> ;
+                swrl:propertyPredicate reh:нуженИнвентарь ] ) .
+
+reh:R21_БюджетныйИнвентарь a owl:NamedIndividual,
+        swrl:Imp ;
+    rdfs:label "R21_БюджетныйИнвентарь"@ru ;
+    rdfs:comment "Цена ≤ 5000 ₽."@ru ;
+    swrl:body ( [ a swrl:ClassAtom ;
+                swrl:argument1 <urn:swrl#i> ;
+                swrl:classPredicate reh:СпортивныйИнвентарь ] [ a swrl:DatavaluedPropertyAtom ;
+                swrl:argument1 <urn:swrl#i> ;
+                swrl:argument2 <urn:swrl#c> ;
+                swrl:propertyPredicate reh:цена ] [ a swrl:BuiltinAtom ;
+                swrl:arguments ( <urn:swrl#c> 5000 ) ;
+                swrl:builtin swrlb:lessThanOrEqual ] ) ;
+    swrl:head ( [ a swrl:ClassAtom ;
+                swrl:argument1 <urn:swrl#i> ;
+                swrl:classPredicate reh:БюджетныйИнвентарь ] ) .
+
+reh:R22_ОпытныйСпециалист a owl:NamedIndividual,
+        swrl:Imp ;
+    rdfs:label "R22_ОпытныйСпециалист"@ru ;
+    rdfs:comment "Стаж ≥ 10 лет."@ru ;
+    swrl:body ( [ a swrl:ClassAtom ;
+                swrl:argument1 <urn:swrl#s> ;
+                swrl:classPredicate reh:Специалист ] [ a swrl:DatavaluedPropertyAtom ;
+                swrl:argument1 <urn:swrl#s> ;
+                swrl:argument2 <urn:swrl#y> ;
+                swrl:propertyPredicate reh:стажЛет ] [ a swrl:BuiltinAtom ;
+                swrl:arguments ( <urn:swrl#y> 10 ) ;
+                swrl:builtin swrlb:greaterThanOrEqual ] ) ;
+    swrl:head ( [ a swrl:ClassAtom ;
+                swrl:argument1 <urn:swrl#s> ;
+                swrl:classPredicate reh:ОпытныйСпециалист ] ) .
+
+reh:Пациент_Козлов a reh:Пациент,
+        owl:NamedIndividual ;
+    reh:ФИО "Козлов Андрей Викторович"^^xsd:string ;
+    reh:весКг 98.0 ;
+    reh:возраст 60 ;
+    reh:датаРождения "1966-03-08T00:00:00"^^xsd:dateTime ;
+    reh:имеетДанные reh:Данные_Козлов ;
+    reh:пол "Мужской"^^xsd:string ;
+    reh:ростСм 176 ;
+    reh:телефон "+7-917-444-55-66"^^xsd:string ;
+    reh:уровеньПодготовки 2 .
+
+reh:Пациент_Лебедева a reh:Пациент,
+        owl:NamedIndividual ;
+    reh:ФИО "Лебедева Ольга Николаевна"^^xsd:string ;
+    reh:весКг 55.0 ;
+    reh:возраст 25 ;
+    reh:датаРождения "2001-05-27T00:00:00"^^xsd:dateTime ;
+    reh:имеетДанные reh:Данные_Лебедева ;
+    reh:пол "Женский"^^xsd:string ;
+    reh:ростСм 170 ;
+    reh:телефон "+7-999-123-45-67"^^xsd:string ;
+    reh:уровеньПодготовки 3 .
+
+reh:Пациент_Новиков a reh:Пациент,
+        owl:NamedIndividual ;
+    reh:ФИО "Новиков Павел Андреевич"^^xsd:string ;
+    reh:весКг 80.0 ;
+    reh:возраст 36 ;
+    reh:датаРождения "1990-06-12T00:00:00"^^xsd:dateTime ;
+    reh:имеетДанные reh:Данные_Новиков ;
+    reh:пол "Мужской"^^xsd:string ;
+    reh:ростСм 182 ;
+    reh:телефон "+7-905-321-00-11"^^xsd:string ;
+    reh:уровеньПодготовки 3 .
+
+reh:Пациент_Фёдорова a reh:Пациент,
+        owl:NamedIndividual ;
+    reh:ФИО "Фёдорова Галина Петровна"^^xsd:string ;
+    reh:весКг 84.0 ;
+    reh:возраст 69 ;
+    reh:датаРождения "1957-02-14T00:00:00"^^xsd:dateTime ;
+    reh:имеетДанные reh:Данные_Фёдорова ;
+    reh:пол "Женский"^^xsd:string ;
+    reh:ростСм 158 ;
+    reh:уровеньПодготовки 1 .
+
+reh:Программа_Волков a reh:РеабилитационнаяПрограмма,
+        owl:NamedIndividual ;
+    reh:датаНазначения "2026-10-02T10:30:00"^^xsd:dateTime ;
+    reh:длительностьНедель 24 ;
+    reh:занятийВНеделю 4 ;
+    reh:имеетЦель reh:Цель_ВосстановлениеПослеИнсульта ;
+    reh:название "Восстановление после инсульта"^^xsd:string ;
+    reh:основанаНаИсторииБолезни reh:Анамнез_Волков ;
+    reh:основанаНаОпытеСпециалиста reh:Реабилитолог_Орлов ;
+    reh:предназначенаДля reh:Пациент_Волков ;
+    reh:содержитУпражнение reh:Упр_РастяжкаСЛентой,
+        reh:Упр_СжатиеЭспандера ;
+    reh:учитываетДанныеПациента reh:Данные_Волков .
+
+reh:Программа_Иванов a reh:РеабилитационнаяПрограмма,
+        owl:NamedIndividual ;
+    reh:датаНазначения "2026-09-01T10:00:00"^^xsd:dateTime ;
+    reh:длительностьНедель 8 ;
+    reh:занятийВНеделю 3 ;
+    reh:имеетЦель reh:Цель_УменьшениеБолиВСпине ;
+    reh:название "Укрепление мышц спины"^^xsd:string ;
+    reh:основанаНаИсторииБолезни reh:Анамнез_Иванов ;
+    reh:основанаНаОпытеСпециалиста reh:Реабилитолог_Соколова ;
+    reh:предназначенаДля reh:Пациент_Иванов ;
+    reh:содержитУпражнение reh:Упр_КошкаКорова,
+        reh:Упр_ПланкаНаФитболе,
+        reh:Упр_ЯгодичныйМостик ;
+    reh:учитываетДанныеПациента reh:Данные_Иванов .
+
+reh:Программа_Кузнецова a reh:РеабилитационнаяПрограмма,
+        owl:NamedIndividual ;
+    reh:датаНазначения "2026-10-05T11:00:00"^^xsd:dateTime ;
+    reh:длительностьНедель 12 ;
+    reh:занятийВНеделю 3 ;
+    reh:имеетЦель reh:Цель_ПрофилактикаОсложненийГипертонии ;
+    reh:название "Кардиотренировки при гипертонии"^^xsd:string ;
+    reh:основанаНаИсторииБолезни reh:Анамнез_Кузнецова ;
+    reh:основанаНаОпытеСпециалиста reh:Тренер_Белов ;
+    reh:предназначенаДля reh:Пациент_Кузнецова ;
+    reh:содержитУпражнение reh:Упр_Велотренажёр,
+        reh:Упр_ХодьбаНаДорожке,
+        reh:Упр_ЯгодичныйМостик ;
+    reh:учитываетДанныеПациента reh:Данные_Кузнецова .
+
+reh:Программа_Морозова a reh:РеабилитационнаяПрограмма,
+        owl:NamedIndividual ;
+    reh:датаНазначения "2026-07-10T18:00:00"^^xsd:dateTime ;
+    reh:длительностьНедель 16 ;
+    reh:занятийВНеделю 3 ;
+    reh:имеетЦель reh:Цель_ПрофилактикаПрогрессированияСколиоза ;
+    reh:название "Коррекция осанки при сколиозе"^^xsd:string ;
+    reh:основанаНаИсторииБолезни reh:Анамнез_Морозова ;
+    reh:основанаНаОпытеСпециалиста reh:Тренер_Зайцева ;
+    reh:предназначенаДля reh:Пациент_Морозова ;
+    reh:содержитУпражнение reh:Упр_КошкаКорова,
+        reh:Упр_ПланкаНаФитболе,
+        reh:Упр_РастяжкаСЛентой,
+        reh:Упр_СкандинавскаяХодьба ;
+    reh:учитываетДанныеПациента reh:Данные_Морозова .
+
+reh:Программа_Петрова a reh:РеабилитационнаяПрограмма,
+        owl:NamedIndividual ;
+    reh:датаНазначения "2026-08-15T14:30:00"^^xsd:dateTime ;
+    reh:длительностьНедель 10 ;
+    reh:занятийВНеделю 3 ;
+    reh:имеетЦель reh:Цель_УменьшениеБолиВКолене ;
+    reh:название "Разгрузка коленного сустава"^^xsd:string ;
+    reh:основанаНаИсторииБолезни reh:Анамнез_Петрова ;
+    reh:основанаНаОпытеСпециалиста reh:Тренер_Зайцева ;
+    reh:предназначенаДля reh:Пациент_Петрова ;
+    reh:содержитУпражнение reh:Упр_Велотренажёр,
+        reh:Упр_ПодъёмПрямойНоги ;
+    reh:учитываетДанныеПациента reh:Данные_Петрова .
+
+reh:Программа_Сидоров a reh:РеабилитационнаяПрограмма,
+        owl:NamedIndividual ;
+    reh:датаНазначения "2026-09-20T09:00:00"^^xsd:dateTime ;
+    reh:длительностьНедель 12 ;
+    reh:занятийВНеделю 5 ;
+    reh:имеетЦель reh:Цель_ВосстановлениеКолена ;
+    reh:название "Восстановление после пластики ПКС"^^xsd:string ;
+    reh:основанаНаИсторииБолезни reh:Анамнез_Сидоров ;
+    reh:основанаНаОпытеСпециалиста reh:Реабилитолог_Орлов ;
+    reh:предназначенаДля reh:Пациент_Сидоров ;
+    reh:содержитУпражнение reh:Упр_Велотренажёр,
+        reh:Упр_ПодъёмПрямойНоги,
+        reh:Упр_ПриседанияУСтены,
+        reh:Упр_ЯгодичныйМостик ;
+    reh:учитываетДанныеПациента reh:Данные_Сидоров .
+
+reh:Программа_Смирнов a reh:РеабилитационнаяПрограмма,
+        owl:NamedIndividual ;
+    reh:датаНазначения "2026-10-01T16:00:00"^^xsd:dateTime ;
+    reh:длительностьНедель 6 ;
+    reh:занятийВНеделю 5 ;
+    reh:имеетЦель reh:Цель_ВосстановлениеКисти ;
+    reh:название "Разработка кисти после перелома"^^xsd:string ;
+    reh:основанаНаИсторииБолезни reh:Анамнез_Смирнов ;
+    reh:основанаНаОпытеСпециалиста reh:Реабилитолог_Соколова ;
+    reh:предназначенаДля reh:Пациент_Смирнов ;
+    reh:содержитУпражнение reh:Упр_СгибанияКистиСГантелей,
+        reh:Упр_СжатиеЭспандера ;
+    reh:учитываетДанныеПациента reh:Данные_Смирнов .
+
+reh:Тренер_Ким a reh:Тренер,
+        owl:NamedIndividual ;
+    reh:ФИО "Ким Сергей Алексеевич"^^xsd:string ;
+    reh:рейтинг 4.6 ;
+    reh:специализируетсяНа reh:Диагноз_АртрозКолена,
+        reh:Диагноз_Гипертония,
+        reh:Диагноз_Плоскостопие ;
+    reh:стажЛет 6 .
+
+reh:Упр_ЗахватПальцамиНог a reh:Упражнение,
+        owl:NamedIndividual ;
+    reh:влияетНа reh:Цель_УкреплениеСводаСтопы ;
+    reh:длительностьМин 5 ;
+    reh:имеетПоказание reh:Показание_СлабостьМышцСтопы ;
+    reh:имеетТехникуВыполнения reh:Техника_ЗахватПальцамиНог ;
+    reh:имеетЭффект reh:Эффект_УкреплениеСводаСтопы ;
+    reh:количествоПовторений 10 ;
+    reh:количествоПодходов 3 ;
+    reh:название "Захват мелких предметов пальцами ног"^^xsd:string ;
+    reh:основаноНаИспытании reh:Испытание_Стопа_2025 ;
+    reh:уровеньСложности 1 .
+
+reh:Упр_ПерекатыСтопыМячом a reh:Упражнение,
+        owl:NamedIndividual ;
+    reh:влияетНа reh:Цель_УкреплениеСводаСтопы ;
+    reh:длительностьМин 5 ;
+    reh:имеетПоказание reh:Показание_СлабостьМышцСтопы ;
+    reh:имеетТехникуВыполнения reh:Техника_ПерекатыСтопыМячом ;
+    reh:имеетЭффект reh:Эффект_УкреплениеСводаСтопы ;
+    reh:количествоПовторений 20 ;
+    reh:количествоПодходов 3 ;
+    reh:название "Перекаты стопы на массажном мяче"^^xsd:string ;
+    reh:основаноНаИспытании reh:Испытание_Стопа_2025 ;
+    reh:требуетИнвентарь reh:Мяч_Массажный ;
+    reh:уровеньСложности 1 .
+
+reh:Упр_СтановаяТягаСГирей a reh:Упражнение,
+        owl:NamedIndividual ;
+    reh:влияетНа reh:Цель_УменьшениеБолиВСпине ;
+    reh:длительностьМин 10 ;
+    reh:имеетПобочныйЭффект reh:ПобЭффект_БольВПояснице ;
+    reh:имеетПротивопоказание reh:Противопоказание_ОстрыйПериодГрыжи ;
+    reh:имеетТехникуВыполнения reh:Техника_СтановаяТягаСГирей ;
+    reh:имеетЭффект reh:Эффект_УкреплениеКора ;
+    reh:количествоПовторений 8 ;
+    reh:количествоПодходов 3 ;
+    reh:название "Становая тяга с гирей"^^xsd:string ;
+    reh:основаноНаИспытании reh:Испытание_Гиря_2025 ;
+    reh:требуетИнвентарь reh:Гиря_8кг ;
+    reh:уровеньСложности 4 .
+
+reh:Упр_СтойкаНаПодушке a reh:Упражнение,
+        owl:NamedIndividual ;
+    reh:влияетНа reh:Цель_УкреплениеСводаСтопы ;
+    reh:длительностьМин 6 ;
+    reh:имеетПоказание reh:Показание_СлабостьМышцСтопы ;
+    reh:имеетПротивопоказание reh:Противопоказание_НарушениеРавновесия ;
+    reh:имеетТехникуВыполнения reh:Техника_СтойкаНаПодушке ;
+    reh:имеетЭффект reh:Эффект_УкреплениеСводаСтопы ;
+    reh:количествоПовторений 1 ;
+    reh:количествоПодходов 3 ;
+    reh:название "Стойка на балансировочной подушке"^^xsd:string ;
+    reh:основаноНаИспытании reh:Испытание_Стопа_2025 ;
+    reh:требуетИнвентарь reh:Балансировочная_Подушка ;
+    reh:уровеньСложности 3 .
+
+reh:ФИО a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "ФИО"@ru ;
+    rdfs:comment "ФИО пациента, специалиста или автора."@ru ;
+    rdfs:range xsd:string .
+
+reh:входитВПрограмму a owl:ObjectProperty ;
+    rdfs:label "входитВПрограмму"@ru ;
+    rdfs:comment "Обратное к «содержитУпражнение». [добавлено при доработке]"@ru ;
+    owl:inverseOf reh:содержитУпражнение .
+
+reh:датаНазначения a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "датаНазначения"@ru ;
+    rdfs:domain reh:РеабилитационнаяПрограмма ;
+    rdfs:range xsd:dateTime .
+
+reh:датаНачала a owl:DatatypeProperty ;
+    rdfs:label "датаНачала"@ru ;
+    rdfs:domain reh:КлиническоеИспытание ;
+    rdfs:range xsd:dateTime .
+
+reh:датаРождения a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "датаРождения"@ru ;
+    rdfs:domain reh:Пациент ;
+    rdfs:range xsd:dateTime .
+
+reh:длительностьМин a owl:DatatypeProperty ;
+    rdfs:label "длительностьМин"@ru ;
+    rdfs:domain reh:Упражнение ;
+    rdfs:range xsd:integer .
+
+reh:длительностьНедель a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "длительностьНедель"@ru ;
+    rdfs:domain reh:РеабилитационнаяПрограмма ;
+    rdfs:range xsd:integer .
+
+reh:зависитОтТехники a owl:ObjectProperty ;
+    rdfs:label "зависитОтТехники"@ru ;
+    rdfs:comment "На схеме: «зависит от»."@ru ;
+    rdfs:domain reh:Эффект ;
+    rdfs:range reh:ТехникаВыполнения .
+
+reh:задаётХарактеристику a owl:ObjectProperty ;
+    rdfs:label "задаётХарактеристику"@ru ;
+    rdfs:domain reh:Производитель ;
+    rdfs:range reh:ХарактеристикаИнвентаря .
+
+reh:занятийВНеделю a owl:DatatypeProperty ;
+    rdfs:label "занятийВНеделю"@ru ;
+    rdfs:domain reh:РеабилитационнаяПрограмма ;
+    rdfs:range xsd:integer .
+
+reh:имеетАвтора a owl:ObjectProperty ;
+    rdfs:label "имеетАвтора"@ru ;
+    rdfs:domain reh:СпортивныйИнвентарь ;
+    rdfs:range reh:Автор .
+
+reh:имеетПобочныйЭффект a owl:ObjectProperty ;
+    rdfs:label "имеетПобочныйЭффект"@ru ;
+    rdfs:comment "[добавлено при доработке]"@ru ;
+    rdfs:domain reh:Упражнение ;
+    rdfs:range reh:ПобочныйЭффект ;
+    rdfs:subPropertyOf reh:имеетЭффект .
+
+reh:имеетПравилаПользования a owl:ObjectProperty ;
+    rdfs:label "имеетПравилаПользования"@ru ;
+    rdfs:domain reh:СпортивныйИнвентарь ;
+    rdfs:range reh:ПравилаПользования .
+
+reh:имеетПроизводителя a owl:FunctionalProperty,
+        owl:ObjectProperty ;
+    rdfs:label "имеетПроизводителя"@ru ;
+    rdfs:domain reh:СпортивныйИнвентарь ;
+    rdfs:range reh:Производитель .
+
+reh:имеетХарактеристику a owl:ObjectProperty ;
+    rdfs:label "имеетХарактеристику"@ru ;
+    rdfs:domain reh:СпортивныйИнвентарь ;
+    rdfs:range reh:ХарактеристикаИнвентаря .
+
+reh:кодМКБ a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "кодМКБ"@ru ;
+    rdfs:comment "Код МКБ-10."@ru ;
+    rdfs:domain reh:Диагноз ;
+    rdfs:range xsd:string .
+
+reh:количествоПовторений a owl:DatatypeProperty ;
+    rdfs:label "количествоПовторений"@ru ;
+    rdfs:domain reh:Упражнение ;
+    rdfs:range xsd:integer .
+
+reh:количествоПодходов a owl:DatatypeProperty ;
+    rdfs:label "количествоПодходов"@ru ;
+    rdfs:domain reh:Упражнение ;
+    rdfs:range xsd:integer .
+
+reh:название a owl:DatatypeProperty ;
+    rdfs:label "название"@ru ;
+    rdfs:comment "Название (программы, упражнения, диагноза, инвентаря)."@ru ;
+    rdfs:range xsd:string .
+
+reh:описание a owl:DatatypeProperty ;
+    rdfs:label "описание"@ru ;
+    rdfs:comment "Текстовое описание."@ru ;
+    rdfs:range xsd:string .
+
+reh:описываетЭффект a owl:ObjectProperty ;
+    rdfs:label "описываетЭффект"@ru ;
+    rdfs:comment "На схеме: «описывает»."@ru ;
+    rdfs:domain reh:КлиническоеИспытание ;
+    rdfs:range reh:Эффект .
+
+reh:основанаНаОпытеСпециалиста a owl:ObjectProperty ;
+    rdfs:label "основанаНаОпытеСпециалиста"@ru ;
+    rdfs:comment "На схеме: «основана на»."@ru ;
+    rdfs:domain reh:РеабилитационнаяПрограмма ;
+    rdfs:range reh:Специалист .
+
+reh:подтверждаетЦель a owl:ObjectProperty ;
+    rdfs:label "подтверждаетЦель"@ru ;
+    rdfs:comment "На схеме: «зависит»."@ru ;
+    rdfs:domain reh:КлиническоеИспытание ;
+    rdfs:range reh:ЦельРеабилитации .
+
+reh:пол a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "пол"@ru ;
+    rdfs:comment "«Мужской» / «Женский»."@ru ;
+    rdfs:domain reh:Пациент ;
+    rdfs:range xsd:string .
+
+reh:правилаЗависятОтИспытания a owl:ObjectProperty ;
+    rdfs:label "правилаЗависятОтИспытания"@ru ;
+    rdfs:comment "На схеме: «зависит»."@ru ;
+    rdfs:domain reh:ПравилаПользования ;
+    rdfs:range reh:КлиническоеИспытание .
+
+reh:принадлежитПациенту a owl:ObjectProperty ;
+    rdfs:label "принадлежитПациенту"@ru ;
+    rdfs:comment "Обратное к «имеетДанные». [добавлено при доработке]"@ru ;
+    owl:inverseOf reh:имеетДанные .
+
+reh:проводитсяНаДанных a owl:ObjectProperty ;
+    rdfs:label "проводитсяНаДанных"@ru ;
+    rdfs:comment "На схеме: «основаны»."@ru ;
+    rdfs:domain reh:КлиническоеИспытание ;
+    rdfs:range reh:ДанныеПациента .
+
+reh:рейтинг a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "рейтинг"@ru ;
+    rdfs:comment "Оценка пациентов 1–5."@ru ;
+    rdfs:domain reh:Специалист ;
+    rdfs:range xsd:decimal .
+
+reh:содержитИсториюБолезни a owl:ObjectProperty ;
+    rdfs:label "содержитИсториюБолезни"@ru ;
+    rdfs:comment "На схеме: «содержат»."@ru ;
+    rdfs:domain reh:ДанныеПациента ;
+    rdfs:range reh:ИсторияБолезни .
+
+reh:содержитОсобенность a owl:ObjectProperty ;
+    rdfs:label "содержитОсобенность"@ru ;
+    rdfs:comment "На схеме: «основаны на»."@ru ;
+    rdfs:domain reh:ДанныеПациента ;
+    rdfs:range reh:ИндивидуальнаяОсобенность .
+
+reh:страна a owl:DatatypeProperty ;
+    rdfs:label "страна"@ru ;
+    rdfs:domain reh:Производитель ;
+    rdfs:range xsd:string .
+
+reh:телефон a owl:DatatypeProperty ;
+    rdfs:label "телефон"@ru ;
+    rdfs:domain reh:Пациент ;
+    rdfs:range xsd:string .
+
+reh:требуетсяДляУпражнения a owl:ObjectProperty ;
+    rdfs:label "требуетсяДляУпражнения"@ru ;
+    rdfs:comment "Обратное к «требуетИнвентарь». [добавлено при доработке]"@ru ;
+    owl:inverseOf reh:требуетИнвентарь .
+
+reh:учитываетДанныеПациента a owl:ObjectProperty ;
+    rdfs:label "учитываетДанныеПациента"@ru ;
+    rdfs:comment "[добавлено при доработке]"@ru ;
+    rdfs:domain reh:РеабилитационнаяПрограмма ;
+    rdfs:range reh:ДанныеПациента .
+
+reh:фиксируетРеакциюПациента a owl:ObjectProperty ;
+    rdfs:label "фиксируетРеакциюПациента"@ru ;
+    rdfs:domain reh:КлиническоеИспытание ;
+    rdfs:range reh:РеакцияПациента ;
+    rdfs:subPropertyOf reh:имеетРезультат .
+
+reh:числоУчастников a owl:DatatypeProperty ;
+    rdfs:label "числоУчастников"@ru ;
+    rdfs:domain reh:КлиническоеИспытание ;
+    rdfs:range xsd:integer .
+
+reh:Автор_Бубновский a reh:Автор,
+        owl:NamedIndividual ;
+    reh:ФИО "Бубновский Сергей Михайлович"^^xsd:string .
+
+reh:Анамнез_Козлов a reh:ИсторияБолезни,
+        owl:NamedIndividual ;
+    reh:описание "АД до 150/95, курит"^^xsd:string .
+
+reh:Анамнез_Лебедева a reh:ИсторияБолезни,
+        owl:NamedIndividual ;
+    reh:описание "Быстрая утомляемость ног при ходьбе"^^xsd:string .
+
+reh:Анамнез_Новиков a reh:ИсторияБолезни,
+        owl:NamedIndividual ;
+    reh:описание "Периодические боли в пояснице после нагрузки"^^xsd:string .
+
+reh:Анамнез_Фёдорова a reh:ИсторияБолезни,
+        owl:NamedIndividual ;
+    reh:описание "Боль в обоих коленях 5 лет"^^xsd:string .
+
+reh:Балансировочная_Подушка a reh:СпортивныйИнвентарь,
+        owl:NamedIndividual ;
+    reh:имеетПравилаПользования reh:Правила_Балансировочная_Подушка ;
+    reh:имеетПроизводителя reh:Производитель_Starfit ;
+    reh:имеетХарактеристику reh:Характеристика_Балансировочная_Подушка ;
+    reh:название "Балансировочная подушка"^^xsd:string ;
+    reh:цена 1290.0 .
+
+reh:Беговая_Дорожка a reh:СпортивныйИнвентарь,
+        owl:NamedIndividual ;
+    reh:имеетПравилаПользования reh:Правила_Беговая_Дорожка ;
+    reh:имеетПроизводителя reh:Производитель_Kettler ;
+    reh:имеетХарактеристику reh:Характеристика_Беговая_Дорожка ;
+    reh:название "Беговая дорожка"^^xsd:string ;
+    reh:цена 64990.0 .
+
+reh:Безопасность_Испытание_Гиря_2025 a reh:УровеньБезопасности,
+        owl:NamedIndividual ;
+    reh:баллБезопасности 2 .
+
+reh:Безопасность_Испытание_Инсульт_2026 a reh:УровеньБезопасности,
+        owl:NamedIndividual ;
+    reh:баллБезопасности 3 .
+
+reh:Безопасность_Испытание_Кардио_2024 a reh:УровеньБезопасности,
+        owl:NamedIndividual ;
+    reh:баллБезопасности 4 .
+
+reh:Безопасность_Испытание_Кисть_2024 a reh:УровеньБезопасности,
+        owl:NamedIndividual ;
+    reh:баллБезопасности 5 .
+
+reh:Безопасность_Испытание_Колено_2023 a reh:УровеньБезопасности,
+        owl:NamedIndividual ;
+    reh:баллБезопасности 4 .
+
+reh:Безопасность_Испытание_ЛФК_Спина_2023 a reh:УровеньБезопасности,
+        owl:NamedIndividual ;
+    reh:баллБезопасности 5 .
+
+reh:Безопасность_Испытание_Стопа_2025 a reh:УровеньБезопасности,
+        owl:NamedIndividual ;
+    reh:баллБезопасности 5 .
+
+reh:БюджетныйИнвентарь a owl:Class ;
+    rdfs:label "БюджетныйИнвентарь"@ru ;
+    rdfs:comment "Цена ≤ 5000 ₽. [выводимый класс: заполняется SWRL-правилами]"@ru ;
+    rdfs:subClassOf reh:СпортивныйИнвентарь .
+
+reh:Велотренажёр a reh:СпортивныйИнвентарь,
+        owl:NamedIndividual ;
+    reh:имеетПравилаПользования reh:Правила_Велотренажёр ;
+    reh:имеетПроизводителя reh:Производитель_Kettler ;
+    reh:имеетХарактеристику reh:Характеристика_Велотренажёр ;
+    reh:название "Велотренажёр магнитный"^^xsd:string ;
+    reh:цена 38990.0 .
+
+reh:Гантель_2кг a reh:СпортивныйИнвентарь,
+        owl:NamedIndividual ;
+    reh:имеетПравилаПользования reh:Правила_Гантель_2кг ;
+    reh:имеетПроизводителя reh:Производитель_Starfit ;
+    reh:имеетХарактеристику reh:Характеристика_Гантель_2кг ;
+    reh:название "Гантель виниловая 2 кг"^^xsd:string ;
+    reh:цена 690.0 .
+
+reh:Гиря_8кг a reh:СпортивныйИнвентарь,
+        owl:NamedIndividual ;
+    reh:имеетПравилаПользования reh:Правила_Гиря_8кг ;
+    reh:имеетПроизводителя reh:Производитель_Starfit ;
+    reh:имеетХарактеристику reh:Характеристика_Гиря_8кг ;
+    reh:название "Гиря 8 кг"^^xsd:string ;
+    reh:цена 1990.0 .
+
+reh:Данные_Козлов a reh:ДанныеПациента,
+        owl:NamedIndividual ;
+    reh:содержитДиагноз reh:Диагноз_Гипертония ;
+    reh:содержитИсториюБолезни reh:Анамнез_Козлов ;
+    reh:содержитОсобенность reh:Особенность_Козлов .
+
+reh:Данные_Лебедева a reh:ДанныеПациента,
+        owl:NamedIndividual ;
+    reh:содержитДиагноз reh:Диагноз_Плоскостопие ;
+    reh:содержитИсториюБолезни reh:Анамнез_Лебедева ;
+    reh:содержитОсобенность reh:Особенность_Лебедева .
+
+reh:Данные_Новиков a reh:ДанныеПациента,
+        owl:NamedIndividual ;
+    reh:содержитДиагноз reh:Диагноз_Остеохондроз ;
+    reh:содержитИсториюБолезни reh:Анамнез_Новиков ;
+    reh:содержитОсобенность reh:Особенность_Новиков .
+
+reh:Данные_Фёдорова a reh:ДанныеПациента,
+        owl:NamedIndividual ;
+    reh:содержитДиагноз reh:Диагноз_АртрозКолена ;
+    reh:содержитИсториюБолезни reh:Анамнез_Фёдорова ;
+    reh:содержитОсобенность reh:Особенность_Фёдорова .
+
+reh:Испытание_Инсульт_2026 a reh:КлиническоеИспытание,
+        owl:NamedIndividual ;
+    reh:датаНачала "2026-01-12T00:00:00"^^xsd:dateTime ;
+    reh:имеетСтатус reh:Статус_Проводится ;
+    reh:определяетУровеньБезопасности reh:Безопасность_Испытание_Инсульт_2026 ;
+    reh:подтверждаетЦель reh:Цель_ВосстановлениеПослеИнсульта ;
+    reh:показываетЭффективность reh:Эффективность_Испытание_Инсульт_2026 ;
+    reh:фиксируетРеакциюПациента reh:Реакция_Испытание_Инсульт_2026 ;
+    reh:числоУчастников 90 .
+
+reh:Лента_Эспандер a reh:СпортивныйИнвентарь,
+        owl:NamedIndividual ;
+    reh:имеетАвтора reh:Автор_Бубновский ;
+    reh:имеетПравилаПользования reh:Правила_Лента_Эспандер ;
+    reh:имеетПроизводителя reh:Производитель_Bradex ;
+    reh:имеетХарактеристику reh:Характеристика_Лента_Эспандер ;
+    reh:название "Лента-эспандер средняя"^^xsd:string ;
+    reh:цена 590.0 .
+
+reh:Мяч_Массажный a reh:СпортивныйИнвентарь,
+        owl:NamedIndividual ;
+    reh:имеетПравилаПользования reh:Правила_Мяч_Массажный ;
+    reh:имеетПроизводителя reh:Производитель_Bradex ;
+    reh:имеетХарактеристику reh:Характеристика_Мяч_Массажный ;
+    reh:название "Массажный мяч с шипами 8 см"^^xsd:string ;
+    reh:цена 390.0 .
+
+reh:ОптимальноеУпражнение a owl:Class ;
+    rdfs:label "ОптимальноеУпражнение"@ru ;
+    rdfs:comment "Одновременно эффективное и безопасное. [выводимый класс: заполняется SWRL-правилами]"@ru ;
+    rdfs:subClassOf reh:БезопасноеУпражнение,
+        reh:Упражнение,
+        reh:ЭффективноеУпражнение .
+
+reh:ОпытныйСпециалист a owl:Class ;
+    rdfs:label "ОпытныйСпециалист"@ru ;
+    rdfs:comment "Стаж ≥ 10 лет. [выводимый класс: заполняется SWRL-правилами]"@ru ;
+    rdfs:subClassOf reh:Специалист .
+
+reh:Особенность_Волков a reh:ИндивидуальнаяОсобенность,
+        owl:NamedIndividual ;
+    reh:описание "Нарушение равновесия"^^xsd:string .
+
+reh:Особенность_Иванов a reh:ИндивидуальнаяОсобенность,
+        owl:NamedIndividual ;
+    reh:описание "Сидячая работа, низкая физическая активность"^^xsd:string .
+
+reh:Особенность_Козлов a reh:ИндивидуальнаяОсобенность,
+        owl:NamedIndividual ;
+    reh:описание "Водитель, малоподвижный образ жизни"^^xsd:string .
+
+reh:Особенность_Кузнецова a reh:ИндивидуальнаяОсобенность,
+        owl:NamedIndividual ;
+    reh:описание "Пенсионер, умеренная активность"^^xsd:string .
+
+reh:Особенность_Лебедева a reh:ИндивидуальнаяОсобенность,
+        owl:NamedIndividual ;
+    reh:описание "Студентка"^^xsd:string .
+
+reh:Особенность_Морозова a reh:ИндивидуальнаяОсобенность,
+        owl:NamedIndividual ;
+    reh:описание "Бухгалтер, сидячая работа"^^xsd:string .
+
+reh:Особенность_Новиков a reh:ИндивидуальнаяОсобенность,
+        owl:NamedIndividual ;
+    reh:описание "Программист, ходит в спортзал"^^xsd:string .
+
+reh:Особенность_Петрова a reh:ИндивидуальнаяОсобенность,
+        owl:NamedIndividual ;
+    reh:описание "Избыточный вес"^^xsd:string .
+
+reh:Особенность_Сидоров a reh:ИндивидуальнаяОсобенность,
+        owl:NamedIndividual ;
+    reh:описание "Профессиональный футболист"^^xsd:string .
+
+reh:Особенность_Смирнов a reh:ИндивидуальнаяОсобенность,
+        owl:NamedIndividual ;
+    reh:описание "Правша, работает за компьютером"^^xsd:string .
+
+reh:Особенность_Фёдорова a reh:ИндивидуальнаяОсобенность,
+        owl:NamedIndividual ;
+    reh:описание "Пенсионерка, живёт одна"^^xsd:string .
+
+reh:Палки_Скандинавские a reh:СпортивныйИнвентарь,
+        owl:NamedIndividual ;
+    reh:имеетПравилаПользования reh:Правила_Палки_Скандинавские ;
+    reh:имеетПроизводителя reh:Производитель_Leki ;
+    reh:имеетХарактеристику reh:Характеристика_Палки_Скандинавские ;
+    reh:название "Палки для скандинавской ходьбы"^^xsd:string ;
+    reh:цена 4990.0 .
+
+reh:Пациент_Волков a reh:Пациент,
+        owl:NamedIndividual ;
+    reh:ФИО "Волков Дмитрий Андреевич"^^xsd:string ;
+    reh:весКг 90.0 ;
+    reh:возраст 69 ;
+    reh:датаРождения "1956-12-05T00:00:00"^^xsd:dateTime ;
+    reh:имеетДанные reh:Данные_Волков ;
+    reh:пол "Мужской"^^xsd:string ;
+    reh:ростСм 172 ;
+    reh:уровеньПодготовки 1 .
+
+reh:Пациент_Иванов a reh:Пациент,
+        owl:NamedIndividual ;
+    reh:ФИО "Иванов Иван Иванович"^^xsd:string ;
+    reh:весКг 86.0 ;
+    reh:возраст 47 ;
+    reh:датаРождения "1979-03-15T00:00:00"^^xsd:dateTime ;
+    reh:имеетДанные reh:Данные_Иванов ;
+    reh:пол "Мужской"^^xsd:string ;
+    reh:ростСм 178 ;
+    reh:телефон "+7-916-111-22-33"^^xsd:string ;
+    reh:уровеньПодготовки 2 .
+
+reh:Пациент_Кузнецова a reh:Пациент,
+        owl:NamedIndividual ;
+    reh:ФИО "Кузнецова Мария Игоревна"^^xsd:string ;
+    reh:весКг 78.0 ;
+    reh:возраст 64 ;
+    reh:датаРождения "1962-01-10T00:00:00"^^xsd:dateTime ;
+    reh:имеетДанные reh:Данные_Кузнецова ;
+    reh:пол "Женский"^^xsd:string ;
+    reh:ростСм 160 ;
+    reh:телефон "+7-926-777-88-99"^^xsd:string ;
+    reh:уровеньПодготовки 1 .
+
+reh:Пациент_Морозова a reh:Пациент,
+        owl:NamedIndividual ;
+    reh:ФИО "Морозова Елена Дмитриевна"^^xsd:string ;
+    reh:весКг 61.0 ;
+    reh:возраст 55 ;
+    reh:датаРождения "1971-09-18T00:00:00"^^xsd:dateTime ;
+    reh:имеетДанные reh:Данные_Морозова ;
+    reh:пол "Женский"^^xsd:string ;
+    reh:ростСм 168 ;
+    reh:телефон "+7-915-222-33-44"^^xsd:string ;
+    reh:уровеньПодготовки 2 .
+
+reh:Пациент_Петрова a reh:Пациент,
+        owl:NamedIndividual ;
+    reh:ФИО "Петрова Анна Сергеевна"^^xsd:string ;
+    reh:весКг 72.5 ;
+    reh:возраст 38 ;
+    reh:датаРождения "1988-07-22T00:00:00"^^xsd:dateTime ;
+    reh:имеетДанные reh:Данные_Петрова ;
+    reh:пол "Женский"^^xsd:string ;
+    reh:ростСм 165 ;
+    reh:уровеньПодготовки 2 .
+
+reh:Пациент_Сидоров a reh:Пациент,
+        owl:NamedIndividual ;
+    reh:ФИО "Сидоров Олег Павлович"^^xsd:string ;
+    reh:весКг 82.0 ;
+    reh:возраст 30 ;
+    reh:датаРождения "1995-11-03T00:00:00"^^xsd:dateTime ;
+    reh:имеетДанные reh:Данные_Сидоров ;
+    reh:пол "Мужской"^^xsd:string ;
+    reh:ростСм 185 ;
+    reh:телефон "+7-903-555-44-11"^^xsd:string ;
+    reh:уровеньПодготовки 4 .
+
+reh:Пациент_Смирнов a reh:Пациент,
+        owl:NamedIndividual ;
+    reh:ФИО "Смирнов Алексей Викторович"^^xsd:string ;
+    reh:весКг 70.0 ;
+    reh:возраст 38 ;
+    reh:датаРождения "1988-04-30T00:00:00"^^xsd:dateTime ;
+    reh:имеетДанные reh:Данные_Смирнов ;
+    reh:пол "Мужской"^^xsd:string ;
+    reh:ростСм 175 ;
+    reh:уровеньПодготовки 3 .
+
+reh:Показание_СкованностьМышц a reh:Показание,
+        owl:NamedIndividual ;
+    reh:описание "Повышенный тонус и скованность мышц"^^xsd:string ;
+    reh:показаноПри reh:Диагноз_ПоследствияИнсульта,
+        reh:Диагноз_Сколиоз .
+
+reh:Правила_Балансировочная_Подушка a reh:ПравилаПользования,
+        owl:NamedIndividual ;
+    reh:описание "Выполнять рядом с опорой"^^xsd:string .
+
+reh:Правила_Беговая_Дорожка a reh:ПравилаПользования,
+        owl:NamedIndividual ;
+    reh:описание "Использовать страховочный ключ"^^xsd:string .
+
+reh:Правила_Велотренажёр a reh:ПравилаПользования,
+        owl:NamedIndividual ;
+    reh:описание "Регулировать высоту седла по росту"^^xsd:string .
+
+reh:Правила_Гантель_2кг a reh:ПравилаПользования,
+        owl:NamedIndividual ;
+    reh:описание "Не ронять, хранить на стойке"^^xsd:string .
+
+reh:Правила_Гиря_8кг a reh:ПравилаПользования,
+        owl:NamedIndividual ;
+    reh:описание "Только под контролем тренера"^^xsd:string ;
+    reh:правилаЗависятОтИспытания reh:Испытание_Гиря_2025 .
+
+reh:Правила_Лента_Эспандер a reh:ПравилаПользования,
+        owl:NamedIndividual ;
+    reh:описание "Проверять ленту на надрывы перед занятием"^^xsd:string .
+
+reh:Правила_Мяч_Массажный a reh:ПравилаПользования,
+        owl:NamedIndividual ;
+    reh:описание "Не вставать на мяч всем весом"^^xsd:string .
+
+reh:Правила_Палки_Скандинавские a reh:ПравилаПользования,
+        owl:NamedIndividual ;
+    reh:описание "Подбирать длину: рост × 0,68"^^xsd:string .
+
+reh:Правила_Фитбол_65см a reh:ПравилаПользования,
+        owl:NamedIndividual ;
+    reh:описание "Использовать на нескользящем покрытии, подбирать по росту"^^xsd:string ;
+    reh:правилаЗависятОтИспытания reh:Испытание_ЛФК_Спина_2023 .
+
+reh:Правила_Эспандер_Кистевой a reh:ПравилаПользования,
+        owl:NamedIndividual ;
+    reh:описание "Начинать с минимального сопротивления"^^xsd:string .
+
+reh:ПрограммаСРиском a owl:Class ;
+    rdfs:label "ПрограммаСРиском"@ru ;
+    rdfs:comment "Программа, в которой есть упражнение, не рекомендованное её пациенту. [выводимый класс: заполняется SWRL-правилами]"@ru ;
+    rdfs:subClassOf reh:РеабилитационнаяПрограмма .
+
+reh:Производитель_Leki a reh:Производитель,
+        owl:NamedIndividual ;
+    reh:задаётХарактеристику reh:Характеристика_Палки_Скандинавские ;
+    reh:название "Leki"^^xsd:string ;
+    reh:страна "Германия"^^xsd:string .
+
+reh:Противопоказание_НеконтролируемаяГипертензия a reh:Противопоказание,
+        owl:NamedIndividual ;
+    reh:описание "АД выше 160/100 мм рт. ст."^^xsd:string ;
+    reh:противопоказаноПри reh:Диагноз_Гипертония .
+
+reh:Противопоказание_НестабильностьКолена a reh:Противопоказание,
+        owl:NamedIndividual ;
+    reh:описание "Нестабильность коленного сустава в раннем периоде"^^xsd:string ;
+    reh:противопоказаноПри reh:Диагноз_РазрывСвязки .
+
+reh:Реакция_Испытание_Гиря_2025 a reh:РеакцияПациента,
+        owl:NamedIndividual ;
+    reh:описание "Часть участников отметила боль в пояснице"^^xsd:string .
+
+reh:Реакция_Испытание_Инсульт_2026 a reh:РеакцияПациента,
+        owl:NamedIndividual ;
+    reh:описание "Набор участников продолжается"^^xsd:string .
+
+reh:Реакция_Испытание_Кардио_2024 a reh:РеакцияПациента,
+        owl:NamedIndividual ;
+    reh:описание "Снижение систолического АД на 8 мм рт. ст."^^xsd:string .
+
+reh:Реакция_Испытание_Кисть_2024 a reh:РеакцияПациента,
+        owl:NamedIndividual ;
+    reh:описание "Сила хвата восстановлена до 85% от здоровой руки"^^xsd:string .
+
+reh:Реакция_Испытание_Колено_2023 a reh:РеакцияПациента,
+        owl:NamedIndividual ;
+    reh:описание "Увеличение объёма движений в колене на 20°"^^xsd:string .
+
+reh:Реакция_Испытание_ЛФК_Спина_2023 a reh:РеакцияПациента,
+        owl:NamedIndividual ;
+    reh:описание "Снижение боли по ВАШ в среднем на 3 балла"^^xsd:string .
+
+reh:Реакция_Испытание_Стопа_2025 a reh:РеакцияПациента,
+        owl:NamedIndividual ;
+    reh:описание "Высота свода стопы увеличилась у 82% участников"^^xsd:string .
+
+reh:Техника_Велотренажёр a reh:ТехникаВыполнения,
+        owl:NamedIndividual ;
+    reh:описание "Низкое сопротивление, равномерный темп, контроль пульса"^^xsd:string .
+
+reh:Техника_ЗахватПальцамиНог a reh:ТехникаВыполнения,
+        owl:NamedIndividual ;
+    reh:описание "Сидя, поднимать пальцами ног карандаш или платок"^^xsd:string .
+
+reh:Техника_КошкаКорова a reh:ТехникаВыполнения,
+        owl:NamedIndividual ;
+    reh:описание "Медленно: на вдохе прогиб, на выдохе округление спины"^^xsd:string .
+
+reh:Техника_ПерекатыСтопыМячом a reh:ТехникаВыполнения,
+        owl:NamedIndividual ;
+    reh:описание "Сидя, катать мяч от пятки к пальцам с лёгким давлением"^^xsd:string .
+
+reh:Техника_ПодъёмПрямойНоги a reh:ТехникаВыполнения,
+        owl:NamedIndividual ;
+    reh:описание "Нога прямая, носок на себя, подъём на 30–40 см"^^xsd:string .
+
+reh:Техника_РастяжкаСЛентой a reh:ТехникаВыполнения,
+        owl:NamedIndividual ;
+    reh:описание "Плавное натяжение ленты, без рывков"^^xsd:string .
+
+reh:Техника_СгибанияКистиСГантелей a reh:ТехникаВыполнения,
+        owl:NamedIndividual ;
+    reh:описание "Предплечье на столе, движение только кистью"^^xsd:string .
+
+reh:Техника_СжатиеЭспандера a reh:ТехникаВыполнения,
+        owl:NamedIndividual ;
+    reh:описание "Плавное сжатие, удержание 2 с, медленное расслабление"^^xsd:string .
+
+reh:Техника_СкандинавскаяХодьба a reh:ТехникаВыполнения,
+        owl:NamedIndividual ;
+    reh:описание "Отталкивание палкой противоположной рукой, шаг с пятки"^^xsd:string .
+
+reh:Техника_СтойкаНаПодушке a reh:ТехникаВыполнения,
+        owl:NamedIndividual ;
+    reh:описание "Стоять на одной ноге 30 с, рядом опора"^^xsd:string .
+
+reh:Техника_ХодьбаНаДорожке a reh:ТехникаВыполнения,
+        owl:NamedIndividual ;
+    reh:описание "Темп 4–5 км/ч, пульс не выше 60% от максимального"^^xsd:string .
+
+reh:Тренер_Белов a reh:Тренер,
+        owl:NamedIndividual ;
+    reh:ФИО "Белов Артём Игоревич"^^xsd:string ;
+    reh:рейтинг 4.3 ;
+    reh:специализируетсяНа reh:Диагноз_Гипертония,
+        reh:Диагноз_Остеохондроз ;
+    reh:стажЛет 5 .
+
+reh:Упр_ПриседанияУСтены a reh:Упражнение,
+        owl:NamedIndividual ;
+    reh:влияетНа reh:Цель_ВосстановлениеКолена ;
+    reh:длительностьМин 7 ;
+    reh:имеетПобочныйЭффект reh:ПобЭффект_БольВКолене ;
+    reh:имеетПоказание reh:Показание_СлабостьМышцБедра ;
+    reh:имеетПротивопоказание reh:Противопоказание_НестабильностьКолена ;
+    reh:имеетТехникуВыполнения reh:Техника_ПриседанияУСтены ;
+    reh:имеетЭффект reh:Эффект_УкреплениеМышцБедра ;
+    reh:количествоПовторений 10 ;
+    reh:количествоПодходов 3 ;
+    reh:название "Приседания у стены"^^xsd:string ;
+    reh:основаноНаИспытании reh:Испытание_Колено_2023 ;
+    reh:уровеньСложности 2 .
+
+reh:Упр_СгибанияКистиСГантелей a reh:Упражнение,
+        owl:NamedIndividual ;
+    reh:влияетНа reh:Цель_ВосстановлениеКисти ;
+    reh:длительностьМин 5 ;
+    reh:имеетПоказание reh:Показание_ОграничениеПодвижностиКисти ;
+    reh:имеетТехникуВыполнения reh:Техника_СгибанияКистиСГантелей ;
+    reh:имеетЭффект reh:Эффект_МелкаяМоторика ;
+    reh:количествоПовторений 12 ;
+    reh:количествоПодходов 3 ;
+    reh:название "Сгибания кисти с гантелей"^^xsd:string ;
+    reh:основаноНаИспытании reh:Испытание_Кисть_2024 ;
+    reh:требуетИнвентарь reh:Гантель_2кг ;
+    reh:уровеньСложности 1 .
+
+reh:Упр_СкандинавскаяХодьба a reh:Упражнение,
+        owl:NamedIndividual ;
+    reh:влияетНа reh:Цель_ПрофилактикаПрогрессированияСколиоза ;
+    reh:длительностьМин 30 ;
+    reh:имеетПоказание reh:Показание_ГиподинамияИЛишнийВес ;
+    reh:имеетТехникуВыполнения reh:Техника_СкандинавскаяХодьба ;
+    reh:имеетЭффект reh:Эффект_Выносливость ;
+    reh:количествоПовторений 1 ;
+    reh:количествоПодходов 1 ;
+    reh:название "Скандинавская ходьба"^^xsd:string ;
+    reh:основаноНаИспытании reh:Испытание_Кардио_2024 ;
+    reh:требуетИнвентарь reh:Палки_Скандинавские ;
+    reh:уровеньСложности 2 .
+
+reh:Упр_ХодьбаНаДорожке a reh:Упражнение,
+        owl:NamedIndividual ;
+    reh:влияетНа reh:Цель_ПрофилактикаОсложненийГипертонии ;
+    reh:длительностьМин 20 ;
+    reh:имеетПоказание reh:Показание_ГиподинамияИЛишнийВес ;
+    reh:имеетПротивопоказание reh:Противопоказание_НарушениеРавновесия ;
+    reh:имеетТехникуВыполнения reh:Техника_ХодьбаНаДорожке ;
+    reh:имеетЭффект reh:Эффект_Выносливость ;
+    reh:количествоПовторений 1 ;
+    reh:количествоПодходов 1 ;
+    reh:название "Ходьба на беговой дорожке"^^xsd:string ;
+    reh:основаноНаИспытании reh:Испытание_Кардио_2024 ;
+    reh:требуетИнвентарь reh:Беговая_Дорожка ;
+    reh:уровеньСложности 2 .
+
+reh:УпражнениеСОсторожностью a owl:Class ;
+    rdfs:label "УпражнениеСОсторожностью"@ru ;
+    rdfs:comment "Испытание упражнения приостановлено — назначать с осторожностью. [выводимый класс: заполняется SWRL-правилами]"@ru ;
+    rdfs:subClassOf reh:Упражнение .
+
+reh:Фитбол_65см a reh:СпортивныйИнвентарь,
+        owl:NamedIndividual ;
+    reh:имеетПравилаПользования reh:Правила_Фитбол_65см ;
+    reh:имеетПроизводителя reh:Производитель_Torneo ;
+    reh:имеетХарактеристику reh:Характеристика_Фитбол_65см ;
+    reh:название "Фитбол 65 см"^^xsd:string ;
+    reh:цена 1490.0 .
+
+reh:Эспандер_Кистевой a reh:СпортивныйИнвентарь,
+        owl:NamedIndividual ;
+    reh:имеетПравилаПользования reh:Правила_Эспандер_Кистевой ;
+    reh:имеетПроизводителя reh:Производитель_Torneo ;
+    reh:имеетХарактеристику reh:Характеристика_Эспандер_Кистевой ;
+    reh:название "Эспандер кистевой"^^xsd:string ;
+    reh:цена 350.0 .
+
+reh:Эффективность_Испытание_Гиря_2025 a reh:Эффективность,
+        owl:NamedIndividual ;
+    reh:процентЭффективности 65.0 .
+
+reh:Эффективность_Испытание_Инсульт_2026 a reh:Эффективность,
+        owl:NamedIndividual ;
+    reh:процентЭффективности 69.5 .
+
+reh:Эффективность_Испытание_Кардио_2024 a reh:Эффективность,
+        owl:NamedIndividual ;
+    reh:процентЭффективности 72.0 .
+
+reh:Эффективность_Испытание_Кисть_2024 a reh:Эффективность,
+        owl:NamedIndividual ;
+    reh:процентЭффективности 91.0 .
+
+reh:Эффективность_Испытание_Колено_2023 a reh:Эффективность,
+        owl:NamedIndividual ;
+    reh:процентЭффективности 84.0 .
+
+reh:Эффективность_Испытание_ЛФК_Спина_2023 a reh:Эффективность,
+        owl:NamedIndividual ;
+    reh:процентЭффективности 78.5 .
+
+reh:Эффективность_Испытание_Стопа_2025 a reh:Эффективность,
+        owl:NamedIndividual ;
+    reh:процентЭффективности 82.0 .
+
+reh:баллБезопасности a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "баллБезопасности"@ru ;
+    rdfs:comment "1–5."@ru ;
+    rdfs:domain reh:УровеньБезопасности ;
+    rdfs:range xsd:integer .
+
+reh:влияетНа a owl:ObjectProperty ;
+    rdfs:label "влияетНа"@ru ;
+    rdfs:comment "На схеме: «влияет»."@ru ;
+    rdfs:domain reh:Упражнение ;
+    rdfs:range reh:ЦельРеабилитации .
+
+reh:возраст a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "возраст"@ru ;
+    rdfs:comment "Полных лет на 01.10.2026."@ru ;
+    rdfs:domain reh:Пациент ;
+    rdfs:range xsd:integer .
+
+reh:имеетПоказание a owl:ObjectProperty ;
+    rdfs:label "имеетПоказание"@ru ;
+    rdfs:comment "На схеме: «имеет»."@ru ;
+    rdfs:domain reh:Упражнение ;
+    rdfs:range reh:Показание .
+
+reh:имеетПротивопоказание a owl:ObjectProperty ;
+    rdfs:label "имеетПротивопоказание"@ru ;
+    rdfs:comment "На схеме: «имеет»."@ru ;
+    rdfs:domain reh:Упражнение ;
+    rdfs:range reh:Противопоказание .
+
+reh:имеетТехникуВыполнения a owl:ObjectProperty ;
+    rdfs:label "имеетТехникуВыполнения"@ru ;
+    rdfs:comment "На схеме: «имеет»."@ru ;
+    rdfs:domain reh:Упражнение ;
+    rdfs:range reh:ТехникаВыполнения .
+
+reh:имеетЦель a owl:ObjectProperty ;
+    rdfs:label "имеетЦель"@ru ;
+    rdfs:comment "На схеме: «цель»."@ru ;
+    rdfs:domain reh:РеабилитационнаяПрограмма ;
+    rdfs:range reh:ЦельРеабилитации .
+
+reh:нуженИнвентарь a owl:ObjectProperty ;
+    rdfs:label "нуженИнвентарь"@ru ;
+    rdfs:comment "[выводимое свойство: заполняется SWRL-правилами]"@ru ;
+    rdfs:domain reh:Пациент ;
+    rdfs:range reh:СпортивныйИнвентарь .
+
+reh:определяетУровеньБезопасности a owl:ObjectProperty ;
+    rdfs:label "определяетУровеньБезопасности"@ru ;
+    rdfs:domain reh:КлиническоеИспытание ;
+    rdfs:range reh:УровеньБезопасности ;
+    rdfs:subPropertyOf reh:имеетРезультат .
+
+reh:основанаНаИсторииБолезни a owl:ObjectProperty ;
+    rdfs:label "основанаНаИсторииБолезни"@ru ;
+    rdfs:comment "На схеме: «основана на»."@ru ;
+    rdfs:domain reh:РеабилитационнаяПрограмма ;
+    rdfs:range reh:ИсторияБолезни .
+
+reh:показаноПри a owl:ObjectProperty ;
+    rdfs:label "показаноПри"@ru ;
+    rdfs:comment "[добавлено при доработке]"@ru ;
+    rdfs:domain reh:Показание ;
+    rdfs:range reh:Диагноз .
+
+reh:показываетЭффективность a owl:ObjectProperty ;
+    rdfs:label "показываетЭффективность"@ru ;
+    rdfs:domain reh:КлиническоеИспытание ;
+    rdfs:range reh:Эффективность ;
+    rdfs:subPropertyOf reh:имеетРезультат .
+
+reh:противопоказаноПри a owl:ObjectProperty ;
+    rdfs:label "противопоказаноПри"@ru ;
+    rdfs:comment "[добавлено при доработке]"@ru ;
+    rdfs:domain reh:Противопоказание ;
+    rdfs:range reh:Диагноз .
+
+reh:процентЭффективности a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "процентЭффективности"@ru ;
+    rdfs:domain reh:Эффективность ;
+    rdfs:range xsd:decimal .
+
+reh:рекомендуемаяЦель a owl:ObjectProperty ;
+    rdfs:label "рекомендуемаяЦель"@ru ;
+    rdfs:comment "[выводимое свойство: заполняется SWRL-правилами]"@ru ;
+    rdfs:domain reh:Пациент ;
+    rdfs:range reh:ЦельРеабилитации .
+
+reh:ростСм a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "ростСм"@ru ;
+    rdfs:domain reh:Пациент ;
+    rdfs:range xsd:integer .
+
+reh:стажЛет a owl:DatatypeProperty ;
+    rdfs:label "стажЛет"@ru ;
+    rdfs:domain reh:Специалист ;
+    rdfs:range xsd:integer .
+
+reh:требуетВрача a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "требуетВрача"@ru ;
+    rdfs:comment "true — программу должен вести врач-реабилитолог, а не тренер."@ru ;
+    rdfs:domain reh:Диагноз ;
+    rdfs:range xsd:boolean .
+
+reh:уровеньПодготовки a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "уровеньПодготовки"@ru ;
+    rdfs:comment "Физическая подготовка 1–5 (1 — минимальная)."@ru ;
+    rdfs:domain reh:Пациент ;
+    rdfs:range xsd:integer .
+
+reh:цена a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "цена"@ru ;
+    rdfs:comment "Рубли."@ru ;
+    rdfs:domain reh:СпортивныйИнвентарь ;
+    rdfs:range xsd:decimal .
+
+reh:Анамнез_Волков a reh:ИсторияБолезни,
+        owl:NamedIndividual ;
+    reh:описание "Ишемический инсульт 4 месяца назад, слабость левой руки"^^xsd:string .
+
+reh:Анамнез_Иванов a reh:ИсторияБолезни,
+        owl:NamedIndividual ;
+    reh:описание "Боли в пояснице 3 года, обострение 2 месяца назад"^^xsd:string .
+
+reh:Анамнез_Кузнецова a reh:ИсторияБолезни,
+        owl:NamedIndividual ;
+    reh:описание "АД до 160/100, принимает гипотензивные препараты 8 лет"^^xsd:string .
+
+reh:Анамнез_Морозова a reh:ИсторияБолезни,
+        owl:NamedIndividual ;
+    reh:описание "Сколиоз II степени с детства, периодические боли в спине"^^xsd:string .
+
+reh:Анамнез_Петрова a reh:ИсторияБолезни,
+        owl:NamedIndividual ;
+    reh:описание "Боль в правом колене при ходьбе по лестнице 1 год"^^xsd:string .
+
+reh:Анамнез_Сидоров a reh:ИсторияБолезни,
+        owl:NamedIndividual ;
+    reh:описание "Спортивная травма, артроскопическая пластика 6 недель назад"^^xsd:string .
+
+reh:Анамнез_Смирнов a reh:ИсторияБолезни,
+        owl:NamedIndividual ;
+    reh:описание "Перелом правой лучевой кости, гипс снят 2 недели назад"^^xsd:string .
+
+reh:Данные_Волков a reh:ДанныеПациента,
+        owl:NamedIndividual ;
+    reh:содержитДиагноз reh:Диагноз_ПоследствияИнсульта ;
+    reh:содержитИсториюБолезни reh:Анамнез_Волков ;
+    reh:содержитОсобенность reh:Особенность_Волков .
+
+reh:Данные_Иванов a reh:ДанныеПациента,
+        owl:NamedIndividual ;
+    reh:содержитДиагноз reh:Диагноз_Остеохондроз ;
+    reh:содержитИсториюБолезни reh:Анамнез_Иванов ;
+    reh:содержитОсобенность reh:Особенность_Иванов .
+
+reh:Данные_Кузнецова a reh:ДанныеПациента,
+        owl:NamedIndividual ;
+    reh:содержитДиагноз reh:Диагноз_Гипертония ;
+    reh:содержитИсториюБолезни reh:Анамнез_Кузнецова ;
+    reh:содержитОсобенность reh:Особенность_Кузнецова .
+
+reh:Данные_Морозова a reh:ДанныеПациента,
+        owl:NamedIndividual ;
+    reh:содержитДиагноз reh:Диагноз_Сколиоз ;
+    reh:содержитИсториюБолезни reh:Анамнез_Морозова ;
+    reh:содержитОсобенность reh:Особенность_Морозова .
+
+reh:Данные_Петрова a reh:ДанныеПациента,
+        owl:NamedIndividual ;
+    reh:содержитДиагноз reh:Диагноз_АртрозКолена ;
+    reh:содержитИсториюБолезни reh:Анамнез_Петрова ;
+    reh:содержитОсобенность reh:Особенность_Петрова .
+
+reh:Данные_Сидоров a reh:ДанныеПациента,
+        owl:NamedIndividual ;
+    reh:содержитДиагноз reh:Диагноз_РазрывСвязки ;
+    reh:содержитИсториюБолезни reh:Анамнез_Сидоров ;
+    reh:содержитОсобенность reh:Особенность_Сидоров .
+
+reh:Данные_Смирнов a reh:ДанныеПациента,
+        owl:NamedIndividual ;
+    reh:содержитДиагноз reh:Диагноз_ПереломЛучевой ;
+    reh:содержитИсториюБолезни reh:Анамнез_Смирнов ;
+    reh:содержитОсобенность reh:Особенность_Смирнов .
+
+reh:Испытание_Гиря_2025 a reh:КлиническоеИспытание,
+        owl:NamedIndividual ;
+    reh:датаНачала "2025-05-20T00:00:00"^^xsd:dateTime ;
+    reh:имеетСтатус reh:Статус_Приостановлено ;
+    reh:описываетЭффект reh:ПобЭффект_БольВПояснице ;
+    reh:определяетУровеньБезопасности reh:Безопасность_Испытание_Гиря_2025 ;
+    reh:подтверждаетЦель reh:Цель_УменьшениеБолиВСпине ;
+    reh:показываетЭффективность reh:Эффективность_Испытание_Гиря_2025 ;
+    reh:фиксируетРеакциюПациента reh:Реакция_Испытание_Гиря_2025 ;
+    reh:числоУчастников 40 .
+
+reh:Испытание_Кисть_2024 a reh:КлиническоеИспытание,
+        owl:NamedIndividual ;
+    reh:датаНачала "2024-03-10T00:00:00"^^xsd:dateTime ;
+    reh:имеетСтатус reh:Статус_Завершено ;
+    reh:определяетУровеньБезопасности reh:Безопасность_Испытание_Кисть_2024 ;
+    reh:подтверждаетЦель reh:Цель_ВосстановлениеКисти ;
+    reh:показываетЭффективность reh:Эффективность_Испытание_Кисть_2024 ;
+    reh:фиксируетРеакциюПациента reh:Реакция_Испытание_Кисть_2024 ;
+    reh:числоУчастников 60 .
+
+reh:Испытание_Колено_2023 a reh:КлиническоеИспытание,
+        owl:NamedIndividual ;
+    reh:датаНачала "2023-09-15T00:00:00"^^xsd:dateTime ;
+    reh:имеетСтатус reh:Статус_Завершено ;
+    reh:описываетЭффект reh:ПобЭффект_БольВКолене ;
+    reh:определяетУровеньБезопасности reh:Безопасность_Испытание_Колено_2023 ;
+    reh:подтверждаетЦель reh:Цель_ВосстановлениеКолена,
+        reh:Цель_УменьшениеБолиВКолене ;
+    reh:показываетЭффективность reh:Эффективность_Испытание_Колено_2023 ;
+    reh:фиксируетРеакциюПациента reh:Реакция_Испытание_Колено_2023 ;
+    reh:числоУчастников 80 .
+
+reh:ПациентСИзбыточнымВесом a owl:Class ;
+    rdfs:label "ПациентСИзбыточнымВесом"@ru ;
+    rdfs:comment "ИМТ от 25 до 30. [выводимый класс: заполняется SWRL-правилами]"@ru ;
+    rdfs:subClassOf reh:Пациент .
+
+reh:ПобЭффект_БольВКолене a reh:ПобочныйЭффект,
+        owl:NamedIndividual ;
+    reh:зависитОтТехники reh:Техника_ПриседанияУСтены ;
+    reh:описание "Боль в колене при выходе колена за носок"^^xsd:string .
+
+reh:ПобЭффект_ПовышениеДавления a reh:ПобочныйЭффект,
+        owl:NamedIndividual ;
+    reh:зависитОтТехники reh:Техника_ЯгодичныйМостик ;
+    reh:описание "Подъём артериального давления при натуживании"^^xsd:string .
+
+reh:ПожилойПациент a owl:Class ;
+    rdfs:label "ПожилойПациент"@ru ;
+    rdfs:comment "Возраст ≥ 60 лет — ограничение сложности упражнений. [выводимый класс: заполняется SWRL-правилами]"@ru ;
+    rdfs:subClassOf reh:Пациент .
+
+reh:Показание_ОграничениеПодвижностиКисти a reh:Показание,
+        owl:NamedIndividual ;
+    reh:описание "Ограничение подвижности кисти после иммобилизации"^^xsd:string ;
+    reh:показаноПри reh:Диагноз_ПереломЛучевой,
+        reh:Диагноз_ПоследствияИнсульта .
+
+reh:Показание_СлабостьМышцБедра a reh:Показание,
+        owl:NamedIndividual ;
+    reh:описание "Слабость четырёхглавой мышцы бедра"^^xsd:string ;
+    reh:показаноПри reh:Диагноз_АртрозКолена,
+        reh:Диагноз_РазрывСвязки .
+
+reh:Показание_ХроническаяБольВСпине a reh:Показание,
+        owl:NamedIndividual ;
+    reh:описание "Хроническая боль в спине вне обострения"^^xsd:string ;
+    reh:показаноПри reh:Диагноз_Остеохондроз,
+        reh:Диагноз_Сколиоз .
+
+reh:Производитель_Bradex a reh:Производитель,
+        owl:NamedIndividual ;
+    reh:задаётХарактеристику reh:Характеристика_Лента_Эспандер,
+        reh:Характеристика_Мяч_Массажный ;
+    reh:название "Bradex"^^xsd:string ;
+    reh:страна "Израиль"^^xsd:string .
+
+reh:Производитель_Kettler a reh:Производитель,
+        owl:NamedIndividual ;
+    reh:задаётХарактеристику reh:Характеристика_Беговая_Дорожка,
+        reh:Характеристика_Велотренажёр ;
+    reh:название "Kettler"^^xsd:string ;
+    reh:страна "Германия"^^xsd:string .
+
+reh:Производитель_Torneo a reh:Производитель,
+        owl:NamedIndividual ;
+    reh:задаётХарактеристику reh:Характеристика_Фитбол_65см,
+        reh:Характеристика_Эспандер_Кистевой ;
+    reh:название "Torneo"^^xsd:string ;
+    reh:страна "Россия"^^xsd:string .
+
+reh:Противопоказание_НарушениеРавновесия a reh:Противопоказание,
+        owl:NamedIndividual ;
+    reh:описание "Выраженное нарушение равновесия"^^xsd:string ;
+    reh:противопоказаноПри reh:Диагноз_ПоследствияИнсульта .
+
+reh:Противопоказание_ОстрыйПериодГрыжи a reh:Противопоказание,
+        owl:NamedIndividual ;
+    reh:описание "Острый период грыжи межпозвонкового диска"^^xsd:string ;
+    reh:противопоказаноПри reh:Диагноз_Остеохондроз .
+
+reh:Реабилитолог_Орлов a reh:Реабилитолог,
+        owl:NamedIndividual ;
+    reh:ФИО "Орлов Виктор Семёнович"^^xsd:string ;
+    reh:рейтинг 4.9 ;
+    reh:специализируетсяНа reh:Диагноз_ПереломЛучевой,
+        reh:Диагноз_ПоследствияИнсульта,
+        reh:Диагноз_РазрывСвязки ;
+    reh:стажЛет 20 .
+
+reh:Реабилитолог_Соколова a reh:Реабилитолог,
+        owl:NamedIndividual ;
+    reh:ФИО "Соколова Ирина Павловна"^^xsd:string ;
+    reh:рейтинг 4.8 ;
+    reh:специализируетсяНа reh:Диагноз_Остеохондроз,
+        reh:Диагноз_ПереломЛучевой,
+        reh:Диагноз_Сколиоз ;
+    reh:стажЛет 12 .
+
+reh:Статус_Планируется a reh:СтатусИспытания,
+        owl:NamedIndividual ;
+    rdfs:label "Планируется"@ru ;
+    reh:название "Планируется"^^xsd:string .
+
+reh:Техника_ПланкаНаФитболе a reh:ТехникаВыполнения,
+        owl:NamedIndividual ;
+    reh:описание "Корпус прямой, без прогиба в пояснице, 20–30 с"^^xsd:string .
+
+reh:Техника_ПриседанияУСтены a reh:ТехникаВыполнения,
+        owl:NamedIndividual ;
+    reh:описание "Спина прижата к стене, колени не выходят за носки"^^xsd:string .
+
+reh:Техника_СтановаяТягаСГирей a reh:ТехникаВыполнения,
+        owl:NamedIndividual ;
+    reh:описание "Спина прямая, движение за счёт таза"^^xsd:string .
+
+reh:Техника_ЯгодичныйМостик a reh:ТехникаВыполнения,
+        owl:NamedIndividual ;
+    reh:описание "Подъём таза до прямой линии плечи–колени, пауза 2 с"^^xsd:string .
+
+reh:Тренер_Зайцева a reh:Тренер,
+        owl:NamedIndividual ;
+    reh:ФИО "Зайцева Наталья Олеговна"^^xsd:string ;
+    reh:рейтинг 4.7 ;
+    reh:специализируетсяНа reh:Диагноз_АртрозКолена,
+        reh:Диагноз_Плоскостопие,
+        reh:Диагноз_Сколиоз ;
+    reh:стажЛет 8 .
+
+reh:Упр_КошкаКорова a reh:Упражнение,
+        owl:NamedIndividual ;
+    reh:влияетНа reh:Цель_УменьшениеБолиВСпине ;
+    reh:длительностьМин 5 ;
+    reh:имеетПоказание reh:Показание_ХроническаяБольВСпине ;
+    reh:имеетТехникуВыполнения reh:Техника_КошкаКорова ;
+    reh:имеетЭффект reh:Эффект_ГибкостьПозвоночника ;
+    reh:количествоПовторений 10 ;
+    reh:количествоПодходов 3 ;
+    reh:название "Кошка-корова"^^xsd:string ;
+    reh:основаноНаИспытании reh:Испытание_ЛФК_Спина_2023 ;
+    reh:уровеньСложности 1 .
+
+reh:Упр_ПланкаНаФитболе a reh:Упражнение,
+        owl:NamedIndividual ;
+    reh:влияетНа reh:Цель_УменьшениеБолиВСпине ;
+    reh:длительностьМин 5 ;
+    reh:имеетПобочныйЭффект reh:ПобЭффект_БольВПояснице ;
+    reh:имеетПротивопоказание reh:Противопоказание_ОстрыйПериодГрыжи ;
+    reh:имеетТехникуВыполнения reh:Техника_ПланкаНаФитболе ;
+    reh:имеетЭффект reh:Эффект_УкреплениеКора ;
+    reh:количествоПовторений 1 ;
+    reh:количествоПодходов 3 ;
+    reh:название "Планка с упором на фитбол"^^xsd:string ;
+    reh:основаноНаИспытании reh:Испытание_ЛФК_Спина_2023 ;
+    reh:требуетИнвентарь reh:Фитбол_65см ;
+    reh:уровеньСложности 3 .
+
+reh:Упр_ПодъёмПрямойНоги a reh:Упражнение,
+        owl:NamedIndividual ;
+    reh:влияетНа reh:Цель_УменьшениеБолиВКолене ;
+    reh:длительностьМин 6 ;
+    reh:имеетПоказание reh:Показание_СлабостьМышцБедра ;
+    reh:имеетТехникуВыполнения reh:Техника_ПодъёмПрямойНоги ;
+    reh:имеетЭффект reh:Эффект_УкреплениеМышцБедра ;
+    reh:количествоПовторений 15 ;
+    reh:количествоПодходов 3 ;
+    reh:название "Подъём прямой ноги лёжа"^^xsd:string ;
+    reh:основаноНаИспытании reh:Испытание_Колено_2023 ;
+    reh:уровеньСложности 1 .
+
+reh:Упр_РастяжкаСЛентой a reh:Упражнение,
+        owl:NamedIndividual ;
+    reh:влияетНа reh:Цель_ВосстановлениеПослеИнсульта ;
+    reh:длительностьМин 8 ;
+    reh:имеетПоказание reh:Показание_СкованностьМышц ;
+    reh:имеетТехникуВыполнения reh:Техника_РастяжкаСЛентой ;
+    reh:имеетЭффект reh:Эффект_ГибкостьПозвоночника ;
+    reh:количествоПовторений 10 ;
+    reh:количествоПодходов 2 ;
+    reh:название "Растяжка с лентой-эспандером"^^xsd:string ;
+    reh:основаноНаИспытании reh:Испытание_Инсульт_2026 ;
+    reh:требуетИнвентарь reh:Лента_Эспандер ;
+    reh:уровеньСложности 1 .
+
+reh:Упр_СжатиеЭспандера a reh:Упражнение,
+        owl:NamedIndividual ;
+    reh:влияетНа reh:Цель_ВосстановлениеКисти ;
+    reh:длительностьМин 4 ;
+    reh:имеетПоказание reh:Показание_ОграничениеПодвижностиКисти ;
+    reh:имеетТехникуВыполнения reh:Техника_СжатиеЭспандера ;
+    reh:имеетЭффект reh:Эффект_МелкаяМоторика ;
+    reh:количествоПовторений 15 ;
+    reh:количествоПодходов 4 ;
+    reh:название "Сжатие кистевого эспандера"^^xsd:string ;
+    reh:основаноНаИспытании reh:Испытание_Кисть_2024 ;
+    reh:требуетИнвентарь reh:Эспандер_Кистевой ;
+    reh:уровеньСложности 1 .
+
+reh:Характеристика_Балансировочная_Подушка a reh:ХарактеристикаИнвентаря,
+        owl:NamedIndividual ;
+    reh:описание "Диаметр 33 см, надувная"^^xsd:string .
+
+reh:Характеристика_Беговая_Дорожка a reh:ХарактеристикаИнвентаря,
+        owl:NamedIndividual ;
+    reh:описание "Скорость до 16 км/ч, наклон до 12%"^^xsd:string .
+
+reh:Характеристика_Велотренажёр a reh:ХарактеристикаИнвентаря,
+        owl:NamedIndividual ;
+    reh:описание "8 уровней нагрузки, пульсометр"^^xsd:string .
+
+reh:Характеристика_Гантель_2кг a reh:ХарактеристикаИнвентаря,
+        owl:NamedIndividual ;
+    reh:описание "Вес 2 кг, виниловое покрытие"^^xsd:string .
+
+reh:Характеристика_Гиря_8кг a reh:ХарактеристикаИнвентаря,
+        owl:NamedIndividual ;
+    reh:описание "Чугун, 8 кг"^^xsd:string .
+
+reh:Характеристика_Лента_Эспандер a reh:ХарактеристикаИнвентаря,
+        owl:NamedIndividual ;
+    reh:описание "Латекс, сопротивление 5–10 кг"^^xsd:string .
+
+reh:Характеристика_Мяч_Массажный a reh:ХарактеристикаИнвентаря,
+        owl:NamedIndividual ;
+    reh:описание "ПВХ, диаметр 8 см"^^xsd:string .
+
+reh:Характеристика_Палки_Скандинавские a reh:ХарактеристикаИнвентаря,
+        owl:NamedIndividual ;
+    reh:описание "Длина 110–130 см, телескопические"^^xsd:string .
+
+reh:Характеристика_Фитбол_65см a reh:ХарактеристикаИнвентаря,
+        owl:NamedIndividual ;
+    reh:описание "Диаметр 65 см, нагрузка до 150 кг"^^xsd:string .
+
+reh:Характеристика_Эспандер_Кистевой a reh:ХарактеристикаИнвентаря,
+        owl:NamedIndividual ;
+    reh:описание "Сопротивление 10 кг"^^xsd:string .
+
+reh:Эффект_ГибкостьПозвоночника a reh:ЛечебныйЭффект,
+        owl:NamedIndividual ;
+    reh:описание "Повышение гибкости позвоночника"^^xsd:string .
+
+reh:Эффект_МелкаяМоторика a reh:ЛечебныйЭффект,
+        owl:NamedIndividual ;
+    reh:описание "Восстановление силы хвата и мелкой моторики"^^xsd:string .
+
+reh:Эффект_УкреплениеКора a reh:ЛечебныйЭффект,
+        owl:NamedIndividual ;
+    reh:описание "Укрепление мышц кора"^^xsd:string .
+
+reh:весКг a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "весКг"@ru ;
+    rdfs:comment "Килограммы."@ru ;
+    rdfs:domain reh:Пациент ;
+    rdfs:range xsd:decimal .
+
+reh:весПриИМТ25 a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "весПриИМТ25"@ru ;
+    rdfs:comment "Вес (кг), при котором ИМТ = 25 для роста пациента. [выводится SWRL-правилом R02]"@ru ;
+    rdfs:domain reh:Пациент ;
+    rdfs:range xsd:decimal .
+
+reh:имеетСтатус a owl:FunctionalProperty,
+        owl:ObjectProperty ;
+    rdfs:label "имеетСтатус"@ru ;
+    rdfs:domain reh:КлиническоеИспытание ;
+    rdfs:range reh:СтатусИспытания .
+
+reh:имеетЭффект a owl:ObjectProperty ;
+    rdfs:label "имеетЭффект"@ru ;
+    rdfs:comment "На схеме: «имеет»."@ru ;
+    rdfs:domain reh:Упражнение ;
+    rdfs:range reh:Эффект .
+
+reh:предназначенаДля a owl:FunctionalProperty,
+        owl:ObjectProperty ;
+    rdfs:label "предназначенаДля"@ru ;
+    rdfs:comment "[добавлено при доработке]"@ru ;
+    rdfs:domain reh:РеабилитационнаяПрограмма ;
+    rdfs:range reh:Пациент .
+
+reh:рекомендуемыйСпециалист a owl:ObjectProperty ;
+    rdfs:label "рекомендуемыйСпециалист"@ru ;
+    rdfs:comment "[выводимое свойство: заполняется SWRL-правилами]"@ru ;
+    rdfs:domain reh:Пациент ;
+    rdfs:range reh:Специалист .
+
+reh:содержитДиагноз a owl:ObjectProperty ;
+    rdfs:label "содержитДиагноз"@ru ;
+    rdfs:comment "На схеме: «содержат»."@ru ;
+    rdfs:domain reh:ДанныеПациента ;
+    rdfs:range reh:Диагноз .
+
+reh:специализируетсяНа a owl:ObjectProperty ;
+    rdfs:label "специализируетсяНа"@ru ;
+    rdfs:comment "[добавлено при доработке]"@ru ;
+    rdfs:domain reh:Специалист ;
+    rdfs:range reh:Диагноз .
+
+reh:требуетИнвентарь a owl:ObjectProperty ;
+    rdfs:label "требуетИнвентарь"@ru ;
+    rdfs:comment "На схеме: «требуют»."@ru ;
+    rdfs:domain reh:Упражнение ;
+    rdfs:range reh:СпортивныйИнвентарь .
+
+<urn:swrl#d> a swrl:Variable .
+
+<urn:swrl#e> a swrl:Variable .
+
+<urn:swrl#l> a swrl:Variable .
+
+<urn:swrl#max> a swrl:Variable .
+
+<urn:swrl#y> a swrl:Variable .
+
+reh:Автор a owl:Class ;
+    rdfs:label "Автор"@ru ;
+    rdfs:comment "Автор (разработчик) методики/инвентаря."@ru ;
+    rdfs:subClassOf owl:Thing .
+
+reh:БезопасноеУпражнение a owl:Class ;
+    rdfs:label "БезопасноеУпражнение"@ru ;
+    rdfs:comment "Балл безопасности по испытанию ≥ 4 из 5. [выводимый класс: заполняется SWRL-правилами]"@ru ;
+    rdfs:subClassOf reh:Упражнение .
+
+reh:Испытание_Кардио_2024 a reh:КлиническоеИспытание,
+        owl:NamedIndividual ;
+    reh:датаНачала "2024-10-01T00:00:00"^^xsd:dateTime ;
+    reh:имеетСтатус reh:Статус_Завершено ;
+    reh:определяетУровеньБезопасности reh:Безопасность_Испытание_Кардио_2024 ;
+    reh:подтверждаетЦель reh:Цель_ПрофилактикаОсложненийГипертонии,
+        reh:Цель_ПрофилактикаПрогрессированияСколиоза ;
+    reh:показываетЭффективность reh:Эффективность_Испытание_Кардио_2024 ;
+    reh:фиксируетРеакциюПациента reh:Реакция_Испытание_Кардио_2024 ;
+    reh:числоУчастников 200 .
+
+reh:Испытание_Стопа_2025 a reh:КлиническоеИспытание,
+        owl:NamedIndividual ;
+    reh:датаНачала "2025-04-01T00:00:00"^^xsd:dateTime ;
+    reh:имеетСтатус reh:Статус_Завершено ;
+    reh:определяетУровеньБезопасности reh:Безопасность_Испытание_Стопа_2025 ;
+    reh:подтверждаетЦель reh:Цель_УкреплениеСводаСтопы ;
+    reh:показываетЭффективность reh:Эффективность_Испытание_Стопа_2025 ;
+    reh:фиксируетРеакциюПациента reh:Реакция_Испытание_Стопа_2025 ;
+    reh:числоУчастников 70 .
+
+reh:ПациентСОжирением a owl:Class ;
+    rdfs:label "ПациентСОжирением"@ru ;
+    rdfs:comment "ИМТ ≥ 30 — ограничение сложности упражнений. [выводимый класс: заполняется SWRL-правилами]"@ru ;
+    rdfs:subClassOf reh:Пациент .
+
+reh:Показание_ГиподинамияИЛишнийВес a reh:Показание,
+        owl:NamedIndividual ;
+    reh:описание "Гиподинамия и избыточная масса тела"^^xsd:string ;
+    reh:показаноПри reh:Диагноз_АртрозКолена,
+        reh:Диагноз_Гипертония .
+
+reh:Показание_СлабостьМышцСтопы a reh:Показание,
+        owl:NamedIndividual ;
+    reh:описание "Слабость мышц стопы, уплощение свода"^^xsd:string ;
+    reh:показаноПри reh:Диагноз_Плоскостопие .
+
+reh:Производитель_Starfit a reh:Производитель,
+        owl:NamedIndividual ;
+    reh:задаётХарактеристику reh:Характеристика_Балансировочная_Подушка,
+        reh:Характеристика_Гантель_2кг,
+        reh:Характеристика_Гиря_8кг ;
+    reh:название "Starfit"^^xsd:string ;
+    reh:страна "Россия"^^xsd:string .
+
+reh:Статус_Проводится a reh:СтатусИспытания,
+        owl:NamedIndividual ;
+    rdfs:label "Проводится"@ru ;
+    reh:название "Проводится"^^xsd:string .
+
+reh:УлучшениеКачестваЖизни a owl:Class ;
+    rdfs:label "УлучшениеКачестваЖизни"@ru ;
+    rdfs:comment "Общая цель программы."@ru ;
+    rdfs:subClassOf reh:ЦельРеабилитации .
+
+reh:УменьшениеБоли a owl:Class ;
+    rdfs:label "УменьшениеБоли"@ru ;
+    rdfs:comment "Цели, связанные со снижением боли."@ru ;
+    rdfs:subClassOf reh:УлучшениеКачестваЖизни .
+
+reh:Упр_Велотренажёр a reh:Упражнение,
+        owl:NamedIndividual ;
+    reh:влияетНа reh:Цель_ПрофилактикаОсложненийГипертонии ;
+    reh:длительностьМин 15 ;
+    reh:имеетПоказание reh:Показание_ГиподинамияИЛишнийВес ;
+    reh:имеетТехникуВыполнения reh:Техника_Велотренажёр ;
+    reh:имеетЭффект reh:Эффект_Выносливость ;
+    reh:количествоПовторений 1 ;
+    reh:количествоПодходов 1 ;
+    reh:название "Занятие на велотренажёре"^^xsd:string ;
+    reh:основаноНаИспытании reh:Испытание_Кардио_2024 ;
+    reh:требуетИнвентарь reh:Велотренажёр ;
+    reh:уровеньСложности 2 .
+
+reh:Упр_ЯгодичныйМостик a reh:Упражнение,
+        owl:NamedIndividual ;
+    reh:влияетНа reh:Цель_УменьшениеБолиВСпине ;
+    reh:длительностьМин 6 ;
+    reh:имеетПобочныйЭффект reh:ПобЭффект_ПовышениеДавления ;
+    reh:имеетПоказание reh:Показание_ХроническаяБольВСпине ;
+    reh:имеетПротивопоказание reh:Противопоказание_НеконтролируемаяГипертензия ;
+    reh:имеетТехникуВыполнения reh:Техника_ЯгодичныйМостик ;
+    reh:имеетЭффект reh:Эффект_УкреплениеМышцБедра ;
+    reh:количествоПовторений 12 ;
+    reh:количествоПодходов 3 ;
+    reh:название "Ягодичный мостик"^^xsd:string ;
+    reh:основаноНаИспытании reh:Испытание_ЛФК_Спина_2023 ;
+    reh:уровеньСложности 2 .
+
+reh:Эффект_Выносливость a reh:ЛечебныйЭффект,
+        owl:NamedIndividual ;
+    reh:описание "Повышение сердечно-сосудистой выносливости"^^xsd:string .
+
+reh:Эффект_УкреплениеМышцБедра a reh:ЛечебныйЭффект,
+        owl:NamedIndividual ;
+    reh:описание "Укрепление мышц бедра и ягодиц"^^xsd:string .
+
+reh:Эффект_УкреплениеСводаСтопы a reh:ЛечебныйЭффект,
+        owl:NamedIndividual ;
+    reh:описание "Укрепление мышц и связок свода стопы"^^xsd:string .
+
+reh:ЭффективноеУпражнение a owl:Class ;
+    rdfs:label "ЭффективноеУпражнение"@ru ;
+    rdfs:comment "Эффективность по испытанию ≥ 80 %. [выводимый класс: заполняется SWRL-правилами]"@ru ;
+    rdfs:subClassOf reh:Упражнение .
+
+reh:весПриИМТ30 a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "весПриИМТ30"@ru ;
+    rdfs:comment "Вес (кг), при котором ИМТ = 30 для роста пациента. [выводится SWRL-правилом R02]"@ru ;
+    rdfs:domain reh:Пациент ;
+    rdfs:range xsd:decimal .
+
+reh:имеетДанные a owl:FunctionalProperty,
+        owl:ObjectProperty ;
+    rdfs:label "имеетДанные"@ru ;
+    rdfs:comment "[добавлено при доработке]"@ru ;
+    rdfs:domain reh:Пациент ;
+    rdfs:range reh:ДанныеПациента .
+
+reh:имеетРезультат a owl:ObjectProperty ;
+    rdfs:label "имеетРезультат"@ru ;
+    rdfs:domain reh:КлиническоеИспытание ;
+    rdfs:range reh:РезультатИспытания .
+
+reh:основаноНаИспытании a owl:ObjectProperty ;
+    rdfs:label "основаноНаИспытании"@ru ;
+    rdfs:comment "На схеме: «основаны на»."@ru ;
+    rdfs:domain reh:Упражнение ;
+    rdfs:range reh:КлиническоеИспытание .
+
+reh:подходитУпражнение a owl:ObjectProperty ;
+    rdfs:label "подходитУпражнение"@ru ;
+    rdfs:comment "[выводимое свойство: заполняется SWRL-правилами]"@ru ;
+    rdfs:domain reh:Пациент ;
+    rdfs:range reh:Упражнение .
+
+reh:содержитУпражнение a owl:ObjectProperty ;
+    rdfs:label "содержитУпражнение"@ru ;
+    rdfs:comment "На схеме: «содержит»."@ru ;
+    rdfs:domain reh:РеабилитационнаяПрограмма ;
+    rdfs:range reh:Упражнение .
+
+reh:требуетЦели a owl:ObjectProperty ;
+    rdfs:label "требуетЦели"@ru ;
+    rdfs:comment "[добавлено при доработке]"@ru ;
+    rdfs:domain reh:Диагноз ;
+    rdfs:range reh:ЦельРеабилитации .
+
+reh:уровеньСложности a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "уровеньСложности"@ru ;
+    rdfs:comment "1 — очень лёгкое … 4 — сложное."@ru ;
+    rdfs:domain reh:Упражнение ;
+    rdfs:range xsd:integer .
+
+<urn:swrl#h> a swrl:Variable .
+
+<urn:swrl#h2> a swrl:Variable .
+
+<urn:swrl#pr> a swrl:Variable .
+
+reh:ВосстановлениеПослеТравмы a owl:Class ;
+    rdfs:label "ВосстановлениеПослеТравмы"@ru ;
+    rdfs:comment "Реабилитация после травмы, операции, инсульта."@ru ;
+    rdfs:subClassOf reh:УлучшениеКачестваЖизни .
+
+reh:Диагноз_ПереломЛучевой a reh:Диагноз,
+        owl:NamedIndividual ;
+    reh:кодМКБ "S52.5"^^xsd:string ;
+    reh:название "Перелом лучевой кости"^^xsd:string ;
+    reh:требуетВрача true ;
+    reh:требуетЦели reh:Цель_ВосстановлениеКисти .
+
+reh:Диагноз_Плоскостопие a reh:Диагноз,
+        owl:NamedIndividual ;
+    reh:кодМКБ "M21.4"^^xsd:string ;
+    reh:название "Плоскостопие"^^xsd:string ;
+    reh:требуетВрача false ;
+    reh:требуетЦели reh:Цель_УкреплениеСводаСтопы .
+
+reh:Диагноз_РазрывСвязки a reh:Диагноз,
+        owl:NamedIndividual ;
+    reh:кодМКБ "S83.5"^^xsd:string ;
+    reh:название "Разрыв передней крестообразной связки"^^xsd:string ;
+    reh:требуетВрача true ;
+    reh:требуетЦели reh:Цель_ВосстановлениеКолена .
+
+reh:Испытание_ЛФК_Спина_2023 a reh:КлиническоеИспытание,
+        owl:NamedIndividual ;
+    reh:датаНачала "2023-02-01T00:00:00"^^xsd:dateTime ;
+    reh:имеетСтатус reh:Статус_Завершено ;
+    reh:описываетЭффект reh:ПобЭффект_БольВПояснице,
+        reh:ПобЭффект_ПовышениеДавления ;
+    reh:определяетУровеньБезопасности reh:Безопасность_Испытание_ЛФК_Спина_2023 ;
+    reh:подтверждаетЦель reh:Цель_УменьшениеБолиВСпине ;
+    reh:показываетЭффективность reh:Эффективность_Испытание_ЛФК_Спина_2023 ;
+    reh:фиксируетРеакциюПациента reh:Реакция_Испытание_ЛФК_Спина_2023 ;
+    reh:числоУчастников 120 .
+
+reh:МедицинскаяИнформация a owl:Class ;
+    rdfs:label "МедицинскаяИнформация"@ru ;
+    rdfs:comment "Группирующий класс для составных частей данных пациента. [добавлено при доработке]"@ru ;
+    rdfs:subClassOf owl:Thing .
+
+reh:ПобЭффект_БольВПояснице a reh:ПобочныйЭффект,
+        owl:NamedIndividual ;
+    reh:зависитОтТехники reh:Техника_ПланкаНаФитболе,
+        reh:Техника_СтановаяТягаСГирей ;
+    reh:описание "Боль в пояснице при неправильной технике"^^xsd:string .
+
+reh:ПрофилактикаХроническихЗаболеваний a owl:Class ;
+    rdfs:label "ПрофилактикаХроническихЗаболеваний"@ru ;
+    rdfs:comment "Профилактика прогрессирования и осложнений."@ru ;
+    rdfs:subClassOf reh:УлучшениеКачестваЖизни .
+
+reh:Реабилитолог a owl:Class ;
+    rdfs:label "Реабилитолог"@ru ;
+    rdfs:comment "Врач-реабилитолог."@ru ;
+    rdfs:subClassOf reh:Специалист .
+
+reh:Статус_Приостановлено a reh:СтатусИспытания,
+        owl:NamedIndividual ;
+    rdfs:label "Приостановлено"@ru ;
+    reh:название "Приостановлено"^^xsd:string .
+
+reh:Цель_ВосстановлениеКолена a reh:ВосстановлениеПослеТравмы,
+        owl:NamedIndividual ;
+    reh:название "Восстановление функции колена"^^xsd:string .
+
+reh:Цель_ВосстановлениеПослеИнсульта a reh:ВосстановлениеПослеТравмы,
+        owl:NamedIndividual ;
+    reh:название "Восстановление после инсульта"^^xsd:string .
+
+reh:Цель_ПрофилактикаПрогрессированияСколиоза a reh:ПрофилактикаХроническихЗаболеваний,
+        owl:NamedIndividual ;
+    reh:название "Профилактика прогрессирования сколиоза"^^xsd:string .
+
+reh:Цель_УменьшениеБолиВКолене a reh:УменьшениеБоли,
+        owl:NamedIndividual ;
+    reh:название "Уменьшение боли в колене"^^xsd:string .
+
+<urn:swrl#c> a swrl:Variable .
+
+<urn:swrl#g> a swrl:Variable .
+
+<urn:swrl#v> a swrl:Variable .
+
+reh:Диагноз_ПоследствияИнсульта a reh:Диагноз,
+        owl:NamedIndividual ;
+    reh:кодМКБ "I69.3"^^xsd:string ;
+    reh:название "Последствия инсульта"^^xsd:string ;
+    reh:требуетВрача true ;
+    reh:требуетЦели reh:Цель_ВосстановлениеПослеИнсульта .
+
+reh:Диагноз_Сколиоз a reh:Диагноз,
+        owl:NamedIndividual ;
+    reh:кодМКБ "M41.1"^^xsd:string ;
+    reh:название "Идиопатический сколиоз"^^xsd:string ;
+    reh:требуетВрача false ;
+    reh:требуетЦели reh:Цель_ПрофилактикаПрогрессированияСколиоза .
+
+reh:ПобочныйЭффект a owl:Class ;
+    rdfs:label "ПобочныйЭффект"@ru ;
+    rdfs:comment "Нежелательный эффект."@ru ;
+    rdfs:subClassOf reh:Эффект .
+
+reh:РезультатИспытания a owl:Class ;
+    rdfs:label "РезультатИспытания"@ru ;
+    rdfs:comment "Группирующий класс для результатов испытаний. [добавлено при доработке]"@ru ;
+    rdfs:subClassOf owl:Thing .
+
+reh:СвойствоУпражнения a owl:Class ;
+    rdfs:label "СвойствоУпражнения"@ru ;
+    rdfs:comment "Группирующий класс для того, что описывает упражнение. [добавлено при доработке]"@ru ;
+    rdfs:subClassOf owl:Thing .
+
+reh:Тренер a owl:Class ;
+    rdfs:label "Тренер"@ru ;
+    rdfs:comment "Тренер ЛФК."@ru ;
+    rdfs:subClassOf reh:Специалист .
+
+reh:Цель_ВосстановлениеКисти a reh:ВосстановлениеПослеТравмы,
+        owl:NamedIndividual ;
+    reh:название "Восстановление функции кисти"^^xsd:string .
+
+reh:Цель_ПрофилактикаОсложненийГипертонии a reh:ПрофилактикаХроническихЗаболеваний,
+        owl:NamedIndividual ;
+    reh:название "Профилактика осложнений гипертонии"^^xsd:string .
+
+reh:Цель_УкреплениеСводаСтопы a reh:ПрофилактикаХроническихЗаболеваний,
+        owl:NamedIndividual ;
+    reh:название "Укрепление свода стопы"^^xsd:string .
+
+reh:неРекомендуетсяУпражнение a owl:ObjectProperty ;
+    rdfs:label "неРекомендуетсяУпражнение"@ru ;
+    rdfs:comment "[выводимое свойство: заполняется SWRL-правилами]"@ru ;
+    rdfs:domain reh:Пациент ;
+    rdfs:range reh:Упражнение .
+
+<urn:swrl#i> a swrl:Variable .
+
+<urn:swrl#w> a swrl:Variable .
+
+reh:Диагноз_АртрозКолена a reh:Диагноз,
+        owl:NamedIndividual ;
+    reh:кодМКБ "M17.0"^^xsd:string ;
+    reh:название "Гонартроз (артроз коленного сустава)"^^xsd:string ;
+    reh:требуетВрача false ;
+    reh:требуетЦели reh:Цель_УменьшениеБолиВКолене .
+
+reh:Диагноз_Гипертония a reh:Диагноз,
+        owl:NamedIndividual ;
+    reh:кодМКБ "I10"^^xsd:string ;
+    reh:название "Гипертоническая болезнь"^^xsd:string ;
+    reh:требуетВрача false ;
+    reh:требуетЦели reh:Цель_ПрофилактикаОсложненийГипертонии .
+
+reh:Диагноз_Остеохондроз a reh:Диагноз,
+        owl:NamedIndividual ;
+    reh:кодМКБ "M42.1"^^xsd:string ;
+    reh:название "Остеохондроз поясничного отдела позвоночника"^^xsd:string ;
+    reh:требуетВрача false ;
+    reh:требуетЦели reh:Цель_УменьшениеБолиВСпине .
+
+reh:Эффект a owl:Class ;
+    rdfs:label "Эффект"@ru ;
+    rdfs:comment "Результат воздействия упражнения на организм."@ru ;
+    rdfs:subClassOf reh:СвойствоУпражнения .
+
+<urn:swrl#a> a swrl:Variable .
+
+<urn:swrl#t> a swrl:Variable .
+
+reh:Противопоказание a owl:Class ;
+    rdfs:label "Противопоказание"@ru ;
+    rdfs:comment "Состояние, при котором упражнение выполнять нельзя."@ru ;
+    rdfs:subClassOf reh:СвойствоУпражнения .
+
+reh:Статус_Завершено a reh:СтатусИспытания,
+        owl:NamedIndividual ;
+    rdfs:label "Завершено"@ru ;
+    reh:название "Завершено"^^xsd:string .
+
+reh:СтатусИспытания a owl:Class ;
+    rdfs:label "СтатусИспытания"@ru ;
+    rdfs:comment "Статус испытания (перечисление)."@ru ;
+    rdfs:subClassOf owl:Thing ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:oneOf ( reh:Статус_Планируется reh:Статус_Проводится reh:Статус_Завершено reh:Статус_Приостановлено ) ] .
+
+reh:имеетДиагноз a owl:ObjectProperty ;
+    rdfs:label "имеетДиагноз"@ru ;
+    rdfs:comment "[выводимое свойство: заполняется SWRL-правилами]"@ru ;
+    rdfs:domain reh:Пациент ;
+    rdfs:range reh:Диагноз .
+
+reh:ЛечебныйЭффект a owl:Class ;
+    rdfs:label "ЛечебныйЭффект"@ru ;
+    rdfs:comment "Ожидаемый положительный эффект. [добавлено при доработке]"@ru ;
+    rdfs:subClassOf reh:Эффект .
+
+reh:Цель_УменьшениеБолиВСпине a reh:УменьшениеБоли,
+        owl:NamedIndividual ;
+    reh:название "Уменьшение боли в спине"^^xsd:string .
+
+<urn:swrl#b> a swrl:Variable .
+
+reh:Показание a owl:Class ;
+    rdfs:label "Показание"@ru ;
+    rdfs:comment "Состояние, при котором упражнение рекомендовано."@ru ;
+    rdfs:subClassOf reh:СвойствоУпражнения .
+
+reh:Производитель a owl:Class ;
+    rdfs:label "Производитель"@ru ;
+    rdfs:comment "Производитель инвентаря."@ru ;
+    rdfs:subClassOf owl:Thing .
+
+reh:РеакцияПациента a owl:Class ;
+    rdfs:label "РеакцияПациента"@ru ;
+    rdfs:comment "Реакция пациентов на упражнение в ходе испытания."@ru ;
+    rdfs:subClassOf reh:РезультатИспытания .
+
+reh:ЦельРеабилитации a owl:Class ;
+    rdfs:label "ЦельРеабилитации"@ru ;
+    rdfs:comment "Цель, на которую направлена программа. [добавлено при доработке]"@ru ;
+    rdfs:subClassOf owl:Thing .
+
+reh:Специалист a owl:Class ;
+    rdfs:label "Специалист"@ru ;
+    rdfs:comment "Тренер или реабилитолог, чей опыт используется при подборе программы."@ru ;
+    rdfs:subClassOf owl:Thing .
+
+reh:УровеньБезопасности a owl:Class ;
+    rdfs:label "УровеньБезопасности"@ru ;
+    rdfs:comment "Балл безопасности 1–5."@ru ;
+    rdfs:subClassOf reh:РезультатИспытания .
+
+reh:Эффективность a owl:Class ;
+    rdfs:label "Эффективность"@ru ;
+    rdfs:comment "Процент пациентов с улучшением."@ru ;
+    rdfs:subClassOf reh:РезультатИспытания .
+
+reh:ИндивидуальнаяОсобенность a owl:Class ;
+    rdfs:label "ИндивидуальнаяОсобенность"@ru ;
+    rdfs:comment "Образ жизни, ограничения и т.п."@ru ;
+    rdfs:subClassOf reh:МедицинскаяИнформация .
+
+reh:ПравилаПользования a owl:Class ;
+    rdfs:label "ПравилаПользования"@ru ;
+    rdfs:comment "Правила безопасного пользования инвентарём."@ru ;
+    rdfs:subClassOf owl:Thing .
+
+reh:ХарактеристикаИнвентаря a owl:Class ;
+    rdfs:label "ХарактеристикаИнвентаря"@ru ;
+    rdfs:comment "Технические характеристики инвентаря."@ru ;
+    rdfs:subClassOf owl:Thing .
+
+reh:ИсторияБолезни a owl:Class ;
+    rdfs:label "ИсторияБолезни"@ru ;
+    rdfs:comment "Анамнез: перенесённые заболевания, травмы, операции."@ru ;
+    rdfs:subClassOf reh:МедицинскаяИнформация .
+
+<urn:swrl#dg> a swrl:Variable .
+
+<urn:swrl#s> a swrl:Variable .
+
+reh:Диагноз a owl:Class ;
+    rdfs:label "Диагноз"@ru ;
+    rdfs:comment "Установленный диагноз (код МКБ-10)."@ru ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty reh:требуетЦели ;
+            owl:someValuesFrom reh:ЦельРеабилитации ],
+        reh:МедицинскаяИнформация .
+
+reh:РеабилитационнаяПрограмма a owl:Class ;
+    rdfs:label "РеабилитационнаяПрограмма"@ru ;
+    rdfs:comment "Подобранная для пациента программа реабилитации (центральное понятие)."@ru ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty reh:содержитУпражнение ;
+            owl:someValuesFrom reh:Упражнение ],
+        [ a owl:Restriction ;
+            owl:onProperty reh:основанаНаИсторииБолезни ;
+            owl:someValuesFrom reh:ИсторияБолезни ],
+        [ a owl:Restriction ;
+            owl:onClass reh:Пациент ;
+            owl:onProperty reh:предназначенаДля ;
+            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ],
+        [ a owl:Restriction ;
+            owl:onProperty reh:имеетЦель ;
+            owl:someValuesFrom reh:ЦельРеабилитации ],
+        owl:Thing .
+
+reh:ДанныеПациента a owl:Class ;
+    rdfs:label "ДанныеПациента"@ru ;
+    rdfs:comment "Совокупность медицинских сведений о пациенте."@ru ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty reh:содержитДиагноз ;
+            owl:someValuesFrom reh:Диагноз ],
+        owl:Thing .
+
+reh:ТехникаВыполнения a owl:Class ;
+    rdfs:label "ТехникаВыполнения"@ru ;
+    rdfs:comment "Правильная техника выполнения упражнения."@ru ;
+    rdfs:subClassOf reh:СвойствоУпражнения .
+
+reh:КлиническоеИспытание a owl:Class ;
+    rdfs:label "КлиническоеИспытание"@ru ;
+    rdfs:comment "Испытание, подтверждающее эффективность и безопасность упражнения."@ru ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onClass reh:СтатусИспытания ;
+            owl:onProperty reh:имеетСтатус ;
+            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ],
+        owl:Thing .
+
+reh:СпортивныйИнвентарь a owl:Class ;
+    rdfs:label "СпортивныйИнвентарь"@ru ;
+    rdfs:comment "Инвентарь, необходимый для выполнения упражнения."@ru ;
+    rdfs:subClassOf owl:Thing .
+
+<urn:swrl#u> a swrl:Variable .
+
+reh:Пациент a owl:Class ;
+    rdfs:label "Пациент"@ru ;
+    rdfs:comment "Человек, для которого подбирается программа. [добавлено при доработке]"@ru ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onClass reh:ДанныеПациента ;
+            owl:onProperty reh:имеетДанные ;
+            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ],
+        owl:Thing .
+
+reh:Упражнение a owl:Class ;
+    rdfs:label "Упражнение"@ru ;
+    rdfs:comment "Отдельное упражнение, входящее в программу."@ru ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty reh:имеетЭффект ;
+            owl:someValuesFrom reh:ЛечебныйЭффект ],
+        [ a owl:Restriction ;
+            owl:onProperty reh:имеетТехникуВыполнения ;
+            owl:someValuesFrom reh:ТехникаВыполнения ],
+        owl:Thing .
+
+<urn:swrl#p> a swrl:Variable .
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( reh:Диагноз reh:ИсторияБолезни reh:ИндивидуальнаяОсобенность ) .
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( reh:Тренер reh:Реабилитолог ) .
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( reh:РеабилитационнаяПрограмма reh:Упражнение reh:СвойствоУпражнения reh:Пациент reh:ДанныеПациента reh:МедицинскаяИнформация reh:Специалист reh:ЦельРеабилитации reh:КлиническоеИспытание reh:РезультатИспытания reh:СтатусИспытания reh:СпортивныйИнвентарь reh:Производитель reh:Автор reh:ХарактеристикаИнвентаря reh:ПравилаПользования ) .
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( reh:УменьшениеБоли reh:ВосстановлениеПослеТравмы reh:ПрофилактикаХроническихЗаболеваний ) .
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( reh:Эффективность reh:УровеньБезопасности reh:РеакцияПациента ) .
+
+[] a owl:AllDifferent ;
+    owl:distinctMembers ( reh:Статус_Планируется reh:Статус_Проводится reh:Статус_Завершено reh:Статус_Приостановлено ) .
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( reh:ПациентСИзбыточнымВесом reh:ПациентСОжирением ) .
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( reh:Противопоказание reh:Показание reh:ТехникаВыполнения reh:Эффект ) .
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( reh:ЛечебныйЭффект reh:ПобочныйЭффект ) .
+

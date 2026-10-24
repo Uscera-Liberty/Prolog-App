@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% from "_cards.html" import badges, chips, num %}
+{% block title %}Каталог — Реабилитация{% endblock %}
+{% block content %}
+<h1>Каталог базы знаний</h1>
+<p class="muted">Бейджи «Оптимальное», «С осторожностью», «Опытный», «Бюджетный», «Программа с риском» выведены SWRL-правилами.</p>
+
+<nav class="tabs" role="tablist">
+    {% for key, title in tabs %}
+    <a href="?tab={{ key }}" class="tab{{ ' active' if key == tab }}" data-tab="{{ key }}" role="tab">{{ title }}
+        <span class="tab-count">{{ data[key]|length }}</span></a>
+    {% endfor %}
+</nav>
+
+<section class="tab-pane cards{{ ' active' if tab == 'exercises' }}" data-pane="exercises">
+    {% for e in data.exercises %}
+    <article class="card entity group-exercise" id="{{ e.id }}">
+        <h3>{{ e.label }}</h3>
+        <div class="meta">Сложность {{ e.difficulty }} из 4 · {{ e.sets }} × {{ e.reps }} · {{ e.minutes }} мин</div>
+        {{ badges(e.badges) }}
+        <div class="kv"><span>Эффективность / безопасность</span><b>{{ num(e.efficacy) }} % / {{ e.safety }} из 5</b></div>
+        <div class="kv"><span>Испытание</span><b class="{{ 'text-danger' if e.status == 'Приостановлено' }}">{{ e.status or '—' }}</b></div>
+        <div class="kv"><span>Цель</span><b>{{ chips(e.goals, 'chip-goal') }}</b></div>
+        <div class="kv"><span>Инвентарь</span><b>{{ chips(e.equipment, 'chip-equipment') }}</b></div>
+        {% if e.contraindications %}<div class="kv"><span>Противопоказание</span><b>{{ chips(e.contraindications, 'chip-danger') }}</b></div>{% endif %}
+        <div class="kv wide"><span>Техника</span><b>{{ e.technique or '—' }}</b></div>
+    </article>
+    {% endfor %}
+</section>
+
+<section class="tab-pane cards{{ ' active' if tab == 'specialists' }}" data-pane="specialists">
+    {% for s in data.specialists %}
+    <article class="card entity group-specialist" id="{{ s.id }}">
+        <h3>{{ s.label }}</h3>
+        <div class="meta">{{ s.type }} · стаж {{ s.experience }} лет · рейтинг {{ num(s.rating) }}</div>
+        {{ badges(s.badges) }}
+        <div class="kv"><span>Специализация</span><b>{{ chips(s.specializations) }}</b></div>
+        <div class="kv"><span>Ведёт программ</span><b>{{ s.programs|length }}{% if s.programs %} — {{ s.programs|map(attribute='label')|join(', ') }}{% endif %}</b></div>
+    </article>
+    {% endfor %}
+</section>
+
+<section class="tab-pane cards{{ ' active' if tab == 'equipment' }}" data-pane="equipment">
+    {% for i in data.equipment %}
+    <article class="card entity group-equipment" id="{{ i.id }}">
+        <h3>{{ i.label }}</h3>
+        <div class="price">{{ '{:,.0f}'.format(i.price).replace(',', ' ') }} ₽</div>
+        {{ badges(i.badges) }}
+        <div class="kv"><span>Производитель</span><b>{{ i.producer or '—' }}{% if i.country %} ({{ i.country }}){% endif %}</b></div>
+        <div class="kv"><span>Характеристики</span><b>{{ i.characteristics|join('; ') or '—' }}</b></div>
+        <div class="kv"><span>Правила</span><b>{{ i.rules|join('; ') or '—' }}</b></div>
+        <div class="kv"><span>Для упражнений</span><b>{{ chips(i.exercises, 'chip-exercise') }}</b></div>
+    </article>
+    {% endfor %}
+</section>
+
+<section class="tab-pane cards{{ ' active' if tab == 'programs' }}" data-pane="programs">
+    {% for pr in data.programs %}
+    <article class="card entity group-program{{ ' risk' if pr.badges }}" id="{{ pr.id }}">
+        <h3>{{ pr.label }}</h3>
+        <div class="meta">{{ pr.weeks }} нед. × {{ pr.per_week }} раз в неделю · с {{ pr.assigned }}</div>
+        {{ badges(pr.badges) }}
+        <div class="kv"><span>Пациент</span><b>{% if pr.patient %}<a href="/patients/{{ pr.patient.id }}">{{ pr.patient.label }}</a>{% else %}—{% endif %}</b></div>
+        <div class="kv"><span>Специалист</span><b>{{ pr.specialist.label if pr.specialist else '—' }}</b></div>
+        <div class="kv"><span>Цель</span><b>{{ chips(pr.goals, 'chip-goal') }}</b></div>
+        <div class="chips">{% for e in pr.exercises %}<span class="chip {{ 'chip-danger' if e.bad else 'chip-exercise' }}" title="{{ 'Не рекомендуется пациенту' if e.bad }}">{{ '⚠ ' if e.bad }}{{ e.label }}</span>{% endfor %}</div>
+    </article>
+    {% endfor %}
+</section>
+{% endblock %}
+{% block scripts %}
+<script>Rehab.initCatalogPage();</script>
+{% endblock %}

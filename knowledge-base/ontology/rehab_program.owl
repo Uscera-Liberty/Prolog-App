@@ -1,0 +1,3850 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xml:base="http://www.semanticweb.org/rehab/ontologies/2026/rehab-program"
+         xmlns="http://www.semanticweb.org/rehab/ontologies/2026/rehab-program#"
+         xmlns:swrl="http://www.w3.org/2003/11/swrl#">
+
+<owl:Ontology rdf:about="http://www.semanticweb.org/rehab/ontologies/2026/rehab-program">
+  <rdfs:label xml:lang="ru">Подбор оптимальной реабилитационной программы</rdfs:label>
+  <rdfs:comment xml:lang="ru">Вариант 22. Рекомендательная система: по диагнозу и данным пациента подбирает упражнения, готовую программу, специалиста (реабилитолога/тренера) и спортивный инвентарь. Содержит SWRL-правила (вкладка SWRLTab).</rdfs:comment>
+</owl:Ontology>
+
+<owl:ObjectProperty rdf:about="#имеетПроизводителя">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#СпортивныйИнвентарь"/>
+  <rdfs:range rdf:resource="#Производитель"/>
+  <rdfs:label xml:lang="ru">имеетПроизводителя</rdfs:label>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#имеетХарактеристику">
+  <rdfs:domain rdf:resource="#СпортивныйИнвентарь"/>
+  <rdfs:range rdf:resource="#ХарактеристикаИнвентаря"/>
+  <rdfs:label xml:lang="ru">имеетХарактеристику</rdfs:label>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#имеетПравилаПользования">
+  <rdfs:domain rdf:resource="#СпортивныйИнвентарь"/>
+  <rdfs:range rdf:resource="#ПравилаПользования"/>
+  <rdfs:label xml:lang="ru">имеетПравилаПользования</rdfs:label>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#содержитДиагноз">
+  <rdfs:domain rdf:resource="#ДанныеПациента"/>
+  <rdfs:range rdf:resource="#Диагноз"/>
+  <rdfs:label xml:lang="ru">содержитДиагноз</rdfs:label>
+  <rdfs:comment xml:lang="ru">На схеме: «содержат».</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#содержитИсториюБолезни">
+  <rdfs:domain rdf:resource="#ДанныеПациента"/>
+  <rdfs:range rdf:resource="#ИсторияБолезни"/>
+  <rdfs:label xml:lang="ru">содержитИсториюБолезни</rdfs:label>
+  <rdfs:comment xml:lang="ru">На схеме: «содержат».</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#содержитОсобенность">
+  <rdfs:domain rdf:resource="#ДанныеПациента"/>
+  <rdfs:range rdf:resource="#ИндивидуальнаяОсобенность"/>
+  <rdfs:label xml:lang="ru">содержитОсобенность</rdfs:label>
+  <rdfs:comment xml:lang="ru">На схеме: «основаны на».</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#имеетДанные">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#Пациент"/>
+  <rdfs:range rdf:resource="#ДанныеПациента"/>
+  <rdfs:label xml:lang="ru">имеетДанные</rdfs:label>
+  <rdfs:comment xml:lang="ru">[добавлено при доработке]</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#предназначенаДля">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#РеабилитационнаяПрограмма"/>
+  <rdfs:range rdf:resource="#Пациент"/>
+  <rdfs:label xml:lang="ru">предназначенаДля</rdfs:label>
+  <rdfs:comment xml:lang="ru">[добавлено при доработке]</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#учитываетДанныеПациента">
+  <rdfs:domain rdf:resource="#РеабилитационнаяПрограмма"/>
+  <rdfs:range rdf:resource="#ДанныеПациента"/>
+  <rdfs:label xml:lang="ru">учитываетДанныеПациента</rdfs:label>
+  <rdfs:comment xml:lang="ru">[добавлено при доработке]</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#основанаНаИсторииБолезни">
+  <rdfs:domain rdf:resource="#РеабилитационнаяПрограмма"/>
+  <rdfs:range rdf:resource="#ИсторияБолезни"/>
+  <rdfs:label xml:lang="ru">основанаНаИсторииБолезни</rdfs:label>
+  <rdfs:comment xml:lang="ru">На схеме: «основана на».</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#основанаНаОпытеСпециалиста">
+  <rdfs:domain rdf:resource="#РеабилитационнаяПрограмма"/>
+  <rdfs:range rdf:resource="#Специалист"/>
+  <rdfs:label xml:lang="ru">основанаНаОпытеСпециалиста</rdfs:label>
+  <rdfs:comment xml:lang="ru">На схеме: «основана на».</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#имеетЦель">
+  <rdfs:domain rdf:resource="#РеабилитационнаяПрограмма"/>
+  <rdfs:range rdf:resource="#ЦельРеабилитации"/>
+  <rdfs:label xml:lang="ru">имеетЦель</rdfs:label>
+  <rdfs:comment xml:lang="ru">На схеме: «цель».</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#содержитУпражнение">
+  <rdfs:domain rdf:resource="#РеабилитационнаяПрограмма"/>
+  <rdfs:range rdf:resource="#Упражнение"/>
+  <rdfs:label xml:lang="ru">содержитУпражнение</rdfs:label>
+  <rdfs:comment xml:lang="ru">На схеме: «содержит».</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#требуетЦели">
+  <rdfs:domain rdf:resource="#Диагноз"/>
+  <rdfs:range rdf:resource="#ЦельРеабилитации"/>
+  <rdfs:label xml:lang="ru">требуетЦели</rdfs:label>
+  <rdfs:comment xml:lang="ru">[добавлено при доработке]</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#задаётХарактеристику">
+  <rdfs:domain rdf:resource="#Производитель"/>
+  <rdfs:range rdf:resource="#ХарактеристикаИнвентаря"/>
+  <rdfs:label xml:lang="ru">задаётХарактеристику</rdfs:label>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#противопоказаноПри">
+  <rdfs:domain rdf:resource="#Противопоказание"/>
+  <rdfs:range rdf:resource="#Диагноз"/>
+  <rdfs:label xml:lang="ru">противопоказаноПри</rdfs:label>
+  <rdfs:comment xml:lang="ru">[добавлено при доработке]</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#зависитОтТехники">
+  <rdfs:domain rdf:resource="#Эффект"/>
+  <rdfs:range rdf:resource="#ТехникаВыполнения"/>
+  <rdfs:label xml:lang="ru">зависитОтТехники</rdfs:label>
+  <rdfs:comment xml:lang="ru">На схеме: «зависит от».</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#имеетТехникуВыполнения">
+  <rdfs:domain rdf:resource="#Упражнение"/>
+  <rdfs:range rdf:resource="#ТехникаВыполнения"/>
+  <rdfs:label xml:lang="ru">имеетТехникуВыполнения</rdfs:label>
+  <rdfs:comment xml:lang="ru">На схеме: «имеет».</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#основаноНаИспытании">
+  <rdfs:domain rdf:resource="#Упражнение"/>
+  <rdfs:range rdf:resource="#КлиническоеИспытание"/>
+  <rdfs:label xml:lang="ru">основаноНаИспытании</rdfs:label>
+  <rdfs:comment xml:lang="ru">На схеме: «основаны на».</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#имеетЭффект">
+  <rdfs:domain rdf:resource="#Упражнение"/>
+  <rdfs:range rdf:resource="#Эффект"/>
+  <rdfs:label xml:lang="ru">имеетЭффект</rdfs:label>
+  <rdfs:comment xml:lang="ru">На схеме: «имеет».</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#влияетНа">
+  <rdfs:domain rdf:resource="#Упражнение"/>
+  <rdfs:range rdf:resource="#ЦельРеабилитации"/>
+  <rdfs:label xml:lang="ru">влияетНа</rdfs:label>
+  <rdfs:comment xml:lang="ru">На схеме: «влияет».</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#требуетИнвентарь">
+  <rdfs:domain rdf:resource="#Упражнение"/>
+  <rdfs:range rdf:resource="#СпортивныйИнвентарь"/>
+  <rdfs:label xml:lang="ru">требуетИнвентарь</rdfs:label>
+  <rdfs:comment xml:lang="ru">На схеме: «требуют».</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#имеетПротивопоказание">
+  <rdfs:domain rdf:resource="#Упражнение"/>
+  <rdfs:range rdf:resource="#Противопоказание"/>
+  <rdfs:label xml:lang="ru">имеетПротивопоказание</rdfs:label>
+  <rdfs:comment xml:lang="ru">На схеме: «имеет».</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#имеетПоказание">
+  <rdfs:domain rdf:resource="#Упражнение"/>
+  <rdfs:range rdf:resource="#Показание"/>
+  <rdfs:label xml:lang="ru">имеетПоказание</rdfs:label>
+  <rdfs:comment xml:lang="ru">На схеме: «имеет».</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#имеетПобочныйЭффект">
+  <rdfs:domain rdf:resource="#Упражнение"/>
+  <rdfs:range rdf:resource="#ПобочныйЭффект"/>
+  <rdfs:subPropertyOf rdf:resource="#имеетЭффект"/>
+  <rdfs:label xml:lang="ru">имеетПобочныйЭффект</rdfs:label>
+  <rdfs:comment xml:lang="ru">[добавлено при доработке]</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#показаноПри">
+  <rdfs:domain rdf:resource="#Показание"/>
+  <rdfs:range rdf:resource="#Диагноз"/>
+  <rdfs:label xml:lang="ru">показаноПри</rdfs:label>
+  <rdfs:comment xml:lang="ru">[добавлено при доработке]</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#показываетЭффективность">
+  <rdfs:domain rdf:resource="#КлиническоеИспытание"/>
+  <rdfs:range rdf:resource="#Эффективность"/>
+  <rdfs:subPropertyOf rdf:resource="#имеетРезультат"/>
+  <rdfs:label xml:lang="ru">показываетЭффективность</rdfs:label>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#определяетУровеньБезопасности">
+  <rdfs:domain rdf:resource="#КлиническоеИспытание"/>
+  <rdfs:range rdf:resource="#УровеньБезопасности"/>
+  <rdfs:subPropertyOf rdf:resource="#имеетРезультат"/>
+  <rdfs:label xml:lang="ru">определяетУровеньБезопасности</rdfs:label>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#фиксируетРеакциюПациента">
+  <rdfs:domain rdf:resource="#КлиническоеИспытание"/>
+  <rdfs:range rdf:resource="#РеакцияПациента"/>
+  <rdfs:subPropertyOf rdf:resource="#имеетРезультат"/>
+  <rdfs:label xml:lang="ru">фиксируетРеакциюПациента</rdfs:label>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#имеетСтатус">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#КлиническоеИспытание"/>
+  <rdfs:range rdf:resource="#СтатусИспытания"/>
+  <rdfs:label xml:lang="ru">имеетСтатус</rdfs:label>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#подтверждаетЦель">
+  <rdfs:domain rdf:resource="#КлиническоеИспытание"/>
+  <rdfs:range rdf:resource="#ЦельРеабилитации"/>
+  <rdfs:label xml:lang="ru">подтверждаетЦель</rdfs:label>
+  <rdfs:comment xml:lang="ru">На схеме: «зависит».</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#описываетЭффект">
+  <rdfs:domain rdf:resource="#КлиническоеИспытание"/>
+  <rdfs:range rdf:resource="#Эффект"/>
+  <rdfs:label xml:lang="ru">описываетЭффект</rdfs:label>
+  <rdfs:comment xml:lang="ru">На схеме: «описывает».</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#имеетДиагноз">
+  <rdfs:domain rdf:resource="#Пациент"/>
+  <rdfs:range rdf:resource="#Диагноз"/>
+  <rdfs:label xml:lang="ru">имеетДиагноз</rdfs:label>
+  <rdfs:comment xml:lang="ru">[выводимое свойство: заполняется SWRL-правилами]</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#неРекомендуетсяУпражнение">
+  <rdfs:domain rdf:resource="#Пациент"/>
+  <rdfs:range rdf:resource="#Упражнение"/>
+  <rdfs:label xml:lang="ru">неРекомендуетсяУпражнение</rdfs:label>
+  <rdfs:comment xml:lang="ru">[выводимое свойство: заполняется SWRL-правилами]</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#специализируетсяНа">
+  <rdfs:domain rdf:resource="#Специалист"/>
+  <rdfs:range rdf:resource="#Диагноз"/>
+  <rdfs:label xml:lang="ru">специализируетсяНа</rdfs:label>
+  <rdfs:comment xml:lang="ru">[добавлено при доработке]</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#рекомендуемаяЦель">
+  <rdfs:domain rdf:resource="#Пациент"/>
+  <rdfs:range rdf:resource="#ЦельРеабилитации"/>
+  <rdfs:label xml:lang="ru">рекомендуемаяЦель</rdfs:label>
+  <rdfs:comment xml:lang="ru">[выводимое свойство: заполняется SWRL-правилами]</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#имеетАвтора">
+  <rdfs:domain rdf:resource="#СпортивныйИнвентарь"/>
+  <rdfs:range rdf:resource="#Автор"/>
+  <rdfs:label xml:lang="ru">имеетАвтора</rdfs:label>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#имеетРезультат">
+  <rdfs:domain rdf:resource="#КлиническоеИспытание"/>
+  <rdfs:range rdf:resource="#РезультатИспытания"/>
+  <rdfs:label xml:lang="ru">имеетРезультат</rdfs:label>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#нуженИнвентарь">
+  <rdfs:domain rdf:resource="#Пациент"/>
+  <rdfs:range rdf:resource="#СпортивныйИнвентарь"/>
+  <rdfs:label xml:lang="ru">нуженИнвентарь</rdfs:label>
+  <rdfs:comment xml:lang="ru">[выводимое свойство: заполняется SWRL-правилами]</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#правилаЗависятОтИспытания">
+  <rdfs:domain rdf:resource="#ПравилаПользования"/>
+  <rdfs:range rdf:resource="#КлиническоеИспытание"/>
+  <rdfs:label xml:lang="ru">правилаЗависятОтИспытания</rdfs:label>
+  <rdfs:comment xml:lang="ru">На схеме: «зависит».</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#проводитсяНаДанных">
+  <rdfs:domain rdf:resource="#КлиническоеИспытание"/>
+  <rdfs:range rdf:resource="#ДанныеПациента"/>
+  <rdfs:label xml:lang="ru">проводитсяНаДанных</rdfs:label>
+  <rdfs:comment xml:lang="ru">На схеме: «основаны».</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#требуетсяДляУпражнения">
+  <owl:inverseOf rdf:resource="#требуетИнвентарь"/>
+  <rdfs:label xml:lang="ru">требуетсяДляУпражнения</rdfs:label>
+  <rdfs:comment xml:lang="ru">Обратное к «требуетИнвентарь». [добавлено при доработке]</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#принадлежитПациенту">
+  <owl:inverseOf rdf:resource="#имеетДанные"/>
+  <rdfs:label xml:lang="ru">принадлежитПациенту</rdfs:label>
+  <rdfs:comment xml:lang="ru">Обратное к «имеетДанные». [добавлено при доработке]</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#входитВПрограмму">
+  <owl:inverseOf rdf:resource="#содержитУпражнение"/>
+  <rdfs:label xml:lang="ru">входитВПрограмму</rdfs:label>
+  <rdfs:comment xml:lang="ru">Обратное к «содержитУпражнение». [добавлено при доработке]</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#рекомендуемыйСпециалист">
+  <rdfs:domain rdf:resource="#Пациент"/>
+  <rdfs:range rdf:resource="#Специалист"/>
+  <rdfs:label xml:lang="ru">рекомендуемыйСпециалист</rdfs:label>
+  <rdfs:comment xml:lang="ru">[выводимое свойство: заполняется SWRL-правилами]</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#подходитУпражнение">
+  <rdfs:domain rdf:resource="#Пациент"/>
+  <rdfs:range rdf:resource="#Упражнение"/>
+  <rdfs:label xml:lang="ru">подходитУпражнение</rdfs:label>
+  <rdfs:comment xml:lang="ru">[выводимое свойство: заполняется SWRL-правилами]</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:DatatypeProperty rdf:about="#числоУчастников">
+  <rdfs:domain rdf:resource="#КлиническоеИспытание"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+  <rdfs:label xml:lang="ru">числоУчастников</rdfs:label>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#уровеньСложности">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#Упражнение"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+  <rdfs:label xml:lang="ru">уровеньСложности</rdfs:label>
+  <rdfs:comment xml:lang="ru">1 — очень лёгкое … 4 — сложное.</rdfs:comment>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#датаНачала">
+  <rdfs:domain rdf:resource="#КлиническоеИспытание"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+  <rdfs:label xml:lang="ru">датаНачала</rdfs:label>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#весКг">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#Пациент"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+  <rdfs:label xml:lang="ru">весКг</rdfs:label>
+  <rdfs:comment xml:lang="ru">Килограммы.</rdfs:comment>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#длительностьМин">
+  <rdfs:domain rdf:resource="#Упражнение"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+  <rdfs:label xml:lang="ru">длительностьМин</rdfs:label>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#датаНазначения">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#РеабилитационнаяПрограмма"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+  <rdfs:label xml:lang="ru">датаНазначения</rdfs:label>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#весПриИМТ30">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#Пациент"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+  <rdfs:label xml:lang="ru">весПриИМТ30</rdfs:label>
+  <rdfs:comment xml:lang="ru">Вес (кг), при котором ИМТ = 30 для роста пациента. [выводится SWRL-правилом R02]</rdfs:comment>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#весПриИМТ25">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#Пациент"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+  <rdfs:label xml:lang="ru">весПриИМТ25</rdfs:label>
+  <rdfs:comment xml:lang="ru">Вес (кг), при котором ИМТ = 25 для роста пациента. [выводится SWRL-правилом R02]</rdfs:comment>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#описание">
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  <rdfs:label xml:lang="ru">описание</rdfs:label>
+  <rdfs:comment xml:lang="ru">Текстовое описание.</rdfs:comment>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#страна">
+  <rdfs:domain rdf:resource="#Производитель"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  <rdfs:label xml:lang="ru">страна</rdfs:label>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#ростСм">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#Пациент"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+  <rdfs:label xml:lang="ru">ростСм</rdfs:label>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#уровеньПодготовки">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#Пациент"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+  <rdfs:label xml:lang="ru">уровеньПодготовки</rdfs:label>
+  <rdfs:comment xml:lang="ru">Физическая подготовка 1–5 (1 — минимальная).</rdfs:comment>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#стажЛет">
+  <rdfs:domain rdf:resource="#Специалист"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+  <rdfs:label xml:lang="ru">стажЛет</rdfs:label>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#кодМКБ">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#Диагноз"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  <rdfs:label xml:lang="ru">кодМКБ</rdfs:label>
+  <rdfs:comment xml:lang="ru">Код МКБ-10.</rdfs:comment>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#баллБезопасности">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#УровеньБезопасности"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+  <rdfs:label xml:lang="ru">баллБезопасности</rdfs:label>
+  <rdfs:comment xml:lang="ru">1–5.</rdfs:comment>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#количествоПовторений">
+  <rdfs:domain rdf:resource="#Упражнение"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+  <rdfs:label xml:lang="ru">количествоПовторений</rdfs:label>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#требуетВрача">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#Диагноз"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+  <rdfs:label xml:lang="ru">требуетВрача</rdfs:label>
+  <rdfs:comment xml:lang="ru">true — программу должен вести врач-реабилитолог, а не тренер.</rdfs:comment>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#название">
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  <rdfs:label xml:lang="ru">название</rdfs:label>
+  <rdfs:comment xml:lang="ru">Название (программы, упражнения, диагноза, инвентаря).</rdfs:comment>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#возраст">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#Пациент"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+  <rdfs:label xml:lang="ru">возраст</rdfs:label>
+  <rdfs:comment xml:lang="ru">Полных лет на 01.10.2026.</rdfs:comment>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#занятийВНеделю">
+  <rdfs:domain rdf:resource="#РеабилитационнаяПрограмма"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+  <rdfs:label xml:lang="ru">занятийВНеделю</rdfs:label>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#длительностьНедель">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#РеабилитационнаяПрограмма"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+  <rdfs:label xml:lang="ru">длительностьНедель</rdfs:label>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#датаРождения">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#Пациент"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+  <rdfs:label xml:lang="ru">датаРождения</rdfs:label>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#пол">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#Пациент"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  <rdfs:label xml:lang="ru">пол</rdfs:label>
+  <rdfs:comment xml:lang="ru">«Мужской» / «Женский».</rdfs:comment>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#рейтинг">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#Специалист"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+  <rdfs:label xml:lang="ru">рейтинг</rdfs:label>
+  <rdfs:comment xml:lang="ru">Оценка пациентов 1–5.</rdfs:comment>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#ФИО">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  <rdfs:label xml:lang="ru">ФИО</rdfs:label>
+  <rdfs:comment xml:lang="ru">ФИО пациента, специалиста или автора.</rdfs:comment>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#цена">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#СпортивныйИнвентарь"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+  <rdfs:label xml:lang="ru">цена</rdfs:label>
+  <rdfs:comment xml:lang="ru">Рубли.</rdfs:comment>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#телефон">
+  <rdfs:domain rdf:resource="#Пациент"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  <rdfs:label xml:lang="ru">телефон</rdfs:label>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#процентЭффективности">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#Эффективность"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+  <rdfs:label xml:lang="ru">процентЭффективности</rdfs:label>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#количествоПодходов">
+  <rdfs:domain rdf:resource="#Упражнение"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+  <rdfs:label xml:lang="ru">количествоПодходов</rdfs:label>
+</owl:DatatypeProperty>
+
+<owl:Class rdf:about="#ВосстановлениеПослеТравмы">
+  <rdfs:subClassOf rdf:resource="#УлучшениеКачестваЖизни"/>
+  <rdfs:label xml:lang="ru">ВосстановлениеПослеТравмы</rdfs:label>
+  <rdfs:comment xml:lang="ru">Реабилитация после травмы, операции, инсульта.</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#КлиническоеИспытание">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#имеетСтатус"/>
+      <owl:onClass rdf:resource="#СтатусИспытания"/>
+      <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:label xml:lang="ru">КлиническоеИспытание</rdfs:label>
+  <rdfs:comment xml:lang="ru">Испытание, подтверждающее эффективность и безопасность упражнения.</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#СпортивныйИнвентарь">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  <rdfs:label xml:lang="ru">СпортивныйИнвентарь</rdfs:label>
+  <rdfs:comment xml:lang="ru">Инвентарь, необходимый для выполнения упражнения.</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#ПравилаПользования">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  <rdfs:label xml:lang="ru">ПравилаПользования</rdfs:label>
+  <rdfs:comment xml:lang="ru">Правила безопасного пользования инвентарём.</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#ТехникаВыполнения">
+  <rdfs:subClassOf rdf:resource="#СвойствоУпражнения"/>
+  <rdfs:label xml:lang="ru">ТехникаВыполнения</rdfs:label>
+  <rdfs:comment xml:lang="ru">Правильная техника выполнения упражнения.</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#ДанныеПациента">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#содержитДиагноз"/>
+      <owl:someValuesFrom rdf:resource="#Диагноз"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:label xml:lang="ru">ДанныеПациента</rdfs:label>
+  <rdfs:comment xml:lang="ru">Совокупность медицинских сведений о пациенте.</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#РеабилитационнаяПрограмма">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#содержитУпражнение"/>
+      <owl:someValuesFrom rdf:resource="#Упражнение"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#имеетЦель"/>
+      <owl:someValuesFrom rdf:resource="#ЦельРеабилитации"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#предназначенаДля"/>
+      <owl:onClass rdf:resource="#Пациент"/>
+      <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#основанаНаИсторииБолезни"/>
+      <owl:someValuesFrom rdf:resource="#ИсторияБолезни"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:label xml:lang="ru">РеабилитационнаяПрограмма</rdfs:label>
+  <rdfs:comment xml:lang="ru">Подобранная для пациента программа реабилитации (центральное понятие).</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#Пациент">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#имеетДанные"/>
+      <owl:onClass rdf:resource="#ДанныеПациента"/>
+      <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:label xml:lang="ru">Пациент</rdfs:label>
+  <rdfs:comment xml:lang="ru">Человек, для которого подбирается программа. [добавлено при доработке]</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#ПобочныйЭффект">
+  <rdfs:subClassOf rdf:resource="#Эффект"/>
+  <rdfs:label xml:lang="ru">ПобочныйЭффект</rdfs:label>
+  <rdfs:comment xml:lang="ru">Нежелательный эффект.</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#Эффект">
+  <rdfs:subClassOf rdf:resource="#СвойствоУпражнения"/>
+  <rdfs:label xml:lang="ru">Эффект</rdfs:label>
+  <rdfs:comment xml:lang="ru">Результат воздействия упражнения на организм.</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#ПрограммаСРиском">
+  <rdfs:subClassOf rdf:resource="#РеабилитационнаяПрограмма"/>
+  <rdfs:label xml:lang="ru">ПрограммаСРиском</rdfs:label>
+  <rdfs:comment xml:lang="ru">Программа, в которой есть упражнение, не рекомендованное её пациенту. [выводимый класс: заполняется SWRL-правилами]</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#Диагноз">
+  <rdfs:subClassOf rdf:resource="#МедицинскаяИнформация"/>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#требуетЦели"/>
+      <owl:someValuesFrom rdf:resource="#ЦельРеабилитации"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:label xml:lang="ru">Диагноз</rdfs:label>
+  <rdfs:comment xml:lang="ru">Установленный диагноз (код МКБ-10).</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#Производитель">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  <rdfs:label xml:lang="ru">Производитель</rdfs:label>
+  <rdfs:comment xml:lang="ru">Производитель инвентаря.</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#Упражнение">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#имеетТехникуВыполнения"/>
+      <owl:someValuesFrom rdf:resource="#ТехникаВыполнения"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#имеетЭффект"/>
+      <owl:someValuesFrom rdf:resource="#ЛечебныйЭффект"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:label xml:lang="ru">Упражнение</rdfs:label>
+  <rdfs:comment xml:lang="ru">Отдельное упражнение, входящее в программу.</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#РеакцияПациента">
+  <rdfs:subClassOf rdf:resource="#РезультатИспытания"/>
+  <rdfs:label xml:lang="ru">РеакцияПациента</rdfs:label>
+  <rdfs:comment xml:lang="ru">Реакция пациентов на упражнение в ходе испытания.</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#Противопоказание">
+  <rdfs:subClassOf rdf:resource="#СвойствоУпражнения"/>
+  <rdfs:label xml:lang="ru">Противопоказание</rdfs:label>
+  <rdfs:comment xml:lang="ru">Состояние, при котором упражнение выполнять нельзя.</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#ИсторияБолезни">
+  <rdfs:subClassOf rdf:resource="#МедицинскаяИнформация"/>
+  <rdfs:label xml:lang="ru">ИсторияБолезни</rdfs:label>
+  <rdfs:comment xml:lang="ru">Анамнез: перенесённые заболевания, травмы, операции.</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#Показание">
+  <rdfs:subClassOf rdf:resource="#СвойствоУпражнения"/>
+  <rdfs:label xml:lang="ru">Показание</rdfs:label>
+  <rdfs:comment xml:lang="ru">Состояние, при котором упражнение рекомендовано.</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#Реабилитолог">
+  <rdfs:subClassOf rdf:resource="#Специалист"/>
+  <rdfs:label xml:lang="ru">Реабилитолог</rdfs:label>
+  <rdfs:comment xml:lang="ru">Врач-реабилитолог.</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#Специалист">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  <rdfs:label xml:lang="ru">Специалист</rdfs:label>
+  <rdfs:comment xml:lang="ru">Тренер или реабилитолог, чей опыт используется при подборе программы.</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#ХарактеристикаИнвентаря">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  <rdfs:label xml:lang="ru">ХарактеристикаИнвентаря</rdfs:label>
+  <rdfs:comment xml:lang="ru">Технические характеристики инвентаря.</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#СтатусИспытания">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  <owl:equivalentClass>
+    <owl:Class>
+      <owl:oneOf rdf:parseType="Collection">
+        <rdf:Description rdf:about="#Статус_Планируется"/>
+        <rdf:Description rdf:about="#Статус_Проводится"/>
+        <rdf:Description rdf:about="#Статус_Завершено"/>
+        <rdf:Description rdf:about="#Статус_Приостановлено"/>
+      </owl:oneOf>
+    </owl:Class>
+  </owl:equivalentClass>
+  <rdfs:label xml:lang="ru">СтатусИспытания</rdfs:label>
+  <rdfs:comment xml:lang="ru">Статус испытания (перечисление).</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#УровеньБезопасности">
+  <rdfs:subClassOf rdf:resource="#РезультатИспытания"/>
+  <rdfs:label xml:lang="ru">УровеньБезопасности</rdfs:label>
+  <rdfs:comment xml:lang="ru">Балл безопасности 1–5.</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#ПрофилактикаХроническихЗаболеваний">
+  <rdfs:subClassOf rdf:resource="#УлучшениеКачестваЖизни"/>
+  <rdfs:label xml:lang="ru">ПрофилактикаХроническихЗаболеваний</rdfs:label>
+  <rdfs:comment xml:lang="ru">Профилактика прогрессирования и осложнений.</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#ИндивидуальнаяОсобенность">
+  <rdfs:subClassOf rdf:resource="#МедицинскаяИнформация"/>
+  <rdfs:label xml:lang="ru">ИндивидуальнаяОсобенность</rdfs:label>
+  <rdfs:comment xml:lang="ru">Образ жизни, ограничения и т.п.</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#СвойствоУпражнения">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  <rdfs:label xml:lang="ru">СвойствоУпражнения</rdfs:label>
+  <rdfs:comment xml:lang="ru">Группирующий класс для того, что описывает упражнение. [добавлено при доработке]</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#ЦельРеабилитации">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  <rdfs:label xml:lang="ru">ЦельРеабилитации</rdfs:label>
+  <rdfs:comment xml:lang="ru">Цель, на которую направлена программа. [добавлено при доработке]</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#Тренер">
+  <rdfs:subClassOf rdf:resource="#Специалист"/>
+  <rdfs:label xml:lang="ru">Тренер</rdfs:label>
+  <rdfs:comment xml:lang="ru">Тренер ЛФК.</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#ЛечебныйЭффект">
+  <rdfs:subClassOf rdf:resource="#Эффект"/>
+  <rdfs:label xml:lang="ru">ЛечебныйЭффект</rdfs:label>
+  <rdfs:comment xml:lang="ru">Ожидаемый положительный эффект. [добавлено при доработке]</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#ПациентСОжирением">
+  <rdfs:subClassOf rdf:resource="#Пациент"/>
+  <rdfs:label xml:lang="ru">ПациентСОжирением</rdfs:label>
+  <rdfs:comment xml:lang="ru">ИМТ ≥ 30 — ограничение сложности упражнений. [выводимый класс: заполняется SWRL-правилами]</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#ПожилойПациент">
+  <rdfs:subClassOf rdf:resource="#Пациент"/>
+  <rdfs:label xml:lang="ru">ПожилойПациент</rdfs:label>
+  <rdfs:comment xml:lang="ru">Возраст ≥ 60 лет — ограничение сложности упражнений. [выводимый класс: заполняется SWRL-правилами]</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#РезультатИспытания">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  <rdfs:label xml:lang="ru">РезультатИспытания</rdfs:label>
+  <rdfs:comment xml:lang="ru">Группирующий класс для результатов испытаний. [добавлено при доработке]</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#Эффективность">
+  <rdfs:subClassOf rdf:resource="#РезультатИспытания"/>
+  <rdfs:label xml:lang="ru">Эффективность</rdfs:label>
+  <rdfs:comment xml:lang="ru">Процент пациентов с улучшением.</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#Автор">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  <rdfs:label xml:lang="ru">Автор</rdfs:label>
+  <rdfs:comment xml:lang="ru">Автор (разработчик) методики/инвентаря.</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#УлучшениеКачестваЖизни">
+  <rdfs:subClassOf rdf:resource="#ЦельРеабилитации"/>
+  <rdfs:label xml:lang="ru">УлучшениеКачестваЖизни</rdfs:label>
+  <rdfs:comment xml:lang="ru">Общая цель программы.</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#БюджетныйИнвентарь">
+  <rdfs:subClassOf rdf:resource="#СпортивныйИнвентарь"/>
+  <rdfs:label xml:lang="ru">БюджетныйИнвентарь</rdfs:label>
+  <rdfs:comment xml:lang="ru">Цена ≤ 5000 ₽. [выводимый класс: заполняется SWRL-правилами]</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#ПациентСИзбыточнымВесом">
+  <rdfs:subClassOf rdf:resource="#Пациент"/>
+  <rdfs:label xml:lang="ru">ПациентСИзбыточнымВесом</rdfs:label>
+  <rdfs:comment xml:lang="ru">ИМТ от 25 до 30. [выводимый класс: заполняется SWRL-правилами]</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#МедицинскаяИнформация">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  <rdfs:label xml:lang="ru">МедицинскаяИнформация</rdfs:label>
+  <rdfs:comment xml:lang="ru">Группирующий класс для составных частей данных пациента. [добавлено при доработке]</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#УменьшениеБоли">
+  <rdfs:subClassOf rdf:resource="#УлучшениеКачестваЖизни"/>
+  <rdfs:label xml:lang="ru">УменьшениеБоли</rdfs:label>
+  <rdfs:comment xml:lang="ru">Цели, связанные со снижением боли.</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#УпражнениеСОсторожностью">
+  <rdfs:subClassOf rdf:resource="#Упражнение"/>
+  <rdfs:label xml:lang="ru">УпражнениеСОсторожностью</rdfs:label>
+  <rdfs:comment xml:lang="ru">Испытание упражнения приостановлено — назначать с осторожностью. [выводимый класс: заполняется SWRL-правилами]</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#ОпытныйСпециалист">
+  <rdfs:subClassOf rdf:resource="#Специалист"/>
+  <rdfs:label xml:lang="ru">ОпытныйСпециалист</rdfs:label>
+  <rdfs:comment xml:lang="ru">Стаж ≥ 10 лет. [выводимый класс: заполняется SWRL-правилами]</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#ЭффективноеУпражнение">
+  <rdfs:subClassOf rdf:resource="#Упражнение"/>
+  <rdfs:label xml:lang="ru">ЭффективноеУпражнение</rdfs:label>
+  <rdfs:comment xml:lang="ru">Эффективность по испытанию ≥ 80 %. [выводимый класс: заполняется SWRL-правилами]</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#БезопасноеУпражнение">
+  <rdfs:subClassOf rdf:resource="#Упражнение"/>
+  <rdfs:label xml:lang="ru">БезопасноеУпражнение</rdfs:label>
+  <rdfs:comment xml:lang="ru">Балл безопасности по испытанию ≥ 4 из 5. [выводимый класс: заполняется SWRL-правилами]</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#ОптимальноеУпражнение">
+  <rdfs:subClassOf rdf:resource="#Упражнение"/>
+  <rdfs:subClassOf rdf:resource="#ЭффективноеУпражнение"/>
+  <rdfs:subClassOf rdf:resource="#БезопасноеУпражнение"/>
+  <rdfs:label xml:lang="ru">ОптимальноеУпражнение</rdfs:label>
+  <rdfs:comment xml:lang="ru">Одновременно эффективное и безопасное. [выводимый класс: заполняется SWRL-правилами]</rdfs:comment>
+</owl:Class>
+
+<owl:NamedIndividual rdf:about="#Цель_ВосстановлениеКисти">
+  <rdf:type rdf:resource="#ВосстановлениеПослеТравмы"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Восстановление функции кисти</название>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Гантель_2кг">
+  <rdf:type rdf:resource="#СпортивныйИнвентарь"/>
+  <имеетПроизводителя rdf:resource="#Производитель_Starfit"/>
+  <имеетХарактеристику rdf:resource="#Характеристика_Гантель_2кг"/>
+  <имеетПравилаПользования rdf:resource="#Правила_Гантель_2кг"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Гантель виниловая 2 кг</название>
+  <цена rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">690.0</цена>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Производитель_Starfit">
+  <rdf:type rdf:resource="#Производитель"/>
+  <задаётХарактеристику rdf:resource="#Характеристика_Гантель_2кг"/>
+  <задаётХарактеристику rdf:resource="#Характеристика_Гиря_8кг"/>
+  <задаётХарактеристику rdf:resource="#Характеристика_Балансировочная_Подушка"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Starfit</название>
+  <страна rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Россия</страна>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Характеристика_Гантель_2кг">
+  <rdf:type rdf:resource="#ХарактеристикаИнвентаря"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Вес 2 кг, виниловое покрытие</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Правила_Гантель_2кг">
+  <rdf:type rdf:resource="#ПравилаПользования"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Не ронять, хранить на стойке</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Правила_Палки_Скандинавские">
+  <rdf:type rdf:resource="#ПравилаПользования"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Подбирать длину: рост × 0,68</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Техника_СтойкаНаПодушке">
+  <rdf:type rdf:resource="#ТехникаВыполнения"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Стоять на одной ноге 30 с, рядом опора</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Данные_Сидоров">
+  <rdf:type rdf:resource="#ДанныеПациента"/>
+  <содержитДиагноз rdf:resource="#Диагноз_РазрывСвязки"/>
+  <содержитИсториюБолезни rdf:resource="#Анамнез_Сидоров"/>
+  <содержитОсобенность rdf:resource="#Особенность_Сидоров"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Диагноз_РазрывСвязки">
+  <rdf:type rdf:resource="#Диагноз"/>
+  <требуетЦели rdf:resource="#Цель_ВосстановлениеКолена"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Разрыв передней крестообразной связки</название>
+  <кодМКБ rdf:datatype="http://www.w3.org/2001/XMLSchema#string">S83.5</кодМКБ>
+  <требуетВрача rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</требуетВрача>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Анамнез_Сидоров">
+  <rdf:type rdf:resource="#ИсторияБолезни"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Спортивная травма, артроскопическая пластика 6 недель назад</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Особенность_Сидоров">
+  <rdf:type rdf:resource="#ИндивидуальнаяОсобенность"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Профессиональный футболист</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Пациент_Кузнецова">
+  <rdf:type rdf:resource="#Пациент"/>
+  <имеетДанные rdf:resource="#Данные_Кузнецова"/>
+  <ФИО rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Кузнецова Мария Игоревна</ФИО>
+  <пол rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Женский</пол>
+  <датаРождения rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">1962-01-10T00:00:00</датаРождения>
+  <возраст rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">64</возраст>
+  <ростСм rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">160</ростСм>
+  <весКг rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">78.0</весКг>
+  <уровеньПодготовки rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</уровеньПодготовки>
+  <телефон rdf:datatype="http://www.w3.org/2001/XMLSchema#string">+7-926-777-88-99</телефон>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Данные_Кузнецова">
+  <rdf:type rdf:resource="#ДанныеПациента"/>
+  <содержитДиагноз rdf:resource="#Диагноз_Гипертония"/>
+  <содержитИсториюБолезни rdf:resource="#Анамнез_Кузнецова"/>
+  <содержитОсобенность rdf:resource="#Особенность_Кузнецова"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Пациент_Лебедева">
+  <rdf:type rdf:resource="#Пациент"/>
+  <имеетДанные rdf:resource="#Данные_Лебедева"/>
+  <ФИО rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Лебедева Ольга Николаевна</ФИО>
+  <пол rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Женский</пол>
+  <датаРождения rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2001-05-27T00:00:00</датаРождения>
+  <возраст rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">25</возраст>
+  <ростСм rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">170</ростСм>
+  <весКг rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">55.0</весКг>
+  <уровеньПодготовки rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</уровеньПодготовки>
+  <телефон rdf:datatype="http://www.w3.org/2001/XMLSchema#string">+7-999-123-45-67</телефон>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Данные_Лебедева">
+  <rdf:type rdf:resource="#ДанныеПациента"/>
+  <содержитДиагноз rdf:resource="#Диагноз_Плоскостопие"/>
+  <содержитИсториюБолезни rdf:resource="#Анамнез_Лебедева"/>
+  <содержитОсобенность rdf:resource="#Особенность_Лебедева"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Программа_Волков">
+  <rdf:type rdf:resource="#РеабилитационнаяПрограмма"/>
+  <предназначенаДля rdf:resource="#Пациент_Волков"/>
+  <учитываетДанныеПациента rdf:resource="#Данные_Волков"/>
+  <основанаНаИсторииБолезни rdf:resource="#Анамнез_Волков"/>
+  <основанаНаОпытеСпециалиста rdf:resource="#Реабилитолог_Орлов"/>
+  <имеетЦель rdf:resource="#Цель_ВосстановлениеПослеИнсульта"/>
+  <содержитУпражнение rdf:resource="#Упр_РастяжкаСЛентой"/>
+  <содержитУпражнение rdf:resource="#Упр_СжатиеЭспандера"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Восстановление после инсульта</название>
+  <датаНазначения rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2026-10-02T10:30:00</датаНазначения>
+  <длительностьНедель rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">24</длительностьНедель>
+  <занятийВНеделю rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</занятийВНеделю>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Пациент_Волков">
+  <rdf:type rdf:resource="#Пациент"/>
+  <имеетДанные rdf:resource="#Данные_Волков"/>
+  <ФИО rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Волков Дмитрий Андреевич</ФИО>
+  <пол rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Мужской</пол>
+  <датаРождения rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">1956-12-05T00:00:00</датаРождения>
+  <возраст rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">69</возраст>
+  <ростСм rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">172</ростСм>
+  <весКг rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">90.0</весКг>
+  <уровеньПодготовки rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</уровеньПодготовки>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Данные_Волков">
+  <rdf:type rdf:resource="#ДанныеПациента"/>
+  <содержитДиагноз rdf:resource="#Диагноз_ПоследствияИнсульта"/>
+  <содержитИсториюБолезни rdf:resource="#Анамнез_Волков"/>
+  <содержитОсобенность rdf:resource="#Особенность_Волков"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Анамнез_Волков">
+  <rdf:type rdf:resource="#ИсторияБолезни"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ишемический инсульт 4 месяца назад, слабость левой руки</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Реабилитолог_Орлов">
+  <rdf:type rdf:resource="#Реабилитолог"/>
+  <специализируетсяНа rdf:resource="#Диагноз_РазрывСвязки"/>
+  <специализируетсяНа rdf:resource="#Диагноз_ПоследствияИнсульта"/>
+  <специализируетсяНа rdf:resource="#Диагноз_ПереломЛучевой"/>
+  <ФИО rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Орлов Виктор Семёнович</ФИО>
+  <стажЛет rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">20</стажЛет>
+  <рейтинг rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">4.9</рейтинг>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Цель_ВосстановлениеПослеИнсульта">
+  <rdf:type rdf:resource="#ВосстановлениеПослеТравмы"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Восстановление после инсульта</название>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Упр_РастяжкаСЛентой">
+  <rdf:type rdf:resource="#Упражнение"/>
+  <имеетТехникуВыполнения rdf:resource="#Техника_РастяжкаСЛентой"/>
+  <основаноНаИспытании rdf:resource="#Испытание_Инсульт_2026"/>
+  <имеетЭффект rdf:resource="#Эффект_ГибкостьПозвоночника"/>
+  <влияетНа rdf:resource="#Цель_ВосстановлениеПослеИнсульта"/>
+  <требуетИнвентарь rdf:resource="#Лента_Эспандер"/>
+  <имеетПоказание rdf:resource="#Показание_СкованностьМышц"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Растяжка с лентой-эспандером</название>
+  <количествоПодходов rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</количествоПодходов>
+  <количествоПовторений rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</количествоПовторений>
+  <уровеньСложности rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</уровеньСложности>
+  <длительностьМин rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</длительностьМин>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Упр_СжатиеЭспандера">
+  <rdf:type rdf:resource="#Упражнение"/>
+  <имеетТехникуВыполнения rdf:resource="#Техника_СжатиеЭспандера"/>
+  <основаноНаИспытании rdf:resource="#Испытание_Кисть_2024"/>
+  <имеетЭффект rdf:resource="#Эффект_МелкаяМоторика"/>
+  <влияетНа rdf:resource="#Цель_ВосстановлениеКисти"/>
+  <требуетИнвентарь rdf:resource="#Эспандер_Кистевой"/>
+  <имеетПоказание rdf:resource="#Показание_ОграничениеПодвижностиКисти"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Сжатие кистевого эспандера</название>
+  <количествоПодходов rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</количествоПодходов>
+  <количествоПовторений rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">15</количествоПовторений>
+  <уровеньСложности rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</уровеньСложности>
+  <длительностьМин rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</длительностьМин>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Программа_Морозова">
+  <rdf:type rdf:resource="#РеабилитационнаяПрограмма"/>
+  <предназначенаДля rdf:resource="#Пациент_Морозова"/>
+  <учитываетДанныеПациента rdf:resource="#Данные_Морозова"/>
+  <основанаНаИсторииБолезни rdf:resource="#Анамнез_Морозова"/>
+  <основанаНаОпытеСпециалиста rdf:resource="#Тренер_Зайцева"/>
+  <имеетЦель rdf:resource="#Цель_ПрофилактикаПрогрессированияСколиоза"/>
+  <содержитУпражнение rdf:resource="#Упр_КошкаКорова"/>
+  <содержитУпражнение rdf:resource="#Упр_СкандинавскаяХодьба"/>
+  <содержитУпражнение rdf:resource="#Упр_РастяжкаСЛентой"/>
+  <содержитУпражнение rdf:resource="#Упр_ПланкаНаФитболе"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Коррекция осанки при сколиозе</название>
+  <датаНазначения rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2026-07-10T18:00:00</датаНазначения>
+  <длительностьНедель rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">16</длительностьНедель>
+  <занятийВНеделю rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</занятийВНеделю>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Пациент_Морозова">
+  <rdf:type rdf:resource="#Пациент"/>
+  <имеетДанные rdf:resource="#Данные_Морозова"/>
+  <ФИО rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Морозова Елена Дмитриевна</ФИО>
+  <пол rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Женский</пол>
+  <датаРождения rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">1971-09-18T00:00:00</датаРождения>
+  <возраст rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">55</возраст>
+  <ростСм rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">168</ростСм>
+  <весКг rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">61.0</весКг>
+  <уровеньПодготовки rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</уровеньПодготовки>
+  <телефон rdf:datatype="http://www.w3.org/2001/XMLSchema#string">+7-915-222-33-44</телефон>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Данные_Морозова">
+  <rdf:type rdf:resource="#ДанныеПациента"/>
+  <содержитДиагноз rdf:resource="#Диагноз_Сколиоз"/>
+  <содержитИсториюБолезни rdf:resource="#Анамнез_Морозова"/>
+  <содержитОсобенность rdf:resource="#Особенность_Морозова"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Анамнез_Морозова">
+  <rdf:type rdf:resource="#ИсторияБолезни"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Сколиоз II степени с детства, периодические боли в спине</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Тренер_Зайцева">
+  <rdf:type rdf:resource="#Тренер"/>
+  <специализируетсяНа rdf:resource="#Диагноз_АртрозКолена"/>
+  <специализируетсяНа rdf:resource="#Диагноз_Сколиоз"/>
+  <специализируетсяНа rdf:resource="#Диагноз_Плоскостопие"/>
+  <ФИО rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Зайцева Наталья Олеговна</ФИО>
+  <стажЛет rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</стажЛет>
+  <рейтинг rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">4.7</рейтинг>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Цель_ПрофилактикаПрогрессированияСколиоза">
+  <rdf:type rdf:resource="#ПрофилактикаХроническихЗаболеваний"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Профилактика прогрессирования сколиоза</название>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Упр_КошкаКорова">
+  <rdf:type rdf:resource="#Упражнение"/>
+  <имеетТехникуВыполнения rdf:resource="#Техника_КошкаКорова"/>
+  <основаноНаИспытании rdf:resource="#Испытание_ЛФК_Спина_2023"/>
+  <имеетЭффект rdf:resource="#Эффект_ГибкостьПозвоночника"/>
+  <влияетНа rdf:resource="#Цель_УменьшениеБолиВСпине"/>
+  <имеетПоказание rdf:resource="#Показание_ХроническаяБольВСпине"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Кошка-корова</название>
+  <количествоПодходов rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</количествоПодходов>
+  <количествоПовторений rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</количествоПовторений>
+  <уровеньСложности rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</уровеньСложности>
+  <длительностьМин rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</длительностьМин>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Упр_СкандинавскаяХодьба">
+  <rdf:type rdf:resource="#Упражнение"/>
+  <имеетТехникуВыполнения rdf:resource="#Техника_СкандинавскаяХодьба"/>
+  <основаноНаИспытании rdf:resource="#Испытание_Кардио_2024"/>
+  <имеетЭффект rdf:resource="#Эффект_Выносливость"/>
+  <влияетНа rdf:resource="#Цель_ПрофилактикаПрогрессированияСколиоза"/>
+  <требуетИнвентарь rdf:resource="#Палки_Скандинавские"/>
+  <имеетПоказание rdf:resource="#Показание_ГиподинамияИЛишнийВес"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Скандинавская ходьба</название>
+  <количествоПодходов rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</количествоПодходов>
+  <количествоПовторений rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</количествоПовторений>
+  <уровеньСложности rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</уровеньСложности>
+  <длительностьМин rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">30</длительностьМин>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Упр_ПланкаНаФитболе">
+  <rdf:type rdf:resource="#Упражнение"/>
+  <имеетТехникуВыполнения rdf:resource="#Техника_ПланкаНаФитболе"/>
+  <основаноНаИспытании rdf:resource="#Испытание_ЛФК_Спина_2023"/>
+  <имеетЭффект rdf:resource="#Эффект_УкреплениеКора"/>
+  <влияетНа rdf:resource="#Цель_УменьшениеБолиВСпине"/>
+  <требуетИнвентарь rdf:resource="#Фитбол_65см"/>
+  <имеетПобочныйЭффект rdf:resource="#ПобЭффект_БольВПояснице"/>
+  <имеетПротивопоказание rdf:resource="#Противопоказание_ОстрыйПериодГрыжи"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Планка с упором на фитбол</название>
+  <количествоПодходов rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</количествоПодходов>
+  <количествоПовторений rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</количествоПовторений>
+  <уровеньСложности rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</уровеньСложности>
+  <длительностьМин rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</длительностьМин>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Диагноз_Плоскостопие">
+  <rdf:type rdf:resource="#Диагноз"/>
+  <требуетЦели rdf:resource="#Цель_УкреплениеСводаСтопы"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Плоскостопие</название>
+  <кодМКБ rdf:datatype="http://www.w3.org/2001/XMLSchema#string">M21.4</кодМКБ>
+  <требуетВрача rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</требуетВрача>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Цель_УкреплениеСводаСтопы">
+  <rdf:type rdf:resource="#ПрофилактикаХроническихЗаболеваний"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Укрепление свода стопы</название>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Производитель_Bradex">
+  <rdf:type rdf:resource="#Производитель"/>
+  <задаётХарактеристику rdf:resource="#Характеристика_Лента_Эспандер"/>
+  <задаётХарактеристику rdf:resource="#Характеристика_Мяч_Массажный"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bradex</название>
+  <страна rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Израиль</страна>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Характеристика_Лента_Эспандер">
+  <rdf:type rdf:resource="#ХарактеристикаИнвентаря"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Латекс, сопротивление 5–10 кг</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Характеристика_Мяч_Массажный">
+  <rdf:type rdf:resource="#ХарактеристикаИнвентаря"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ПВХ, диаметр 8 см</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Реакция_Испытание_Гиря_2025">
+  <rdf:type rdf:resource="#РеакцияПациента"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Часть участников отметила боль в пояснице</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Пациент_Иванов">
+  <rdf:type rdf:resource="#Пациент"/>
+  <имеетДанные rdf:resource="#Данные_Иванов"/>
+  <ФИО rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Иванов Иван Иванович</ФИО>
+  <пол rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Мужской</пол>
+  <датаРождения rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">1979-03-15T00:00:00</датаРождения>
+  <возраст rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">47</возраст>
+  <ростСм rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">178</ростСм>
+  <весКг rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">86.0</весКг>
+  <уровеньПодготовки rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</уровеньПодготовки>
+  <телефон rdf:datatype="http://www.w3.org/2001/XMLSchema#string">+7-916-111-22-33</телефон>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Данные_Иванов">
+  <rdf:type rdf:resource="#ДанныеПациента"/>
+  <содержитДиагноз rdf:resource="#Диагноз_Остеохондроз"/>
+  <содержитИсториюБолезни rdf:resource="#Анамнез_Иванов"/>
+  <содержитОсобенность rdf:resource="#Особенность_Иванов"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Противопоказание_НарушениеРавновесия">
+  <rdf:type rdf:resource="#Противопоказание"/>
+  <противопоказаноПри rdf:resource="#Диагноз_ПоследствияИнсульта"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Выраженное нарушение равновесия</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Диагноз_ПоследствияИнсульта">
+  <rdf:type rdf:resource="#Диагноз"/>
+  <требуетЦели rdf:resource="#Цель_ВосстановлениеПослеИнсульта"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Последствия инсульта</название>
+  <кодМКБ rdf:datatype="http://www.w3.org/2001/XMLSchema#string">I69.3</кодМКБ>
+  <требуетВрача rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</требуетВрача>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#ПобЭффект_БольВКолене">
+  <rdf:type rdf:resource="#ПобочныйЭффект"/>
+  <зависитОтТехники rdf:resource="#Техника_ПриседанияУСтены"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Боль в колене при выходе колена за носок</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Техника_ПриседанияУСтены">
+  <rdf:type rdf:resource="#ТехникаВыполнения"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Спина прижата к стене, колени не выходят за носки</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Анамнез_Новиков">
+  <rdf:type rdf:resource="#ИсторияБолезни"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Периодические боли в пояснице после нагрузки</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Программа_Иванов">
+  <rdf:type rdf:resource="#РеабилитационнаяПрограмма"/>
+  <предназначенаДля rdf:resource="#Пациент_Иванов"/>
+  <учитываетДанныеПациента rdf:resource="#Данные_Иванов"/>
+  <основанаНаИсторииБолезни rdf:resource="#Анамнез_Иванов"/>
+  <основанаНаОпытеСпециалиста rdf:resource="#Реабилитолог_Соколова"/>
+  <имеетЦель rdf:resource="#Цель_УменьшениеБолиВСпине"/>
+  <содержитУпражнение rdf:resource="#Упр_КошкаКорова"/>
+  <содержитУпражнение rdf:resource="#Упр_ПланкаНаФитболе"/>
+  <содержитУпражнение rdf:resource="#Упр_ЯгодичныйМостик"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Укрепление мышц спины</название>
+  <датаНазначения rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2026-09-01T10:00:00</датаНазначения>
+  <длительностьНедель rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</длительностьНедель>
+  <занятийВНеделю rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</занятийВНеделю>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Анамнез_Иванов">
+  <rdf:type rdf:resource="#ИсторияБолезни"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Боли в пояснице 3 года, обострение 2 месяца назад</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Реабилитолог_Соколова">
+  <rdf:type rdf:resource="#Реабилитолог"/>
+  <специализируетсяНа rdf:resource="#Диагноз_Остеохондроз"/>
+  <специализируетсяНа rdf:resource="#Диагноз_Сколиоз"/>
+  <специализируетсяНа rdf:resource="#Диагноз_ПереломЛучевой"/>
+  <ФИО rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Соколова Ирина Павловна</ФИО>
+  <стажЛет rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">12</стажЛет>
+  <рейтинг rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">4.8</рейтинг>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Цель_УменьшениеБолиВСпине">
+  <rdf:type rdf:resource="#УменьшениеБоли"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Уменьшение боли в спине</название>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Упр_ЯгодичныйМостик">
+  <rdf:type rdf:resource="#Упражнение"/>
+  <имеетТехникуВыполнения rdf:resource="#Техника_ЯгодичныйМостик"/>
+  <основаноНаИспытании rdf:resource="#Испытание_ЛФК_Спина_2023"/>
+  <имеетЭффект rdf:resource="#Эффект_УкреплениеМышцБедра"/>
+  <влияетНа rdf:resource="#Цель_УменьшениеБолиВСпине"/>
+  <имеетПобочныйЭффект rdf:resource="#ПобЭффект_ПовышениеДавления"/>
+  <имеетПротивопоказание rdf:resource="#Противопоказание_НеконтролируемаяГипертензия"/>
+  <имеетПоказание rdf:resource="#Показание_ХроническаяБольВСпине"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ягодичный мостик</название>
+  <количествоПодходов rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</количествоПодходов>
+  <количествоПовторений rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">12</количествоПовторений>
+  <уровеньСложности rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</уровеньСложности>
+  <длительностьМин rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</длительностьМин>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Пациент_Сидоров">
+  <rdf:type rdf:resource="#Пациент"/>
+  <имеетДанные rdf:resource="#Данные_Сидоров"/>
+  <ФИО rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Сидоров Олег Павлович</ФИО>
+  <пол rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Мужской</пол>
+  <датаРождения rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">1995-11-03T00:00:00</датаРождения>
+  <возраст rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">30</возраст>
+  <ростСм rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">185</ростСм>
+  <весКг rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">82.0</весКг>
+  <уровеньПодготовки rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</уровеньПодготовки>
+  <телефон rdf:datatype="http://www.w3.org/2001/XMLSchema#string">+7-903-555-44-11</телефон>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Упр_ХодьбаНаДорожке">
+  <rdf:type rdf:resource="#Упражнение"/>
+  <имеетТехникуВыполнения rdf:resource="#Техника_ХодьбаНаДорожке"/>
+  <основаноНаИспытании rdf:resource="#Испытание_Кардио_2024"/>
+  <имеетЭффект rdf:resource="#Эффект_Выносливость"/>
+  <влияетНа rdf:resource="#Цель_ПрофилактикаОсложненийГипертонии"/>
+  <требуетИнвентарь rdf:resource="#Беговая_Дорожка"/>
+  <имеетПротивопоказание rdf:resource="#Противопоказание_НарушениеРавновесия"/>
+  <имеетПоказание rdf:resource="#Показание_ГиподинамияИЛишнийВес"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ходьба на беговой дорожке</название>
+  <количествоПодходов rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</количествоПодходов>
+  <количествоПовторений rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</количествоПовторений>
+  <уровеньСложности rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</уровеньСложности>
+  <длительностьМин rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">20</длительностьМин>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Техника_ХодьбаНаДорожке">
+  <rdf:type rdf:resource="#ТехникаВыполнения"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Темп 4–5 км/ч, пульс не выше 60% от максимального</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Испытание_Кардио_2024">
+  <rdf:type rdf:resource="#КлиническоеИспытание"/>
+  <показываетЭффективность rdf:resource="#Эффективность_Испытание_Кардио_2024"/>
+  <определяетУровеньБезопасности rdf:resource="#Безопасность_Испытание_Кардио_2024"/>
+  <фиксируетРеакциюПациента rdf:resource="#Реакция_Испытание_Кардио_2024"/>
+  <имеетСтатус rdf:resource="#Статус_Завершено"/>
+  <подтверждаетЦель rdf:resource="#Цель_ПрофилактикаОсложненийГипертонии"/>
+  <подтверждаетЦель rdf:resource="#Цель_ПрофилактикаПрогрессированияСколиоза"/>
+  <датаНачала rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2024-10-01T00:00:00</датаНачала>
+  <числоУчастников rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">200</числоУчастников>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Эффект_Выносливость">
+  <rdf:type rdf:resource="#ЛечебныйЭффект"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Повышение сердечно-сосудистой выносливости</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Цель_ПрофилактикаОсложненийГипертонии">
+  <rdf:type rdf:resource="#ПрофилактикаХроническихЗаболеваний"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Профилактика осложнений гипертонии</название>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Беговая_Дорожка">
+  <rdf:type rdf:resource="#СпортивныйИнвентарь"/>
+  <имеетПроизводителя rdf:resource="#Производитель_Kettler"/>
+  <имеетХарактеристику rdf:resource="#Характеристика_Беговая_Дорожка"/>
+  <имеетПравилаПользования rdf:resource="#Правила_Беговая_Дорожка"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Беговая дорожка</название>
+  <цена rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">64990.0</цена>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Показание_ГиподинамияИЛишнийВес">
+  <rdf:type rdf:resource="#Показание"/>
+  <показаноПри rdf:resource="#Диагноз_Гипертония"/>
+  <показаноПри rdf:resource="#Диагноз_АртрозКолена"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Гиподинамия и избыточная масса тела</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Данные_Смирнов">
+  <rdf:type rdf:resource="#ДанныеПациента"/>
+  <содержитДиагноз rdf:resource="#Диагноз_ПереломЛучевой"/>
+  <содержитИсториюБолезни rdf:resource="#Анамнез_Смирнов"/>
+  <содержитОсобенность rdf:resource="#Особенность_Смирнов"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Диагноз_ПереломЛучевой">
+  <rdf:type rdf:resource="#Диагноз"/>
+  <требуетЦели rdf:resource="#Цель_ВосстановлениеКисти"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Перелом лучевой кости</название>
+  <кодМКБ rdf:datatype="http://www.w3.org/2001/XMLSchema#string">S52.5</кодМКБ>
+  <требуетВрача rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</требуетВрача>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Анамнез_Смирнов">
+  <rdf:type rdf:resource="#ИсторияБолезни"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Перелом правой лучевой кости, гипс снят 2 недели назад</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Особенность_Смирнов">
+  <rdf:type rdf:resource="#ИндивидуальнаяОсобенность"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Правша, работает за компьютером</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Упр_ПриседанияУСтены">
+  <rdf:type rdf:resource="#Упражнение"/>
+  <имеетТехникуВыполнения rdf:resource="#Техника_ПриседанияУСтены"/>
+  <основаноНаИспытании rdf:resource="#Испытание_Колено_2023"/>
+  <имеетЭффект rdf:resource="#Эффект_УкреплениеМышцБедра"/>
+  <влияетНа rdf:resource="#Цель_ВосстановлениеКолена"/>
+  <имеетПобочныйЭффект rdf:resource="#ПобЭффект_БольВКолене"/>
+  <имеетПротивопоказание rdf:resource="#Противопоказание_НестабильностьКолена"/>
+  <имеетПоказание rdf:resource="#Показание_СлабостьМышцБедра"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Приседания у стены</название>
+  <количествоПодходов rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</количествоПодходов>
+  <количествоПовторений rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</количествоПовторений>
+  <уровеньСложности rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</уровеньСложности>
+  <длительностьМин rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">7</длительностьМин>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Испытание_Колено_2023">
+  <rdf:type rdf:resource="#КлиническоеИспытание"/>
+  <показываетЭффективность rdf:resource="#Эффективность_Испытание_Колено_2023"/>
+  <определяетУровеньБезопасности rdf:resource="#Безопасность_Испытание_Колено_2023"/>
+  <фиксируетРеакциюПациента rdf:resource="#Реакция_Испытание_Колено_2023"/>
+  <имеетСтатус rdf:resource="#Статус_Завершено"/>
+  <подтверждаетЦель rdf:resource="#Цель_ВосстановлениеКолена"/>
+  <подтверждаетЦель rdf:resource="#Цель_УменьшениеБолиВКолене"/>
+  <описываетЭффект rdf:resource="#ПобЭффект_БольВКолене"/>
+  <датаНачала rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2023-09-15T00:00:00</датаНачала>
+  <числоУчастников rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">80</числоУчастников>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Эффект_УкреплениеМышцБедра">
+  <rdf:type rdf:resource="#ЛечебныйЭффект"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Укрепление мышц бедра и ягодиц</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Цель_ВосстановлениеКолена">
+  <rdf:type rdf:resource="#ВосстановлениеПослеТравмы"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Восстановление функции колена</название>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Противопоказание_НестабильностьКолена">
+  <rdf:type rdf:resource="#Противопоказание"/>
+  <противопоказаноПри rdf:resource="#Диагноз_РазрывСвязки"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Нестабильность коленного сустава в раннем периоде</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Показание_СлабостьМышцБедра">
+  <rdf:type rdf:resource="#Показание"/>
+  <показаноПри rdf:resource="#Диагноз_АртрозКолена"/>
+  <показаноПри rdf:resource="#Диагноз_РазрывСвязки"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Слабость четырёхглавой мышцы бедра</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Упр_СтановаяТягаСГирей">
+  <rdf:type rdf:resource="#Упражнение"/>
+  <имеетТехникуВыполнения rdf:resource="#Техника_СтановаяТягаСГирей"/>
+  <основаноНаИспытании rdf:resource="#Испытание_Гиря_2025"/>
+  <имеетЭффект rdf:resource="#Эффект_УкреплениеКора"/>
+  <влияетНа rdf:resource="#Цель_УменьшениеБолиВСпине"/>
+  <требуетИнвентарь rdf:resource="#Гиря_8кг"/>
+  <имеетПобочныйЭффект rdf:resource="#ПобЭффект_БольВПояснице"/>
+  <имеетПротивопоказание rdf:resource="#Противопоказание_ОстрыйПериодГрыжи"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Становая тяга с гирей</название>
+  <количествоПодходов rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</количествоПодходов>
+  <количествоПовторений rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</количествоПовторений>
+  <уровеньСложности rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</уровеньСложности>
+  <длительностьМин rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</длительностьМин>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Техника_СтановаяТягаСГирей">
+  <rdf:type rdf:resource="#ТехникаВыполнения"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Спина прямая, движение за счёт таза</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Испытание_Гиря_2025">
+  <rdf:type rdf:resource="#КлиническоеИспытание"/>
+  <показываетЭффективность rdf:resource="#Эффективность_Испытание_Гиря_2025"/>
+  <определяетУровеньБезопасности rdf:resource="#Безопасность_Испытание_Гиря_2025"/>
+  <фиксируетРеакциюПациента rdf:resource="#Реакция_Испытание_Гиря_2025"/>
+  <имеетСтатус rdf:resource="#Статус_Приостановлено"/>
+  <подтверждаетЦель rdf:resource="#Цель_УменьшениеБолиВСпине"/>
+  <описываетЭффект rdf:resource="#ПобЭффект_БольВПояснице"/>
+  <датаНачала rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2025-05-20T00:00:00</датаНачала>
+  <числоУчастников rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">40</числоУчастников>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Эффект_УкреплениеКора">
+  <rdf:type rdf:resource="#ЛечебныйЭффект"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Укрепление мышц кора</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Гиря_8кг">
+  <rdf:type rdf:resource="#СпортивныйИнвентарь"/>
+  <имеетПроизводителя rdf:resource="#Производитель_Starfit"/>
+  <имеетХарактеристику rdf:resource="#Характеристика_Гиря_8кг"/>
+  <имеетПравилаПользования rdf:resource="#Правила_Гиря_8кг"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Гиря 8 кг</название>
+  <цена rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1990.0</цена>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#ПобЭффект_БольВПояснице">
+  <rdf:type rdf:resource="#ПобочныйЭффект"/>
+  <зависитОтТехники rdf:resource="#Техника_ПланкаНаФитболе"/>
+  <зависитОтТехники rdf:resource="#Техника_СтановаяТягаСГирей"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Боль в пояснице при неправильной технике</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Противопоказание_ОстрыйПериодГрыжи">
+  <rdf:type rdf:resource="#Противопоказание"/>
+  <противопоказаноПри rdf:resource="#Диагноз_Остеохондроз"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Острый период грыжи межпозвонкового диска</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Программа_Сидоров">
+  <rdf:type rdf:resource="#РеабилитационнаяПрограмма"/>
+  <предназначенаДля rdf:resource="#Пациент_Сидоров"/>
+  <учитываетДанныеПациента rdf:resource="#Данные_Сидоров"/>
+  <основанаНаИсторииБолезни rdf:resource="#Анамнез_Сидоров"/>
+  <основанаНаОпытеСпециалиста rdf:resource="#Реабилитолог_Орлов"/>
+  <имеетЦель rdf:resource="#Цель_ВосстановлениеКолена"/>
+  <содержитУпражнение rdf:resource="#Упр_ПодъёмПрямойНоги"/>
+  <содержитУпражнение rdf:resource="#Упр_ПриседанияУСтены"/>
+  <содержитУпражнение rdf:resource="#Упр_Велотренажёр"/>
+  <содержитУпражнение rdf:resource="#Упр_ЯгодичныйМостик"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Восстановление после пластики ПКС</название>
+  <датаНазначения rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2026-09-20T09:00:00</датаНазначения>
+  <длительностьНедель rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">12</длительностьНедель>
+  <занятийВНеделю rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</занятийВНеделю>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Упр_ПодъёмПрямойНоги">
+  <rdf:type rdf:resource="#Упражнение"/>
+  <имеетТехникуВыполнения rdf:resource="#Техника_ПодъёмПрямойНоги"/>
+  <основаноНаИспытании rdf:resource="#Испытание_Колено_2023"/>
+  <имеетЭффект rdf:resource="#Эффект_УкреплениеМышцБедра"/>
+  <влияетНа rdf:resource="#Цель_УменьшениеБолиВКолене"/>
+  <имеетПоказание rdf:resource="#Показание_СлабостьМышцБедра"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Подъём прямой ноги лёжа</название>
+  <количествоПодходов rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</количествоПодходов>
+  <количествоПовторений rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">15</количествоПовторений>
+  <уровеньСложности rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</уровеньСложности>
+  <длительностьМин rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</длительностьМин>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Упр_Велотренажёр">
+  <rdf:type rdf:resource="#Упражнение"/>
+  <имеетТехникуВыполнения rdf:resource="#Техника_Велотренажёр"/>
+  <основаноНаИспытании rdf:resource="#Испытание_Кардио_2024"/>
+  <имеетЭффект rdf:resource="#Эффект_Выносливость"/>
+  <влияетНа rdf:resource="#Цель_ПрофилактикаОсложненийГипертонии"/>
+  <требуетИнвентарь rdf:resource="#Велотренажёр"/>
+  <имеетПоказание rdf:resource="#Показание_ГиподинамияИЛишнийВес"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Занятие на велотренажёре</название>
+  <количествоПодходов rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</количествоПодходов>
+  <количествоПовторений rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</количествоПовторений>
+  <уровеньСложности rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</уровеньСложности>
+  <длительностьМин rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">15</длительностьМин>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Фитбол_65см">
+  <rdf:type rdf:resource="#СпортивныйИнвентарь"/>
+  <имеетПроизводителя rdf:resource="#Производитель_Torneo"/>
+  <имеетХарактеристику rdf:resource="#Характеристика_Фитбол_65см"/>
+  <имеетПравилаПользования rdf:resource="#Правила_Фитбол_65см"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Фитбол 65 см</название>
+  <цена rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1490.0</цена>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Производитель_Torneo">
+  <rdf:type rdf:resource="#Производитель"/>
+  <задаётХарактеристику rdf:resource="#Характеристика_Фитбол_65см"/>
+  <задаётХарактеристику rdf:resource="#Характеристика_Эспандер_Кистевой"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Torneo</название>
+  <страна rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Россия</страна>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Характеристика_Фитбол_65см">
+  <rdf:type rdf:resource="#ХарактеристикаИнвентаря"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Диаметр 65 см, нагрузка до 150 кг</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Правила_Фитбол_65см">
+  <rdf:type rdf:resource="#ПравилаПользования"/>
+  <правилаЗависятОтИспытания rdf:resource="#Испытание_ЛФК_Спина_2023"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Использовать на нескользящем покрытии, подбирать по росту</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Техника_РастяжкаСЛентой">
+  <rdf:type rdf:resource="#ТехникаВыполнения"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Плавное натяжение ленты, без рывков</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Испытание_Инсульт_2026">
+  <rdf:type rdf:resource="#КлиническоеИспытание"/>
+  <показываетЭффективность rdf:resource="#Эффективность_Испытание_Инсульт_2026"/>
+  <определяетУровеньБезопасности rdf:resource="#Безопасность_Испытание_Инсульт_2026"/>
+  <фиксируетРеакциюПациента rdf:resource="#Реакция_Испытание_Инсульт_2026"/>
+  <имеетСтатус rdf:resource="#Статус_Проводится"/>
+  <подтверждаетЦель rdf:resource="#Цель_ВосстановлениеПослеИнсульта"/>
+  <датаНачала rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2026-01-12T00:00:00</датаНачала>
+  <числоУчастников rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">90</числоУчастников>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Эффект_ГибкостьПозвоночника">
+  <rdf:type rdf:resource="#ЛечебныйЭффект"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Повышение гибкости позвоночника</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Лента_Эспандер">
+  <rdf:type rdf:resource="#СпортивныйИнвентарь"/>
+  <имеетПроизводителя rdf:resource="#Производитель_Bradex"/>
+  <имеетХарактеристику rdf:resource="#Характеристика_Лента_Эспандер"/>
+  <имеетПравилаПользования rdf:resource="#Правила_Лента_Эспандер"/>
+  <имеетАвтора rdf:resource="#Автор_Бубновский"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Лента-эспандер средняя</название>
+  <цена rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">590.0</цена>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Показание_СкованностьМышц">
+  <rdf:type rdf:resource="#Показание"/>
+  <показаноПри rdf:resource="#Диагноз_ПоследствияИнсульта"/>
+  <показаноПри rdf:resource="#Диагноз_Сколиоз"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Повышенный тонус и скованность мышц</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Характеристика_Беговая_Дорожка">
+  <rdf:type rdf:resource="#ХарактеристикаИнвентаря"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Скорость до 16 км/ч, наклон до 12%</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Статус_Планируется">
+  <rdf:type rdf:resource="#СтатусИспытания"/>
+  <rdfs:label xml:lang="ru">Планируется</rdfs:label>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Планируется</название>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Программа_Кузнецова">
+  <rdf:type rdf:resource="#РеабилитационнаяПрограмма"/>
+  <предназначенаДля rdf:resource="#Пациент_Кузнецова"/>
+  <учитываетДанныеПациента rdf:resource="#Данные_Кузнецова"/>
+  <основанаНаИсторииБолезни rdf:resource="#Анамнез_Кузнецова"/>
+  <основанаНаОпытеСпециалиста rdf:resource="#Тренер_Белов"/>
+  <имеетЦель rdf:resource="#Цель_ПрофилактикаОсложненийГипертонии"/>
+  <содержитУпражнение rdf:resource="#Упр_ХодьбаНаДорожке"/>
+  <содержитУпражнение rdf:resource="#Упр_Велотренажёр"/>
+  <содержитУпражнение rdf:resource="#Упр_ЯгодичныйМостик"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Кардиотренировки при гипертонии</название>
+  <датаНазначения rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2026-10-05T11:00:00</датаНазначения>
+  <длительностьНедель rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">12</длительностьНедель>
+  <занятийВНеделю rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</занятийВНеделю>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Анамнез_Кузнецова">
+  <rdf:type rdf:resource="#ИсторияБолезни"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">АД до 160/100, принимает гипотензивные препараты 8 лет</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Тренер_Белов">
+  <rdf:type rdf:resource="#Тренер"/>
+  <специализируетсяНа rdf:resource="#Диагноз_Гипертония"/>
+  <специализируетсяНа rdf:resource="#Диагноз_Остеохондроз"/>
+  <ФИО rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Белов Артём Игоревич</ФИО>
+  <стажЛет rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</стажЛет>
+  <рейтинг rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">4.3</рейтинг>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Пациент_Фёдорова">
+  <rdf:type rdf:resource="#Пациент"/>
+  <имеетДанные rdf:resource="#Данные_Фёдорова"/>
+  <ФИО rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Фёдорова Галина Петровна</ФИО>
+  <пол rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Женский</пол>
+  <датаРождения rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">1957-02-14T00:00:00</датаРождения>
+  <возраст rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">69</возраст>
+  <ростСм rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">158</ростСм>
+  <весКг rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">84.0</весКг>
+  <уровеньПодготовки rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</уровеньПодготовки>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Данные_Фёдорова">
+  <rdf:type rdf:resource="#ДанныеПациента"/>
+  <содержитДиагноз rdf:resource="#Диагноз_АртрозКолена"/>
+  <содержитИсториюБолезни rdf:resource="#Анамнез_Фёдорова"/>
+  <содержитОсобенность rdf:resource="#Особенность_Фёдорова"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Диагноз_АртрозКолена">
+  <rdf:type rdf:resource="#Диагноз"/>
+  <требуетЦели rdf:resource="#Цель_УменьшениеБолиВКолене"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Гонартроз (артроз коленного сустава)</название>
+  <кодМКБ rdf:datatype="http://www.w3.org/2001/XMLSchema#string">M17.0</кодМКБ>
+  <требуетВрача rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</требуетВрача>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Эффективность_Испытание_Колено_2023">
+  <rdf:type rdf:resource="#Эффективность"/>
+  <процентЭффективности rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">84.0</процентЭффективности>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Безопасность_Испытание_Колено_2023">
+  <rdf:type rdf:resource="#УровеньБезопасности"/>
+  <баллБезопасности rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</баллБезопасности>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Реакция_Испытание_Колено_2023">
+  <rdf:type rdf:resource="#РеакцияПациента"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Увеличение объёма движений в колене на 20°</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Статус_Завершено">
+  <rdf:type rdf:resource="#СтатусИспытания"/>
+  <rdfs:label xml:lang="ru">Завершено</rdfs:label>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Завершено</название>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Цель_УменьшениеБолиВКолене">
+  <rdf:type rdf:resource="#УменьшениеБоли"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Уменьшение боли в колене</название>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Правила_Беговая_Дорожка">
+  <rdf:type rdf:resource="#ПравилаПользования"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Использовать страховочный ключ</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Безопасность_Испытание_ЛФК_Спина_2023">
+  <rdf:type rdf:resource="#УровеньБезопасности"/>
+  <баллБезопасности rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</баллБезопасности>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Упр_СтойкаНаПодушке">
+  <rdf:type rdf:resource="#Упражнение"/>
+  <имеетТехникуВыполнения rdf:resource="#Техника_СтойкаНаПодушке"/>
+  <основаноНаИспытании rdf:resource="#Испытание_Стопа_2025"/>
+  <имеетЭффект rdf:resource="#Эффект_УкреплениеСводаСтопы"/>
+  <влияетНа rdf:resource="#Цель_УкреплениеСводаСтопы"/>
+  <требуетИнвентарь rdf:resource="#Балансировочная_Подушка"/>
+  <имеетПротивопоказание rdf:resource="#Противопоказание_НарушениеРавновесия"/>
+  <имеетПоказание rdf:resource="#Показание_СлабостьМышцСтопы"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Стойка на балансировочной подушке</название>
+  <количествоПодходов rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</количествоПодходов>
+  <количествоПовторений rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</количествоПовторений>
+  <уровеньСложности rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</уровеньСложности>
+  <длительностьМин rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</длительностьМин>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Испытание_Стопа_2025">
+  <rdf:type rdf:resource="#КлиническоеИспытание"/>
+  <показываетЭффективность rdf:resource="#Эффективность_Испытание_Стопа_2025"/>
+  <определяетУровеньБезопасности rdf:resource="#Безопасность_Испытание_Стопа_2025"/>
+  <фиксируетРеакциюПациента rdf:resource="#Реакция_Испытание_Стопа_2025"/>
+  <имеетСтатус rdf:resource="#Статус_Завершено"/>
+  <подтверждаетЦель rdf:resource="#Цель_УкреплениеСводаСтопы"/>
+  <датаНачала rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2025-04-01T00:00:00</датаНачала>
+  <числоУчастников rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">70</числоУчастников>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Эффект_УкреплениеСводаСтопы">
+  <rdf:type rdf:resource="#ЛечебныйЭффект"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Укрепление мышц и связок свода стопы</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Балансировочная_Подушка">
+  <rdf:type rdf:resource="#СпортивныйИнвентарь"/>
+  <имеетПроизводителя rdf:resource="#Производитель_Starfit"/>
+  <имеетХарактеристику rdf:resource="#Характеристика_Балансировочная_Подушка"/>
+  <имеетПравилаПользования rdf:resource="#Правила_Балансировочная_Подушка"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Балансировочная подушка</название>
+  <цена rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1290.0</цена>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Показание_СлабостьМышцСтопы">
+  <rdf:type rdf:resource="#Показание"/>
+  <показаноПри rdf:resource="#Диагноз_Плоскостопие"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Слабость мышц стопы, уплощение свода</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Характеристика_Гиря_8кг">
+  <rdf:type rdf:resource="#ХарактеристикаИнвентаря"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Чугун, 8 кг</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Характеристика_Балансировочная_Подушка">
+  <rdf:type rdf:resource="#ХарактеристикаИнвентаря"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Диаметр 33 см, надувная</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Производитель_Kettler">
+  <rdf:type rdf:resource="#Производитель"/>
+  <задаётХарактеристику rdf:resource="#Характеристика_Беговая_Дорожка"/>
+  <задаётХарактеристику rdf:resource="#Характеристика_Велотренажёр"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Kettler</название>
+  <страна rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Германия</страна>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Эспандер_Кистевой">
+  <rdf:type rdf:resource="#СпортивныйИнвентарь"/>
+  <имеетПроизводителя rdf:resource="#Производитель_Torneo"/>
+  <имеетХарактеристику rdf:resource="#Характеристика_Эспандер_Кистевой"/>
+  <имеетПравилаПользования rdf:resource="#Правила_Эспандер_Кистевой"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Эспандер кистевой</название>
+  <цена rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">350.0</цена>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Характеристика_Эспандер_Кистевой">
+  <rdf:type rdf:resource="#ХарактеристикаИнвентаря"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Сопротивление 10 кг</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Правила_Эспандер_Кистевой">
+  <rdf:type rdf:resource="#ПравилаПользования"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Начинать с минимального сопротивления</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Диагноз_Сколиоз">
+  <rdf:type rdf:resource="#Диагноз"/>
+  <требуетЦели rdf:resource="#Цель_ПрофилактикаПрогрессированияСколиоза"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Идиопатический сколиоз</название>
+  <кодМКБ rdf:datatype="http://www.w3.org/2001/XMLSchema#string">M41.1</кодМКБ>
+  <требуетВрача rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</требуетВрача>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Особенность_Морозова">
+  <rdf:type rdf:resource="#ИндивидуальнаяОсобенность"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Бухгалтер, сидячая работа</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Программа_Петрова">
+  <rdf:type rdf:resource="#РеабилитационнаяПрограмма"/>
+  <предназначенаДля rdf:resource="#Пациент_Петрова"/>
+  <учитываетДанныеПациента rdf:resource="#Данные_Петрова"/>
+  <основанаНаИсторииБолезни rdf:resource="#Анамнез_Петрова"/>
+  <основанаНаОпытеСпециалиста rdf:resource="#Тренер_Зайцева"/>
+  <имеетЦель rdf:resource="#Цель_УменьшениеБолиВКолене"/>
+  <содержитУпражнение rdf:resource="#Упр_ПодъёмПрямойНоги"/>
+  <содержитУпражнение rdf:resource="#Упр_Велотренажёр"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Разгрузка коленного сустава</название>
+  <датаНазначения rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2026-08-15T14:30:00</датаНазначения>
+  <длительностьНедель rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</длительностьНедель>
+  <занятийВНеделю rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</занятийВНеделю>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Пациент_Петрова">
+  <rdf:type rdf:resource="#Пациент"/>
+  <имеетДанные rdf:resource="#Данные_Петрова"/>
+  <ФИО rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Петрова Анна Сергеевна</ФИО>
+  <пол rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Женский</пол>
+  <датаРождения rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">1988-07-22T00:00:00</датаРождения>
+  <возраст rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">38</возраст>
+  <ростСм rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">165</ростСм>
+  <весКг rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">72.5</весКг>
+  <уровеньПодготовки rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</уровеньПодготовки>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Данные_Петрова">
+  <rdf:type rdf:resource="#ДанныеПациента"/>
+  <содержитДиагноз rdf:resource="#Диагноз_АртрозКолена"/>
+  <содержитИсториюБолезни rdf:resource="#Анамнез_Петрова"/>
+  <содержитОсобенность rdf:resource="#Особенность_Петрова"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Анамнез_Петрова">
+  <rdf:type rdf:resource="#ИсторияБолезни"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Боль в правом колене при ходьбе по лестнице 1 год</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Характеристика_Палки_Скандинавские">
+  <rdf:type rdf:resource="#ХарактеристикаИнвентаря"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Длина 110–130 см, телескопические</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Реакция_Испытание_Стопа_2025">
+  <rdf:type rdf:resource="#РеакцияПациента"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Высота свода стопы увеличилась у 82% участников</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Техника_ЯгодичныйМостик">
+  <rdf:type rdf:resource="#ТехникаВыполнения"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Подъём таза до прямой линии плечи–колени, пауза 2 с</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Испытание_ЛФК_Спина_2023">
+  <rdf:type rdf:resource="#КлиническоеИспытание"/>
+  <показываетЭффективность rdf:resource="#Эффективность_Испытание_ЛФК_Спина_2023"/>
+  <определяетУровеньБезопасности rdf:resource="#Безопасность_Испытание_ЛФК_Спина_2023"/>
+  <фиксируетРеакциюПациента rdf:resource="#Реакция_Испытание_ЛФК_Спина_2023"/>
+  <имеетСтатус rdf:resource="#Статус_Завершено"/>
+  <подтверждаетЦель rdf:resource="#Цель_УменьшениеБолиВСпине"/>
+  <описываетЭффект rdf:resource="#ПобЭффект_БольВПояснице"/>
+  <описываетЭффект rdf:resource="#ПобЭффект_ПовышениеДавления"/>
+  <датаНачала rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2023-02-01T00:00:00</датаНачала>
+  <числоУчастников rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">120</числоУчастников>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#ПобЭффект_ПовышениеДавления">
+  <rdf:type rdf:resource="#ПобочныйЭффект"/>
+  <зависитОтТехники rdf:resource="#Техника_ЯгодичныйМостик"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Подъём артериального давления при натуживании</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Противопоказание_НеконтролируемаяГипертензия">
+  <rdf:type rdf:resource="#Противопоказание"/>
+  <противопоказаноПри rdf:resource="#Диагноз_Гипертония"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">АД выше 160/100 мм рт. ст.</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Показание_ХроническаяБольВСпине">
+  <rdf:type rdf:resource="#Показание"/>
+  <показаноПри rdf:resource="#Диагноз_Остеохондроз"/>
+  <показаноПри rdf:resource="#Диагноз_Сколиоз"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Хроническая боль в спине вне обострения</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Показание_ОграничениеПодвижностиКисти">
+  <rdf:type rdf:resource="#Показание"/>
+  <показаноПри rdf:resource="#Диагноз_ПереломЛучевой"/>
+  <показаноПри rdf:resource="#Диагноз_ПоследствияИнсульта"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ограничение подвижности кисти после иммобилизации</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Особенность_Иванов">
+  <rdf:type rdf:resource="#ИндивидуальнаяОсобенность"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Сидячая работа, низкая физическая активность</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Анамнез_Лебедева">
+  <rdf:type rdf:resource="#ИсторияБолезни"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Быстрая утомляемость ног при ходьбе</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Техника_СкандинавскаяХодьба">
+  <rdf:type rdf:resource="#ТехникаВыполнения"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Отталкивание палкой противоположной рукой, шаг с пятки</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Палки_Скандинавские">
+  <rdf:type rdf:resource="#СпортивныйИнвентарь"/>
+  <имеетПроизводителя rdf:resource="#Производитель_Leki"/>
+  <имеетХарактеристику rdf:resource="#Характеристика_Палки_Скандинавские"/>
+  <имеетПравилаПользования rdf:resource="#Правила_Палки_Скандинавские"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Палки для скандинавской ходьбы</название>
+  <цена rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">4990.0</цена>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Эффективность_Испытание_ЛФК_Спина_2023">
+  <rdf:type rdf:resource="#Эффективность"/>
+  <процентЭффективности rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">78.5</процентЭффективности>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Реакция_Испытание_ЛФК_Спина_2023">
+  <rdf:type rdf:resource="#РеакцияПациента"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Снижение боли по ВАШ в среднем на 3 балла</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Правила_Лента_Эспандер">
+  <rdf:type rdf:resource="#ПравилаПользования"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Проверять ленту на надрывы перед занятием</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Диагноз_Остеохондроз">
+  <rdf:type rdf:resource="#Диагноз"/>
+  <требуетЦели rdf:resource="#Цель_УменьшениеБолиВСпине"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Остеохондроз поясничного отдела позвоночника</название>
+  <кодМКБ rdf:datatype="http://www.w3.org/2001/XMLSchema#string">M42.1</кодМКБ>
+  <требуетВрача rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</требуетВрача>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Техника_КошкаКорова">
+  <rdf:type rdf:resource="#ТехникаВыполнения"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Медленно: на вдохе прогиб, на выдохе округление спины</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Испытание_Кисть_2024">
+  <rdf:type rdf:resource="#КлиническоеИспытание"/>
+  <показываетЭффективность rdf:resource="#Эффективность_Испытание_Кисть_2024"/>
+  <определяетУровеньБезопасности rdf:resource="#Безопасность_Испытание_Кисть_2024"/>
+  <фиксируетРеакциюПациента rdf:resource="#Реакция_Испытание_Кисть_2024"/>
+  <имеетСтатус rdf:resource="#Статус_Завершено"/>
+  <подтверждаетЦель rdf:resource="#Цель_ВосстановлениеКисти"/>
+  <датаНачала rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2024-03-10T00:00:00</датаНачала>
+  <числоУчастников rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">60</числоУчастников>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Эффективность_Испытание_Кисть_2024">
+  <rdf:type rdf:resource="#Эффективность"/>
+  <процентЭффективности rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">91.0</процентЭффективности>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Безопасность_Испытание_Кисть_2024">
+  <rdf:type rdf:resource="#УровеньБезопасности"/>
+  <баллБезопасности rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</баллБезопасности>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Реакция_Испытание_Кисть_2024">
+  <rdf:type rdf:resource="#РеакцияПациента"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Сила хвата восстановлена до 85% от здоровой руки</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Особенность_Козлов">
+  <rdf:type rdf:resource="#ИндивидуальнаяОсобенность"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Водитель, малоподвижный образ жизни</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Упр_ПерекатыСтопыМячом">
+  <rdf:type rdf:resource="#Упражнение"/>
+  <имеетТехникуВыполнения rdf:resource="#Техника_ПерекатыСтопыМячом"/>
+  <основаноНаИспытании rdf:resource="#Испытание_Стопа_2025"/>
+  <имеетЭффект rdf:resource="#Эффект_УкреплениеСводаСтопы"/>
+  <влияетНа rdf:resource="#Цель_УкреплениеСводаСтопы"/>
+  <требуетИнвентарь rdf:resource="#Мяч_Массажный"/>
+  <имеетПоказание rdf:resource="#Показание_СлабостьМышцСтопы"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Перекаты стопы на массажном мяче</название>
+  <количествоПодходов rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</количествоПодходов>
+  <количествоПовторений rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">20</количествоПовторений>
+  <уровеньСложности rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</уровеньСложности>
+  <длительностьМин rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</длительностьМин>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Техника_ПерекатыСтопыМячом">
+  <rdf:type rdf:resource="#ТехникаВыполнения"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Сидя, катать мяч от пятки к пальцам с лёгким давлением</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Мяч_Массажный">
+  <rdf:type rdf:resource="#СпортивныйИнвентарь"/>
+  <имеетПроизводителя rdf:resource="#Производитель_Bradex"/>
+  <имеетХарактеристику rdf:resource="#Характеристика_Мяч_Массажный"/>
+  <имеетПравилаПользования rdf:resource="#Правила_Мяч_Массажный"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Массажный мяч с шипами 8 см</название>
+  <цена rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">390.0</цена>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Эффективность_Испытание_Инсульт_2026">
+  <rdf:type rdf:resource="#Эффективность"/>
+  <процентЭффективности rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">69.5</процентЭффективности>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Безопасность_Испытание_Инсульт_2026">
+  <rdf:type rdf:resource="#УровеньБезопасности"/>
+  <баллБезопасности rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</баллБезопасности>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Реакция_Испытание_Инсульт_2026">
+  <rdf:type rdf:resource="#РеакцияПациента"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Набор участников продолжается</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Статус_Проводится">
+  <rdf:type rdf:resource="#СтатусИспытания"/>
+  <rdfs:label xml:lang="ru">Проводится</rdfs:label>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Проводится</название>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Эффективность_Испытание_Стопа_2025">
+  <rdf:type rdf:resource="#Эффективность"/>
+  <процентЭффективности rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">82.0</процентЭффективности>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Безопасность_Испытание_Стопа_2025">
+  <rdf:type rdf:resource="#УровеньБезопасности"/>
+  <баллБезопасности rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</баллБезопасности>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Диагноз_Гипертония">
+  <rdf:type rdf:resource="#Диагноз"/>
+  <требуетЦели rdf:resource="#Цель_ПрофилактикаОсложненийГипертонии"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Гипертоническая болезнь</название>
+  <кодМКБ rdf:datatype="http://www.w3.org/2001/XMLSchema#string">I10</кодМКБ>
+  <требуетВрача rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</требуетВрача>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Особенность_Кузнецова">
+  <rdf:type rdf:resource="#ИндивидуальнаяОсобенность"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Пенсионер, умеренная активность</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Особенность_Лебедева">
+  <rdf:type rdf:resource="#ИндивидуальнаяОсобенность"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Студентка</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Эффективность_Испытание_Гиря_2025">
+  <rdf:type rdf:resource="#Эффективность"/>
+  <процентЭффективности rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">65.0</процентЭффективности>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Безопасность_Испытание_Гиря_2025">
+  <rdf:type rdf:resource="#УровеньБезопасности"/>
+  <баллБезопасности rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</баллБезопасности>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Статус_Приостановлено">
+  <rdf:type rdf:resource="#СтатусИспытания"/>
+  <rdfs:label xml:lang="ru">Приостановлено</rdfs:label>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Приостановлено</название>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Эффективность_Испытание_Кардио_2024">
+  <rdf:type rdf:resource="#Эффективность"/>
+  <процентЭффективности rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">72.0</процентЭффективности>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Безопасность_Испытание_Кардио_2024">
+  <rdf:type rdf:resource="#УровеньБезопасности"/>
+  <баллБезопасности rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</баллБезопасности>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Реакция_Испытание_Кардио_2024">
+  <rdf:type rdf:resource="#РеакцияПациента"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Снижение систолического АД на 8 мм рт. ст.</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Автор_Бубновский">
+  <rdf:type rdf:resource="#Автор"/>
+  <ФИО rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Бубновский Сергей Михайлович</ФИО>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Данные_Новиков">
+  <rdf:type rdf:resource="#ДанныеПациента"/>
+  <содержитДиагноз rdf:resource="#Диагноз_Остеохондроз"/>
+  <содержитИсториюБолезни rdf:resource="#Анамнез_Новиков"/>
+  <содержитОсобенность rdf:resource="#Особенность_Новиков"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Особенность_Новиков">
+  <rdf:type rdf:resource="#ИндивидуальнаяОсобенность"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Программист, ходит в спортзал</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Техника_Велотренажёр">
+  <rdf:type rdf:resource="#ТехникаВыполнения"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Низкое сопротивление, равномерный темп, контроль пульса</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Велотренажёр">
+  <rdf:type rdf:resource="#СпортивныйИнвентарь"/>
+  <имеетПроизводителя rdf:resource="#Производитель_Kettler"/>
+  <имеетХарактеристику rdf:resource="#Характеристика_Велотренажёр"/>
+  <имеетПравилаПользования rdf:resource="#Правила_Велотренажёр"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Велотренажёр магнитный</название>
+  <цена rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">38990.0</цена>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Производитель_Leki">
+  <rdf:type rdf:resource="#Производитель"/>
+  <задаётХарактеристику rdf:resource="#Характеристика_Палки_Скандинавские"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Leki</название>
+  <страна rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Германия</страна>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Программа_Смирнов">
+  <rdf:type rdf:resource="#РеабилитационнаяПрограмма"/>
+  <предназначенаДля rdf:resource="#Пациент_Смирнов"/>
+  <учитываетДанныеПациента rdf:resource="#Данные_Смирнов"/>
+  <основанаНаИсторииБолезни rdf:resource="#Анамнез_Смирнов"/>
+  <основанаНаОпытеСпециалиста rdf:resource="#Реабилитолог_Соколова"/>
+  <имеетЦель rdf:resource="#Цель_ВосстановлениеКисти"/>
+  <содержитУпражнение rdf:resource="#Упр_СгибанияКистиСГантелей"/>
+  <содержитУпражнение rdf:resource="#Упр_СжатиеЭспандера"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Разработка кисти после перелома</название>
+  <датаНазначения rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2026-10-01T16:00:00</датаНазначения>
+  <длительностьНедель rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</длительностьНедель>
+  <занятийВНеделю rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</занятийВНеделю>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Пациент_Смирнов">
+  <rdf:type rdf:resource="#Пациент"/>
+  <имеетДанные rdf:resource="#Данные_Смирнов"/>
+  <ФИО rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Смирнов Алексей Викторович</ФИО>
+  <пол rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Мужской</пол>
+  <датаРождения rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">1988-04-30T00:00:00</датаРождения>
+  <возраст rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">38</возраст>
+  <ростСм rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">175</ростСм>
+  <весКг rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">70.0</весКг>
+  <уровеньПодготовки rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</уровеньПодготовки>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Упр_СгибанияКистиСГантелей">
+  <rdf:type rdf:resource="#Упражнение"/>
+  <имеетТехникуВыполнения rdf:resource="#Техника_СгибанияКистиСГантелей"/>
+  <основаноНаИспытании rdf:resource="#Испытание_Кисть_2024"/>
+  <имеетЭффект rdf:resource="#Эффект_МелкаяМоторика"/>
+  <влияетНа rdf:resource="#Цель_ВосстановлениеКисти"/>
+  <требуетИнвентарь rdf:resource="#Гантель_2кг"/>
+  <имеетПоказание rdf:resource="#Показание_ОграничениеПодвижностиКисти"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Сгибания кисти с гантелей</название>
+  <количествоПодходов rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</количествоПодходов>
+  <количествоПовторений rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">12</количествоПовторений>
+  <уровеньСложности rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</уровеньСложности>
+  <длительностьМин rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</длительностьМин>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Особенность_Волков">
+  <rdf:type rdf:resource="#ИндивидуальнаяОсобенность"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Нарушение равновесия</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Особенность_Петрова">
+  <rdf:type rdf:resource="#ИндивидуальнаяОсобенность"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Избыточный вес</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Правила_Мяч_Массажный">
+  <rdf:type rdf:resource="#ПравилаПользования"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Не вставать на мяч всем весом</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Пациент_Новиков">
+  <rdf:type rdf:resource="#Пациент"/>
+  <имеетДанные rdf:resource="#Данные_Новиков"/>
+  <ФИО rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Новиков Павел Андреевич</ФИО>
+  <пол rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Мужской</пол>
+  <датаРождения rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">1990-06-12T00:00:00</датаРождения>
+  <возраст rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">36</возраст>
+  <ростСм rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">182</ростСм>
+  <весКг rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">80.0</весКг>
+  <уровеньПодготовки rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</уровеньПодготовки>
+  <телефон rdf:datatype="http://www.w3.org/2001/XMLSchema#string">+7-905-321-00-11</телефон>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Правила_Гиря_8кг">
+  <rdf:type rdf:resource="#ПравилаПользования"/>
+  <правилаЗависятОтИспытания rdf:resource="#Испытание_Гиря_2025"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Только под контролем тренера</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Техника_СгибанияКистиСГантелей">
+  <rdf:type rdf:resource="#ТехникаВыполнения"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Предплечье на столе, движение только кистью</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Особенность_Фёдорова">
+  <rdf:type rdf:resource="#ИндивидуальнаяОсобенность"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Пенсионерка, живёт одна</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Правила_Балансировочная_Подушка">
+  <rdf:type rdf:resource="#ПравилаПользования"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Выполнять рядом с опорой</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Техника_СжатиеЭспандера">
+  <rdf:type rdf:resource="#ТехникаВыполнения"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Плавное сжатие, удержание 2 с, медленное расслабление</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Эффект_МелкаяМоторика">
+  <rdf:type rdf:resource="#ЛечебныйЭффект"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Восстановление силы хвата и мелкой моторики</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Техника_ПодъёмПрямойНоги">
+  <rdf:type rdf:resource="#ТехникаВыполнения"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Нога прямая, носок на себя, подъём на 30–40 см</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Данные_Козлов">
+  <rdf:type rdf:resource="#ДанныеПациента"/>
+  <содержитДиагноз rdf:resource="#Диагноз_Гипертония"/>
+  <содержитИсториюБолезни rdf:resource="#Анамнез_Козлов"/>
+  <содержитОсобенность rdf:resource="#Особенность_Козлов"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Анамнез_Козлов">
+  <rdf:type rdf:resource="#ИсторияБолезни"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">АД до 150/95, курит</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Анамнез_Фёдорова">
+  <rdf:type rdf:resource="#ИсторияБолезни"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Боль в обоих коленях 5 лет</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Упр_ЗахватПальцамиНог">
+  <rdf:type rdf:resource="#Упражнение"/>
+  <имеетТехникуВыполнения rdf:resource="#Техника_ЗахватПальцамиНог"/>
+  <основаноНаИспытании rdf:resource="#Испытание_Стопа_2025"/>
+  <имеетЭффект rdf:resource="#Эффект_УкреплениеСводаСтопы"/>
+  <влияетНа rdf:resource="#Цель_УкреплениеСводаСтопы"/>
+  <имеетПоказание rdf:resource="#Показание_СлабостьМышцСтопы"/>
+  <название rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Захват мелких предметов пальцами ног</название>
+  <количествоПодходов rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</количествоПодходов>
+  <количествоПовторений rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</количествоПовторений>
+  <уровеньСложности rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</уровеньСложности>
+  <длительностьМин rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</длительностьМин>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Техника_ЗахватПальцамиНог">
+  <rdf:type rdf:resource="#ТехникаВыполнения"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Сидя, поднимать пальцами ног карандаш или платок</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Техника_ПланкаНаФитболе">
+  <rdf:type rdf:resource="#ТехникаВыполнения"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Корпус прямой, без прогиба в пояснице, 20–30 с</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Тренер_Ким">
+  <rdf:type rdf:resource="#Тренер"/>
+  <специализируетсяНа rdf:resource="#Диагноз_Плоскостопие"/>
+  <специализируетсяНа rdf:resource="#Диагноз_Гипертония"/>
+  <специализируетсяНа rdf:resource="#Диагноз_АртрозКолена"/>
+  <ФИО rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ким Сергей Алексеевич</ФИО>
+  <стажЛет rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</стажЛет>
+  <рейтинг rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">4.6</рейтинг>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Пациент_Козлов">
+  <rdf:type rdf:resource="#Пациент"/>
+  <имеетДанные rdf:resource="#Данные_Козлов"/>
+  <ФИО rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Козлов Андрей Викторович</ФИО>
+  <пол rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Мужской</пол>
+  <датаРождения rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">1966-03-08T00:00:00</датаРождения>
+  <возраст rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">60</возраст>
+  <ростСм rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">176</ростСм>
+  <весКг rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">98.0</весКг>
+  <уровеньПодготовки rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</уровеньПодготовки>
+  <телефон rdf:datatype="http://www.w3.org/2001/XMLSchema#string">+7-917-444-55-66</телефон>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Характеристика_Велотренажёр">
+  <rdf:type rdf:resource="#ХарактеристикаИнвентаря"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">8 уровней нагрузки, пульсометр</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Правила_Велотренажёр">
+  <rdf:type rdf:resource="#ПравилаПользования"/>
+  <описание rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Регулировать высоту седла по росту</описание>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#R01_ДиагнозПациента">
+  <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+  <swrl:body>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:ClassAtom>
+          <swrl:classPredicate rdf:resource="#Пациент"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+        </swrl:ClassAtom>
+      </rdf:first>
+      <rdf:rest>
+        <rdf:Description>
+          <rdf:first>
+            <swrl:IndividualPropertyAtom>
+              <swrl:propertyPredicate rdf:resource="#имеетДанные"/>
+              <swrl:argument1 rdf:resource="urn:swrl#p"/>
+              <swrl:argument2 rdf:resource="urn:swrl#d"/>
+            </swrl:IndividualPropertyAtom>
+          </rdf:first>
+          <rdf:rest>
+            <rdf:Description>
+              <rdf:first>
+                <swrl:IndividualPropertyAtom>
+                  <swrl:propertyPredicate rdf:resource="#содержитДиагноз"/>
+                  <swrl:argument1 rdf:resource="urn:swrl#d"/>
+                  <swrl:argument2 rdf:resource="urn:swrl#dg"/>
+                </swrl:IndividualPropertyAtom>
+              </rdf:first>
+              <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+          </rdf:rest>
+        </rdf:Description>
+      </rdf:rest>
+    </rdf:Description>
+  </swrl:body>
+  <swrl:head>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:IndividualPropertyAtom>
+          <swrl:propertyPredicate rdf:resource="#имеетДиагноз"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+          <swrl:argument2 rdf:resource="urn:swrl#dg"/>
+        </swrl:IndividualPropertyAtom>
+      </rdf:first>
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    </rdf:Description>
+  </swrl:head>
+  <rdfs:label xml:lang="ru">R01_ДиагнозПациента</rdfs:label>
+  <rdfs:comment xml:lang="ru">Цепочка Пациент → ДанныеПациента → Диагноз сокращается до прямой связи имеетДиагноз.</rdfs:comment>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#R02_ПорогиВеса">
+  <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+  <swrl:body>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:ClassAtom>
+          <swrl:classPredicate rdf:resource="#Пациент"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+        </swrl:ClassAtom>
+      </rdf:first>
+      <rdf:rest>
+        <rdf:Description>
+          <rdf:first>
+            <swrl:DatavaluedPropertyAtom>
+              <swrl:propertyPredicate rdf:resource="#ростСм"/>
+              <swrl:argument1 rdf:resource="urn:swrl#p"/>
+              <swrl:argument2 rdf:resource="urn:swrl#h"/>
+            </swrl:DatavaluedPropertyAtom>
+          </rdf:first>
+          <rdf:rest>
+            <rdf:Description>
+              <rdf:first>
+                <swrl:BuiltinAtom>
+                  <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#multiply"/>
+                  <swrl:arguments>
+                    <rdf:Description>
+                      <rdf:first rdf:resource="urn:swrl#h2"/>
+                      <rdf:rest>
+                        <rdf:Description>
+                          <rdf:first rdf:resource="urn:swrl#h"/>
+                          <rdf:rest>
+                            <rdf:Description>
+                              <rdf:first rdf:resource="urn:swrl#h"/>
+                              <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                            </rdf:Description>
+                          </rdf:rest>
+                        </rdf:Description>
+                      </rdf:rest>
+                    </rdf:Description>
+                  </swrl:arguments>
+                </swrl:BuiltinAtom>
+              </rdf:first>
+              <rdf:rest>
+                <rdf:Description>
+                  <rdf:first>
+                    <swrl:BuiltinAtom>
+                      <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#multiply"/>
+                      <swrl:arguments>
+                        <rdf:Description>
+                          <rdf:first rdf:resource="urn:swrl#a"/>
+                          <rdf:rest>
+                            <rdf:Description>
+                              <rdf:first rdf:resource="urn:swrl#h2"/>
+                              <rdf:rest>
+                                <rdf:Description>
+                                  <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                  <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.0025</rdf:first>
+                                </rdf:Description>
+                              </rdf:rest>
+                            </rdf:Description>
+                          </rdf:rest>
+                        </rdf:Description>
+                      </swrl:arguments>
+                    </swrl:BuiltinAtom>
+                  </rdf:first>
+                  <rdf:rest>
+                    <rdf:Description>
+                      <rdf:first>
+                        <swrl:BuiltinAtom>
+                          <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#multiply"/>
+                          <swrl:arguments>
+                            <rdf:Description>
+                              <rdf:first rdf:resource="urn:swrl#b"/>
+                              <rdf:rest>
+                                <rdf:Description>
+                                  <rdf:first rdf:resource="urn:swrl#h2"/>
+                                  <rdf:rest>
+                                    <rdf:Description>
+                                      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                      <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.003</rdf:first>
+                                    </rdf:Description>
+                                  </rdf:rest>
+                                </rdf:Description>
+                              </rdf:rest>
+                            </rdf:Description>
+                          </swrl:arguments>
+                        </swrl:BuiltinAtom>
+                      </rdf:first>
+                      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                    </rdf:Description>
+                  </rdf:rest>
+                </rdf:Description>
+              </rdf:rest>
+            </rdf:Description>
+          </rdf:rest>
+        </rdf:Description>
+      </rdf:rest>
+    </rdf:Description>
+  </swrl:body>
+  <swrl:head>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:DatavaluedPropertyAtom>
+          <swrl:propertyPredicate rdf:resource="#весПриИМТ25"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+          <swrl:argument2 rdf:resource="urn:swrl#a"/>
+        </swrl:DatavaluedPropertyAtom>
+      </rdf:first>
+      <rdf:rest>
+        <rdf:Description>
+          <rdf:first>
+            <swrl:DatavaluedPropertyAtom>
+              <swrl:propertyPredicate rdf:resource="#весПриИМТ30"/>
+              <swrl:argument1 rdf:resource="urn:swrl#p"/>
+              <swrl:argument2 rdf:resource="urn:swrl#b"/>
+            </swrl:DatavaluedPropertyAtom>
+          </rdf:first>
+          <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+        </rdf:Description>
+      </rdf:rest>
+    </rdf:Description>
+  </swrl:head>
+  <rdfs:label xml:lang="ru">R02_ПорогиВеса</rdfs:label>
+  <rdfs:comment xml:lang="ru">ИМТ = вес / (рост/100)², значит ИМТ = 25 при весе 0,0025·рост², ИМТ = 30 при весе 0,003·рост². Деления нет намеренно: swrlb:divide в SWRLTab (Drools) падает на бесконечных дробях.</rdfs:comment>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#R03_Ожирение">
+  <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+  <swrl:body>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:ClassAtom>
+          <swrl:classPredicate rdf:resource="#Пациент"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+        </swrl:ClassAtom>
+      </rdf:first>
+      <rdf:rest>
+        <rdf:Description>
+          <rdf:first>
+            <swrl:DatavaluedPropertyAtom>
+              <swrl:propertyPredicate rdf:resource="#весКг"/>
+              <swrl:argument1 rdf:resource="urn:swrl#p"/>
+              <swrl:argument2 rdf:resource="urn:swrl#w"/>
+            </swrl:DatavaluedPropertyAtom>
+          </rdf:first>
+          <rdf:rest>
+            <rdf:Description>
+              <rdf:first>
+                <swrl:DatavaluedPropertyAtom>
+                  <swrl:propertyPredicate rdf:resource="#весПриИМТ30"/>
+                  <swrl:argument1 rdf:resource="urn:swrl#p"/>
+                  <swrl:argument2 rdf:resource="urn:swrl#b"/>
+                </swrl:DatavaluedPropertyAtom>
+              </rdf:first>
+              <rdf:rest>
+                <rdf:Description>
+                  <rdf:first>
+                    <swrl:BuiltinAtom>
+                      <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#greaterThanOrEqual"/>
+                      <swrl:arguments>
+                        <rdf:Description>
+                          <rdf:first rdf:resource="urn:swrl#w"/>
+                          <rdf:rest>
+                            <rdf:Description>
+                              <rdf:first rdf:resource="urn:swrl#b"/>
+                              <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                            </rdf:Description>
+                          </rdf:rest>
+                        </rdf:Description>
+                      </swrl:arguments>
+                    </swrl:BuiltinAtom>
+                  </rdf:first>
+                  <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                </rdf:Description>
+              </rdf:rest>
+            </rdf:Description>
+          </rdf:rest>
+        </rdf:Description>
+      </rdf:rest>
+    </rdf:Description>
+  </swrl:body>
+  <swrl:head>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:ClassAtom>
+          <swrl:classPredicate rdf:resource="#ПациентСОжирением"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+        </swrl:ClassAtom>
+      </rdf:first>
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    </rdf:Description>
+  </swrl:head>
+  <rdfs:label xml:lang="ru">R03_Ожирение</rdfs:label>
+  <rdfs:comment xml:lang="ru">ИМТ ≥ 30, то есть вес ≥ весПриИМТ30.</rdfs:comment>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#R04_ИзбыточныйВес">
+  <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+  <swrl:body>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:ClassAtom>
+          <swrl:classPredicate rdf:resource="#Пациент"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+        </swrl:ClassAtom>
+      </rdf:first>
+      <rdf:rest>
+        <rdf:Description>
+          <rdf:first>
+            <swrl:DatavaluedPropertyAtom>
+              <swrl:propertyPredicate rdf:resource="#весКг"/>
+              <swrl:argument1 rdf:resource="urn:swrl#p"/>
+              <swrl:argument2 rdf:resource="urn:swrl#w"/>
+            </swrl:DatavaluedPropertyAtom>
+          </rdf:first>
+          <rdf:rest>
+            <rdf:Description>
+              <rdf:first>
+                <swrl:DatavaluedPropertyAtom>
+                  <swrl:propertyPredicate rdf:resource="#весПриИМТ25"/>
+                  <swrl:argument1 rdf:resource="urn:swrl#p"/>
+                  <swrl:argument2 rdf:resource="urn:swrl#a"/>
+                </swrl:DatavaluedPropertyAtom>
+              </rdf:first>
+              <rdf:rest>
+                <rdf:Description>
+                  <rdf:first>
+                    <swrl:DatavaluedPropertyAtom>
+                      <swrl:propertyPredicate rdf:resource="#весПриИМТ30"/>
+                      <swrl:argument1 rdf:resource="urn:swrl#p"/>
+                      <swrl:argument2 rdf:resource="urn:swrl#b"/>
+                    </swrl:DatavaluedPropertyAtom>
+                  </rdf:first>
+                  <rdf:rest>
+                    <rdf:Description>
+                      <rdf:first>
+                        <swrl:BuiltinAtom>
+                          <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#greaterThanOrEqual"/>
+                          <swrl:arguments>
+                            <rdf:Description>
+                              <rdf:first rdf:resource="urn:swrl#w"/>
+                              <rdf:rest>
+                                <rdf:Description>
+                                  <rdf:first rdf:resource="urn:swrl#a"/>
+                                  <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                </rdf:Description>
+                              </rdf:rest>
+                            </rdf:Description>
+                          </swrl:arguments>
+                        </swrl:BuiltinAtom>
+                      </rdf:first>
+                      <rdf:rest>
+                        <rdf:Description>
+                          <rdf:first>
+                            <swrl:BuiltinAtom>
+                              <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#lessThan"/>
+                              <swrl:arguments>
+                                <rdf:Description>
+                                  <rdf:first rdf:resource="urn:swrl#w"/>
+                                  <rdf:rest>
+                                    <rdf:Description>
+                                      <rdf:first rdf:resource="urn:swrl#b"/>
+                                      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                    </rdf:Description>
+                                  </rdf:rest>
+                                </rdf:Description>
+                              </swrl:arguments>
+                            </swrl:BuiltinAtom>
+                          </rdf:first>
+                          <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                        </rdf:Description>
+                      </rdf:rest>
+                    </rdf:Description>
+                  </rdf:rest>
+                </rdf:Description>
+              </rdf:rest>
+            </rdf:Description>
+          </rdf:rest>
+        </rdf:Description>
+      </rdf:rest>
+    </rdf:Description>
+  </swrl:body>
+  <swrl:head>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:ClassAtom>
+          <swrl:classPredicate rdf:resource="#ПациентСИзбыточнымВесом"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+        </swrl:ClassAtom>
+      </rdf:first>
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    </rdf:Description>
+  </swrl:head>
+  <rdfs:label xml:lang="ru">R04_ИзбыточныйВес</rdfs:label>
+  <rdfs:comment xml:lang="ru">25 ≤ ИМТ &lt; 30.</rdfs:comment>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#R05_ПожилойПациент">
+  <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+  <swrl:body>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:ClassAtom>
+          <swrl:classPredicate rdf:resource="#Пациент"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+        </swrl:ClassAtom>
+      </rdf:first>
+      <rdf:rest>
+        <rdf:Description>
+          <rdf:first>
+            <swrl:DatavaluedPropertyAtom>
+              <swrl:propertyPredicate rdf:resource="#возраст"/>
+              <swrl:argument1 rdf:resource="urn:swrl#p"/>
+              <swrl:argument2 rdf:resource="urn:swrl#a"/>
+            </swrl:DatavaluedPropertyAtom>
+          </rdf:first>
+          <rdf:rest>
+            <rdf:Description>
+              <rdf:first>
+                <swrl:BuiltinAtom>
+                  <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#greaterThanOrEqual"/>
+                  <swrl:arguments>
+                    <rdf:Description>
+                      <rdf:first rdf:resource="urn:swrl#a"/>
+                      <rdf:rest>
+                        <rdf:Description>
+                          <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">60</rdf:first>
+                        </rdf:Description>
+                      </rdf:rest>
+                    </rdf:Description>
+                  </swrl:arguments>
+                </swrl:BuiltinAtom>
+              </rdf:first>
+              <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+          </rdf:rest>
+        </rdf:Description>
+      </rdf:rest>
+    </rdf:Description>
+  </swrl:body>
+  <swrl:head>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:ClassAtom>
+          <swrl:classPredicate rdf:resource="#ПожилойПациент"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+        </swrl:ClassAtom>
+      </rdf:first>
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    </rdf:Description>
+  </swrl:head>
+  <rdfs:label xml:lang="ru">R05_ПожилойПациент</rdfs:label>
+  <rdfs:comment xml:lang="ru">Возраст ≥ 60 лет.</rdfs:comment>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#R06_ПодходитПоПоказанию">
+  <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+  <swrl:body>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:IndividualPropertyAtom>
+          <swrl:propertyPredicate rdf:resource="#имеетДиагноз"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+          <swrl:argument2 rdf:resource="urn:swrl#dg"/>
+        </swrl:IndividualPropertyAtom>
+      </rdf:first>
+      <rdf:rest>
+        <rdf:Description>
+          <rdf:first>
+            <swrl:IndividualPropertyAtom>
+              <swrl:propertyPredicate rdf:resource="#показаноПри"/>
+              <swrl:argument1 rdf:resource="urn:swrl#s"/>
+              <swrl:argument2 rdf:resource="urn:swrl#dg"/>
+            </swrl:IndividualPropertyAtom>
+          </rdf:first>
+          <rdf:rest>
+            <rdf:Description>
+              <rdf:first>
+                <swrl:IndividualPropertyAtom>
+                  <swrl:propertyPredicate rdf:resource="#имеетПоказание"/>
+                  <swrl:argument1 rdf:resource="urn:swrl#u"/>
+                  <swrl:argument2 rdf:resource="urn:swrl#s"/>
+                </swrl:IndividualPropertyAtom>
+              </rdf:first>
+              <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+          </rdf:rest>
+        </rdf:Description>
+      </rdf:rest>
+    </rdf:Description>
+  </swrl:body>
+  <swrl:head>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:IndividualPropertyAtom>
+          <swrl:propertyPredicate rdf:resource="#подходитУпражнение"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+          <swrl:argument2 rdf:resource="urn:swrl#u"/>
+        </swrl:IndividualPropertyAtom>
+      </rdf:first>
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    </rdf:Description>
+  </swrl:head>
+  <rdfs:label xml:lang="ru">R06_ПодходитПоПоказанию</rdfs:label>
+  <rdfs:comment xml:lang="ru">Упражнение показано при диагнозе пациента.</rdfs:comment>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#R07_ПодходитПоЦели">
+  <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+  <swrl:body>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:IndividualPropertyAtom>
+          <swrl:propertyPredicate rdf:resource="#имеетДиагноз"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+          <swrl:argument2 rdf:resource="urn:swrl#dg"/>
+        </swrl:IndividualPropertyAtom>
+      </rdf:first>
+      <rdf:rest>
+        <rdf:Description>
+          <rdf:first>
+            <swrl:IndividualPropertyAtom>
+              <swrl:propertyPredicate rdf:resource="#требуетЦели"/>
+              <swrl:argument1 rdf:resource="urn:swrl#dg"/>
+              <swrl:argument2 rdf:resource="urn:swrl#g"/>
+            </swrl:IndividualPropertyAtom>
+          </rdf:first>
+          <rdf:rest>
+            <rdf:Description>
+              <rdf:first>
+                <swrl:IndividualPropertyAtom>
+                  <swrl:propertyPredicate rdf:resource="#влияетНа"/>
+                  <swrl:argument1 rdf:resource="urn:swrl#u"/>
+                  <swrl:argument2 rdf:resource="urn:swrl#g"/>
+                </swrl:IndividualPropertyAtom>
+              </rdf:first>
+              <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+          </rdf:rest>
+        </rdf:Description>
+      </rdf:rest>
+    </rdf:Description>
+  </swrl:body>
+  <swrl:head>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:IndividualPropertyAtom>
+          <swrl:propertyPredicate rdf:resource="#подходитУпражнение"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+          <swrl:argument2 rdf:resource="urn:swrl#u"/>
+        </swrl:IndividualPropertyAtom>
+      </rdf:first>
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    </rdf:Description>
+  </swrl:head>
+  <rdfs:label xml:lang="ru">R07_ПодходитПоЦели</rdfs:label>
+  <rdfs:comment xml:lang="ru">Упражнение влияет на цель, которую требует диагноз пациента.</rdfs:comment>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#R08_Противопоказано">
+  <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+  <swrl:body>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:IndividualPropertyAtom>
+          <swrl:propertyPredicate rdf:resource="#имеетДиагноз"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+          <swrl:argument2 rdf:resource="urn:swrl#dg"/>
+        </swrl:IndividualPropertyAtom>
+      </rdf:first>
+      <rdf:rest>
+        <rdf:Description>
+          <rdf:first>
+            <swrl:IndividualPropertyAtom>
+              <swrl:propertyPredicate rdf:resource="#имеетПротивопоказание"/>
+              <swrl:argument1 rdf:resource="urn:swrl#u"/>
+              <swrl:argument2 rdf:resource="urn:swrl#c"/>
+            </swrl:IndividualPropertyAtom>
+          </rdf:first>
+          <rdf:rest>
+            <rdf:Description>
+              <rdf:first>
+                <swrl:IndividualPropertyAtom>
+                  <swrl:propertyPredicate rdf:resource="#противопоказаноПри"/>
+                  <swrl:argument1 rdf:resource="urn:swrl#c"/>
+                  <swrl:argument2 rdf:resource="urn:swrl#dg"/>
+                </swrl:IndividualPropertyAtom>
+              </rdf:first>
+              <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+          </rdf:rest>
+        </rdf:Description>
+      </rdf:rest>
+    </rdf:Description>
+  </swrl:body>
+  <swrl:head>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:IndividualPropertyAtom>
+          <swrl:propertyPredicate rdf:resource="#неРекомендуетсяУпражнение"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+          <swrl:argument2 rdf:resource="urn:swrl#u"/>
+        </swrl:IndividualPropertyAtom>
+      </rdf:first>
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    </rdf:Description>
+  </swrl:head>
+  <rdfs:label xml:lang="ru">R08_Противопоказано</rdfs:label>
+  <rdfs:comment xml:lang="ru">У упражнения есть противопоказание при диагнозе пациента.</rdfs:comment>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#R09_СлишкомСложно">
+  <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+  <swrl:body>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:ClassAtom>
+          <swrl:classPredicate rdf:resource="#Пациент"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+        </swrl:ClassAtom>
+      </rdf:first>
+      <rdf:rest>
+        <rdf:Description>
+          <rdf:first>
+            <swrl:DatavaluedPropertyAtom>
+              <swrl:propertyPredicate rdf:resource="#уровеньПодготовки"/>
+              <swrl:argument1 rdf:resource="urn:swrl#p"/>
+              <swrl:argument2 rdf:resource="urn:swrl#l"/>
+            </swrl:DatavaluedPropertyAtom>
+          </rdf:first>
+          <rdf:rest>
+            <rdf:Description>
+              <rdf:first>
+                <swrl:ClassAtom>
+                  <swrl:classPredicate rdf:resource="#Упражнение"/>
+                  <swrl:argument1 rdf:resource="urn:swrl#u"/>
+                </swrl:ClassAtom>
+              </rdf:first>
+              <rdf:rest>
+                <rdf:Description>
+                  <rdf:first>
+                    <swrl:DatavaluedPropertyAtom>
+                      <swrl:propertyPredicate rdf:resource="#уровеньСложности"/>
+                      <swrl:argument1 rdf:resource="urn:swrl#u"/>
+                      <swrl:argument2 rdf:resource="urn:swrl#s"/>
+                    </swrl:DatavaluedPropertyAtom>
+                  </rdf:first>
+                  <rdf:rest>
+                    <rdf:Description>
+                      <rdf:first>
+                        <swrl:BuiltinAtom>
+                          <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#add"/>
+                          <swrl:arguments>
+                            <rdf:Description>
+                              <rdf:first rdf:resource="urn:swrl#max"/>
+                              <rdf:rest>
+                                <rdf:Description>
+                                  <rdf:first rdf:resource="urn:swrl#l"/>
+                                  <rdf:rest>
+                                    <rdf:Description>
+                                      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                      <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</rdf:first>
+                                    </rdf:Description>
+                                  </rdf:rest>
+                                </rdf:Description>
+                              </rdf:rest>
+                            </rdf:Description>
+                          </swrl:arguments>
+                        </swrl:BuiltinAtom>
+                      </rdf:first>
+                      <rdf:rest>
+                        <rdf:Description>
+                          <rdf:first>
+                            <swrl:BuiltinAtom>
+                              <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#greaterThan"/>
+                              <swrl:arguments>
+                                <rdf:Description>
+                                  <rdf:first rdf:resource="urn:swrl#s"/>
+                                  <rdf:rest>
+                                    <rdf:Description>
+                                      <rdf:first rdf:resource="urn:swrl#max"/>
+                                      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                    </rdf:Description>
+                                  </rdf:rest>
+                                </rdf:Description>
+                              </swrl:arguments>
+                            </swrl:BuiltinAtom>
+                          </rdf:first>
+                          <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                        </rdf:Description>
+                      </rdf:rest>
+                    </rdf:Description>
+                  </rdf:rest>
+                </rdf:Description>
+              </rdf:rest>
+            </rdf:Description>
+          </rdf:rest>
+        </rdf:Description>
+      </rdf:rest>
+    </rdf:Description>
+  </swrl:body>
+  <swrl:head>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:IndividualPropertyAtom>
+          <swrl:propertyPredicate rdf:resource="#неРекомендуетсяУпражнение"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+          <swrl:argument2 rdf:resource="urn:swrl#u"/>
+        </swrl:IndividualPropertyAtom>
+      </rdf:first>
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    </rdf:Description>
+  </swrl:head>
+  <rdfs:label xml:lang="ru">R09_СлишкомСложно</rdfs:label>
+  <rdfs:comment xml:lang="ru">Сложность упражнения больше уровня подготовки пациента + 1.</rdfs:comment>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#R10_ОжирениеИСложность">
+  <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+  <swrl:body>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:ClassAtom>
+          <swrl:classPredicate rdf:resource="#ПациентСОжирением"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+        </swrl:ClassAtom>
+      </rdf:first>
+      <rdf:rest>
+        <rdf:Description>
+          <rdf:first>
+            <swrl:ClassAtom>
+              <swrl:classPredicate rdf:resource="#Упражнение"/>
+              <swrl:argument1 rdf:resource="urn:swrl#u"/>
+            </swrl:ClassAtom>
+          </rdf:first>
+          <rdf:rest>
+            <rdf:Description>
+              <rdf:first>
+                <swrl:DatavaluedPropertyAtom>
+                  <swrl:propertyPredicate rdf:resource="#уровеньСложности"/>
+                  <swrl:argument1 rdf:resource="urn:swrl#u"/>
+                  <swrl:argument2 rdf:resource="urn:swrl#s"/>
+                </swrl:DatavaluedPropertyAtom>
+              </rdf:first>
+              <rdf:rest>
+                <rdf:Description>
+                  <rdf:first>
+                    <swrl:BuiltinAtom>
+                      <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#greaterThan"/>
+                      <swrl:arguments>
+                        <rdf:Description>
+                          <rdf:first rdf:resource="urn:swrl#s"/>
+                          <rdf:rest>
+                            <rdf:Description>
+                              <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                              <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</rdf:first>
+                            </rdf:Description>
+                          </rdf:rest>
+                        </rdf:Description>
+                      </swrl:arguments>
+                    </swrl:BuiltinAtom>
+                  </rdf:first>
+                  <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                </rdf:Description>
+              </rdf:rest>
+            </rdf:Description>
+          </rdf:rest>
+        </rdf:Description>
+      </rdf:rest>
+    </rdf:Description>
+  </swrl:body>
+  <swrl:head>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:IndividualPropertyAtom>
+          <swrl:propertyPredicate rdf:resource="#неРекомендуетсяУпражнение"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+          <swrl:argument2 rdf:resource="urn:swrl#u"/>
+        </swrl:IndividualPropertyAtom>
+      </rdf:first>
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    </rdf:Description>
+  </swrl:head>
+  <rdfs:label xml:lang="ru">R10_ОжирениеИСложность</rdfs:label>
+  <rdfs:comment xml:lang="ru">При ожирении — только упражнения сложности ≤ 2.</rdfs:comment>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#R11_ВозрастИСложность">
+  <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+  <swrl:body>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:ClassAtom>
+          <swrl:classPredicate rdf:resource="#ПожилойПациент"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+        </swrl:ClassAtom>
+      </rdf:first>
+      <rdf:rest>
+        <rdf:Description>
+          <rdf:first>
+            <swrl:ClassAtom>
+              <swrl:classPredicate rdf:resource="#Упражнение"/>
+              <swrl:argument1 rdf:resource="urn:swrl#u"/>
+            </swrl:ClassAtom>
+          </rdf:first>
+          <rdf:rest>
+            <rdf:Description>
+              <rdf:first>
+                <swrl:DatavaluedPropertyAtom>
+                  <swrl:propertyPredicate rdf:resource="#уровеньСложности"/>
+                  <swrl:argument1 rdf:resource="urn:swrl#u"/>
+                  <swrl:argument2 rdf:resource="urn:swrl#s"/>
+                </swrl:DatavaluedPropertyAtom>
+              </rdf:first>
+              <rdf:rest>
+                <rdf:Description>
+                  <rdf:first>
+                    <swrl:BuiltinAtom>
+                      <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#greaterThan"/>
+                      <swrl:arguments>
+                        <rdf:Description>
+                          <rdf:first rdf:resource="urn:swrl#s"/>
+                          <rdf:rest>
+                            <rdf:Description>
+                              <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                              <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</rdf:first>
+                            </rdf:Description>
+                          </rdf:rest>
+                        </rdf:Description>
+                      </swrl:arguments>
+                    </swrl:BuiltinAtom>
+                  </rdf:first>
+                  <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                </rdf:Description>
+              </rdf:rest>
+            </rdf:Description>
+          </rdf:rest>
+        </rdf:Description>
+      </rdf:rest>
+    </rdf:Description>
+  </swrl:body>
+  <swrl:head>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:IndividualPropertyAtom>
+          <swrl:propertyPredicate rdf:resource="#неРекомендуетсяУпражнение"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+          <swrl:argument2 rdf:resource="urn:swrl#u"/>
+        </swrl:IndividualPropertyAtom>
+      </rdf:first>
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    </rdf:Description>
+  </swrl:head>
+  <rdfs:label xml:lang="ru">R11_ВозрастИСложность</rdfs:label>
+  <rdfs:comment xml:lang="ru">Пожилым — только упражнения сложности ≤ 2.</rdfs:comment>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#R12_ЭффективноеУпражнение">
+  <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+  <swrl:body>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:IndividualPropertyAtom>
+          <swrl:propertyPredicate rdf:resource="#основаноНаИспытании"/>
+          <swrl:argument1 rdf:resource="urn:swrl#u"/>
+          <swrl:argument2 rdf:resource="urn:swrl#t"/>
+        </swrl:IndividualPropertyAtom>
+      </rdf:first>
+      <rdf:rest>
+        <rdf:Description>
+          <rdf:first>
+            <swrl:IndividualPropertyAtom>
+              <swrl:propertyPredicate rdf:resource="#показываетЭффективность"/>
+              <swrl:argument1 rdf:resource="urn:swrl#t"/>
+              <swrl:argument2 rdf:resource="urn:swrl#e"/>
+            </swrl:IndividualPropertyAtom>
+          </rdf:first>
+          <rdf:rest>
+            <rdf:Description>
+              <rdf:first>
+                <swrl:DatavaluedPropertyAtom>
+                  <swrl:propertyPredicate rdf:resource="#процентЭффективности"/>
+                  <swrl:argument1 rdf:resource="urn:swrl#e"/>
+                  <swrl:argument2 rdf:resource="urn:swrl#v"/>
+                </swrl:DatavaluedPropertyAtom>
+              </rdf:first>
+              <rdf:rest>
+                <rdf:Description>
+                  <rdf:first>
+                    <swrl:BuiltinAtom>
+                      <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#greaterThanOrEqual"/>
+                      <swrl:arguments>
+                        <rdf:Description>
+                          <rdf:first rdf:resource="urn:swrl#v"/>
+                          <rdf:rest>
+                            <rdf:Description>
+                              <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                              <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">80</rdf:first>
+                            </rdf:Description>
+                          </rdf:rest>
+                        </rdf:Description>
+                      </swrl:arguments>
+                    </swrl:BuiltinAtom>
+                  </rdf:first>
+                  <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                </rdf:Description>
+              </rdf:rest>
+            </rdf:Description>
+          </rdf:rest>
+        </rdf:Description>
+      </rdf:rest>
+    </rdf:Description>
+  </swrl:body>
+  <swrl:head>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:ClassAtom>
+          <swrl:classPredicate rdf:resource="#ЭффективноеУпражнение"/>
+          <swrl:argument1 rdf:resource="urn:swrl#u"/>
+        </swrl:ClassAtom>
+      </rdf:first>
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    </rdf:Description>
+  </swrl:head>
+  <rdfs:label xml:lang="ru">R12_ЭффективноеУпражнение</rdfs:label>
+  <rdfs:comment xml:lang="ru">Эффективность по испытанию ≥ 80 %.</rdfs:comment>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#R13_БезопасноеУпражнение">
+  <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+  <swrl:body>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:IndividualPropertyAtom>
+          <swrl:propertyPredicate rdf:resource="#основаноНаИспытании"/>
+          <swrl:argument1 rdf:resource="urn:swrl#u"/>
+          <swrl:argument2 rdf:resource="urn:swrl#t"/>
+        </swrl:IndividualPropertyAtom>
+      </rdf:first>
+      <rdf:rest>
+        <rdf:Description>
+          <rdf:first>
+            <swrl:IndividualPropertyAtom>
+              <swrl:propertyPredicate rdf:resource="#определяетУровеньБезопасности"/>
+              <swrl:argument1 rdf:resource="urn:swrl#t"/>
+              <swrl:argument2 rdf:resource="urn:swrl#b"/>
+            </swrl:IndividualPropertyAtom>
+          </rdf:first>
+          <rdf:rest>
+            <rdf:Description>
+              <rdf:first>
+                <swrl:DatavaluedPropertyAtom>
+                  <swrl:propertyPredicate rdf:resource="#баллБезопасности"/>
+                  <swrl:argument1 rdf:resource="urn:swrl#b"/>
+                  <swrl:argument2 rdf:resource="urn:swrl#v"/>
+                </swrl:DatavaluedPropertyAtom>
+              </rdf:first>
+              <rdf:rest>
+                <rdf:Description>
+                  <rdf:first>
+                    <swrl:BuiltinAtom>
+                      <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#greaterThanOrEqual"/>
+                      <swrl:arguments>
+                        <rdf:Description>
+                          <rdf:first rdf:resource="urn:swrl#v"/>
+                          <rdf:rest>
+                            <rdf:Description>
+                              <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                              <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</rdf:first>
+                            </rdf:Description>
+                          </rdf:rest>
+                        </rdf:Description>
+                      </swrl:arguments>
+                    </swrl:BuiltinAtom>
+                  </rdf:first>
+                  <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                </rdf:Description>
+              </rdf:rest>
+            </rdf:Description>
+          </rdf:rest>
+        </rdf:Description>
+      </rdf:rest>
+    </rdf:Description>
+  </swrl:body>
+  <swrl:head>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:ClassAtom>
+          <swrl:classPredicate rdf:resource="#БезопасноеУпражнение"/>
+          <swrl:argument1 rdf:resource="urn:swrl#u"/>
+        </swrl:ClassAtom>
+      </rdf:first>
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    </rdf:Description>
+  </swrl:head>
+  <rdfs:label xml:lang="ru">R13_БезопасноеУпражнение</rdfs:label>
+  <rdfs:comment xml:lang="ru">Балл безопасности по испытанию ≥ 4.</rdfs:comment>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#R14_ОптимальноеУпражнение">
+  <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+  <swrl:body>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:ClassAtom>
+          <swrl:classPredicate rdf:resource="#ЭффективноеУпражнение"/>
+          <swrl:argument1 rdf:resource="urn:swrl#u"/>
+        </swrl:ClassAtom>
+      </rdf:first>
+      <rdf:rest>
+        <rdf:Description>
+          <rdf:first>
+            <swrl:ClassAtom>
+              <swrl:classPredicate rdf:resource="#БезопасноеУпражнение"/>
+              <swrl:argument1 rdf:resource="urn:swrl#u"/>
+            </swrl:ClassAtom>
+          </rdf:first>
+          <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+        </rdf:Description>
+      </rdf:rest>
+    </rdf:Description>
+  </swrl:body>
+  <swrl:head>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:ClassAtom>
+          <swrl:classPredicate rdf:resource="#ОптимальноеУпражнение"/>
+          <swrl:argument1 rdf:resource="urn:swrl#u"/>
+        </swrl:ClassAtom>
+      </rdf:first>
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    </rdf:Description>
+  </swrl:head>
+  <rdfs:label xml:lang="ru">R14_ОптимальноеУпражнение</rdfs:label>
+  <rdfs:comment xml:lang="ru">Эффективное и безопасное одновременно.</rdfs:comment>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#R15_СОсторожностью">
+  <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+  <swrl:body>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:IndividualPropertyAtom>
+          <swrl:propertyPredicate rdf:resource="#основаноНаИспытании"/>
+          <swrl:argument1 rdf:resource="urn:swrl#u"/>
+          <swrl:argument2 rdf:resource="urn:swrl#t"/>
+        </swrl:IndividualPropertyAtom>
+      </rdf:first>
+      <rdf:rest>
+        <rdf:Description>
+          <rdf:first>
+            <swrl:IndividualPropertyAtom>
+              <swrl:propertyPredicate rdf:resource="#имеетСтатус"/>
+              <swrl:argument1 rdf:resource="urn:swrl#t"/>
+              <swrl:argument2 rdf:resource="#Статус_Приостановлено"/>
+            </swrl:IndividualPropertyAtom>
+          </rdf:first>
+          <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+        </rdf:Description>
+      </rdf:rest>
+    </rdf:Description>
+  </swrl:body>
+  <swrl:head>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:ClassAtom>
+          <swrl:classPredicate rdf:resource="#УпражнениеСОсторожностью"/>
+          <swrl:argument1 rdf:resource="urn:swrl#u"/>
+        </swrl:ClassAtom>
+      </rdf:first>
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    </rdf:Description>
+  </swrl:head>
+  <rdfs:label xml:lang="ru">R15_СОсторожностью</rdfs:label>
+  <rdfs:comment xml:lang="ru">Испытание упражнения приостановлено.</rdfs:comment>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#R16_ПрограммаСРиском">
+  <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+  <swrl:body>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:IndividualPropertyAtom>
+          <swrl:propertyPredicate rdf:resource="#предназначенаДля"/>
+          <swrl:argument1 rdf:resource="urn:swrl#pr"/>
+          <swrl:argument2 rdf:resource="urn:swrl#p"/>
+        </swrl:IndividualPropertyAtom>
+      </rdf:first>
+      <rdf:rest>
+        <rdf:Description>
+          <rdf:first>
+            <swrl:IndividualPropertyAtom>
+              <swrl:propertyPredicate rdf:resource="#содержитУпражнение"/>
+              <swrl:argument1 rdf:resource="urn:swrl#pr"/>
+              <swrl:argument2 rdf:resource="urn:swrl#u"/>
+            </swrl:IndividualPropertyAtom>
+          </rdf:first>
+          <rdf:rest>
+            <rdf:Description>
+              <rdf:first>
+                <swrl:IndividualPropertyAtom>
+                  <swrl:propertyPredicate rdf:resource="#неРекомендуетсяУпражнение"/>
+                  <swrl:argument1 rdf:resource="urn:swrl#p"/>
+                  <swrl:argument2 rdf:resource="urn:swrl#u"/>
+                </swrl:IndividualPropertyAtom>
+              </rdf:first>
+              <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+          </rdf:rest>
+        </rdf:Description>
+      </rdf:rest>
+    </rdf:Description>
+  </swrl:body>
+  <swrl:head>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:ClassAtom>
+          <swrl:classPredicate rdf:resource="#ПрограммаСРиском"/>
+          <swrl:argument1 rdf:resource="urn:swrl#pr"/>
+        </swrl:ClassAtom>
+      </rdf:first>
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    </rdf:Description>
+  </swrl:head>
+  <rdfs:label xml:lang="ru">R16_ПрограммаСРиском</rdfs:label>
+  <rdfs:comment xml:lang="ru">В программе есть упражнение, не рекомендованное её пациенту.</rdfs:comment>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#R17_СпециалистВрач">
+  <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+  <swrl:body>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:IndividualPropertyAtom>
+          <swrl:propertyPredicate rdf:resource="#имеетДиагноз"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+          <swrl:argument2 rdf:resource="urn:swrl#dg"/>
+        </swrl:IndividualPropertyAtom>
+      </rdf:first>
+      <rdf:rest>
+        <rdf:Description>
+          <rdf:first>
+            <swrl:ClassAtom>
+              <swrl:classPredicate rdf:resource="#Реабилитолог"/>
+              <swrl:argument1 rdf:resource="urn:swrl#s"/>
+            </swrl:ClassAtom>
+          </rdf:first>
+          <rdf:rest>
+            <rdf:Description>
+              <rdf:first>
+                <swrl:IndividualPropertyAtom>
+                  <swrl:propertyPredicate rdf:resource="#специализируетсяНа"/>
+                  <swrl:argument1 rdf:resource="urn:swrl#s"/>
+                  <swrl:argument2 rdf:resource="urn:swrl#dg"/>
+                </swrl:IndividualPropertyAtom>
+              </rdf:first>
+              <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+          </rdf:rest>
+        </rdf:Description>
+      </rdf:rest>
+    </rdf:Description>
+  </swrl:body>
+  <swrl:head>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:IndividualPropertyAtom>
+          <swrl:propertyPredicate rdf:resource="#рекомендуемыйСпециалист"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+          <swrl:argument2 rdf:resource="urn:swrl#s"/>
+        </swrl:IndividualPropertyAtom>
+      </rdf:first>
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    </rdf:Description>
+  </swrl:head>
+  <rdfs:label xml:lang="ru">R17_СпециалистВрач</rdfs:label>
+  <rdfs:comment xml:lang="ru">Реабилитолог, специализирующийся на диагнозе пациента.</rdfs:comment>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#R18_СпециалистТренер">
+  <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+  <swrl:body>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:IndividualPropertyAtom>
+          <swrl:propertyPredicate rdf:resource="#имеетДиагноз"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+          <swrl:argument2 rdf:resource="urn:swrl#dg"/>
+        </swrl:IndividualPropertyAtom>
+      </rdf:first>
+      <rdf:rest>
+        <rdf:Description>
+          <rdf:first>
+            <swrl:DatavaluedPropertyAtom>
+              <swrl:propertyPredicate rdf:resource="#требуетВрача"/>
+              <swrl:argument1 rdf:resource="urn:swrl#dg"/>
+              <swrl:argument2 rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</swrl:argument2>
+            </swrl:DatavaluedPropertyAtom>
+          </rdf:first>
+          <rdf:rest>
+            <rdf:Description>
+              <rdf:first>
+                <swrl:ClassAtom>
+                  <swrl:classPredicate rdf:resource="#Тренер"/>
+                  <swrl:argument1 rdf:resource="urn:swrl#s"/>
+                </swrl:ClassAtom>
+              </rdf:first>
+              <rdf:rest>
+                <rdf:Description>
+                  <rdf:first>
+                    <swrl:IndividualPropertyAtom>
+                      <swrl:propertyPredicate rdf:resource="#специализируетсяНа"/>
+                      <swrl:argument1 rdf:resource="urn:swrl#s"/>
+                      <swrl:argument2 rdf:resource="urn:swrl#dg"/>
+                    </swrl:IndividualPropertyAtom>
+                  </rdf:first>
+                  <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                </rdf:Description>
+              </rdf:rest>
+            </rdf:Description>
+          </rdf:rest>
+        </rdf:Description>
+      </rdf:rest>
+    </rdf:Description>
+  </swrl:body>
+  <swrl:head>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:IndividualPropertyAtom>
+          <swrl:propertyPredicate rdf:resource="#рекомендуемыйСпециалист"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+          <swrl:argument2 rdf:resource="urn:swrl#s"/>
+        </swrl:IndividualPropertyAtom>
+      </rdf:first>
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    </rdf:Description>
+  </swrl:head>
+  <rdfs:label xml:lang="ru">R18_СпециалистТренер</rdfs:label>
+  <rdfs:comment xml:lang="ru">Тренер — только если диагноз не требует врача.</rdfs:comment>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#R19_ЦельПациента">
+  <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+  <swrl:body>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:IndividualPropertyAtom>
+          <swrl:propertyPredicate rdf:resource="#имеетДиагноз"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+          <swrl:argument2 rdf:resource="urn:swrl#dg"/>
+        </swrl:IndividualPropertyAtom>
+      </rdf:first>
+      <rdf:rest>
+        <rdf:Description>
+          <rdf:first>
+            <swrl:IndividualPropertyAtom>
+              <swrl:propertyPredicate rdf:resource="#требуетЦели"/>
+              <swrl:argument1 rdf:resource="urn:swrl#dg"/>
+              <swrl:argument2 rdf:resource="urn:swrl#g"/>
+            </swrl:IndividualPropertyAtom>
+          </rdf:first>
+          <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+        </rdf:Description>
+      </rdf:rest>
+    </rdf:Description>
+  </swrl:body>
+  <swrl:head>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:IndividualPropertyAtom>
+          <swrl:propertyPredicate rdf:resource="#рекомендуемаяЦель"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+          <swrl:argument2 rdf:resource="urn:swrl#g"/>
+        </swrl:IndividualPropertyAtom>
+      </rdf:first>
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    </rdf:Description>
+  </swrl:head>
+  <rdfs:label xml:lang="ru">R19_ЦельПациента</rdfs:label>
+  <rdfs:comment xml:lang="ru">Цель реабилитации следует из диагноза.</rdfs:comment>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#R20_НуженИнвентарь">
+  <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+  <swrl:body>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:IndividualPropertyAtom>
+          <swrl:propertyPredicate rdf:resource="#подходитУпражнение"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+          <swrl:argument2 rdf:resource="urn:swrl#u"/>
+        </swrl:IndividualPropertyAtom>
+      </rdf:first>
+      <rdf:rest>
+        <rdf:Description>
+          <rdf:first>
+            <swrl:IndividualPropertyAtom>
+              <swrl:propertyPredicate rdf:resource="#требуетИнвентарь"/>
+              <swrl:argument1 rdf:resource="urn:swrl#u"/>
+              <swrl:argument2 rdf:resource="urn:swrl#i"/>
+            </swrl:IndividualPropertyAtom>
+          </rdf:first>
+          <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+        </rdf:Description>
+      </rdf:rest>
+    </rdf:Description>
+  </swrl:body>
+  <swrl:head>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:IndividualPropertyAtom>
+          <swrl:propertyPredicate rdf:resource="#нуженИнвентарь"/>
+          <swrl:argument1 rdf:resource="urn:swrl#p"/>
+          <swrl:argument2 rdf:resource="urn:swrl#i"/>
+        </swrl:IndividualPropertyAtom>
+      </rdf:first>
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    </rdf:Description>
+  </swrl:head>
+  <rdfs:label xml:lang="ru">R20_НуженИнвентарь</rdfs:label>
+  <rdfs:comment xml:lang="ru">Инвентарь для подходящих пациенту упражнений.</rdfs:comment>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#R21_БюджетныйИнвентарь">
+  <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+  <swrl:body>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:ClassAtom>
+          <swrl:classPredicate rdf:resource="#СпортивныйИнвентарь"/>
+          <swrl:argument1 rdf:resource="urn:swrl#i"/>
+        </swrl:ClassAtom>
+      </rdf:first>
+      <rdf:rest>
+        <rdf:Description>
+          <rdf:first>
+            <swrl:DatavaluedPropertyAtom>
+              <swrl:propertyPredicate rdf:resource="#цена"/>
+              <swrl:argument1 rdf:resource="urn:swrl#i"/>
+              <swrl:argument2 rdf:resource="urn:swrl#c"/>
+            </swrl:DatavaluedPropertyAtom>
+          </rdf:first>
+          <rdf:rest>
+            <rdf:Description>
+              <rdf:first>
+                <swrl:BuiltinAtom>
+                  <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#lessThanOrEqual"/>
+                  <swrl:arguments>
+                    <rdf:Description>
+                      <rdf:first rdf:resource="urn:swrl#c"/>
+                      <rdf:rest>
+                        <rdf:Description>
+                          <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5000</rdf:first>
+                        </rdf:Description>
+                      </rdf:rest>
+                    </rdf:Description>
+                  </swrl:arguments>
+                </swrl:BuiltinAtom>
+              </rdf:first>
+              <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+          </rdf:rest>
+        </rdf:Description>
+      </rdf:rest>
+    </rdf:Description>
+  </swrl:body>
+  <swrl:head>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:ClassAtom>
+          <swrl:classPredicate rdf:resource="#БюджетныйИнвентарь"/>
+          <swrl:argument1 rdf:resource="urn:swrl#i"/>
+        </swrl:ClassAtom>
+      </rdf:first>
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    </rdf:Description>
+  </swrl:head>
+  <rdfs:label xml:lang="ru">R21_БюджетныйИнвентарь</rdfs:label>
+  <rdfs:comment xml:lang="ru">Цена ≤ 5000 ₽.</rdfs:comment>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#R22_ОпытныйСпециалист">
+  <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+  <swrl:body>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:ClassAtom>
+          <swrl:classPredicate rdf:resource="#Специалист"/>
+          <swrl:argument1 rdf:resource="urn:swrl#s"/>
+        </swrl:ClassAtom>
+      </rdf:first>
+      <rdf:rest>
+        <rdf:Description>
+          <rdf:first>
+            <swrl:DatavaluedPropertyAtom>
+              <swrl:propertyPredicate rdf:resource="#стажЛет"/>
+              <swrl:argument1 rdf:resource="urn:swrl#s"/>
+              <swrl:argument2 rdf:resource="urn:swrl#y"/>
+            </swrl:DatavaluedPropertyAtom>
+          </rdf:first>
+          <rdf:rest>
+            <rdf:Description>
+              <rdf:first>
+                <swrl:BuiltinAtom>
+                  <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#greaterThanOrEqual"/>
+                  <swrl:arguments>
+                    <rdf:Description>
+                      <rdf:first rdf:resource="urn:swrl#y"/>
+                      <rdf:rest>
+                        <rdf:Description>
+                          <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</rdf:first>
+                        </rdf:Description>
+                      </rdf:rest>
+                    </rdf:Description>
+                  </swrl:arguments>
+                </swrl:BuiltinAtom>
+              </rdf:first>
+              <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+          </rdf:rest>
+        </rdf:Description>
+      </rdf:rest>
+    </rdf:Description>
+  </swrl:body>
+  <swrl:head>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:ClassAtom>
+          <swrl:classPredicate rdf:resource="#ОпытныйСпециалист"/>
+          <swrl:argument1 rdf:resource="urn:swrl#s"/>
+        </swrl:ClassAtom>
+      </rdf:first>
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    </rdf:Description>
+  </swrl:head>
+  <rdfs:label xml:lang="ru">R22_ОпытныйСпециалист</rdfs:label>
+  <rdfs:comment xml:lang="ru">Стаж ≥ 10 лет.</rdfs:comment>
+</owl:NamedIndividual>
+
+<swrl:Variable rdf:about="urn:swrl#p"/>
+
+<swrl:Variable rdf:about="urn:swrl#d"/>
+
+<swrl:Variable rdf:about="urn:swrl#dg"/>
+
+<swrl:Variable rdf:about="urn:swrl#h"/>
+
+<swrl:Variable rdf:about="urn:swrl#h2"/>
+
+<swrl:Variable rdf:about="urn:swrl#a"/>
+
+<swrl:Variable rdf:about="urn:swrl#b"/>
+
+<swrl:Variable rdf:about="urn:swrl#w"/>
+
+<swrl:Variable rdf:about="urn:swrl#s"/>
+
+<swrl:Variable rdf:about="urn:swrl#u"/>
+
+<swrl:Variable rdf:about="urn:swrl#g"/>
+
+<swrl:Variable rdf:about="urn:swrl#c"/>
+
+<swrl:Variable rdf:about="urn:swrl#l"/>
+
+<swrl:Variable rdf:about="urn:swrl#max"/>
+
+<swrl:Variable rdf:about="urn:swrl#t"/>
+
+<swrl:Variable rdf:about="urn:swrl#e"/>
+
+<swrl:Variable rdf:about="urn:swrl#v"/>
+
+<swrl:Variable rdf:about="urn:swrl#pr"/>
+
+<swrl:Variable rdf:about="urn:swrl#i"/>
+
+<swrl:Variable rdf:about="urn:swrl#y"/>
+
+<owl:AllDisjointClasses>
+  <owl:members rdf:parseType="Collection">
+    <rdf:Description rdf:about="#Противопоказание"/>
+    <rdf:Description rdf:about="#Показание"/>
+    <rdf:Description rdf:about="#ТехникаВыполнения"/>
+    <rdf:Description rdf:about="#Эффект"/>
+  </owl:members>
+</owl:AllDisjointClasses>
+
+<owl:AllDisjointClasses>
+  <owl:members rdf:parseType="Collection">
+    <rdf:Description rdf:about="#Тренер"/>
+    <rdf:Description rdf:about="#Реабилитолог"/>
+  </owl:members>
+</owl:AllDisjointClasses>
+
+<owl:AllDisjointClasses>
+  <owl:members rdf:parseType="Collection">
+    <rdf:Description rdf:about="#ПациентСИзбыточнымВесом"/>
+    <rdf:Description rdf:about="#ПациентСОжирением"/>
+  </owl:members>
+</owl:AllDisjointClasses>
+
+<owl:AllDisjointClasses>
+  <owl:members rdf:parseType="Collection">
+    <rdf:Description rdf:about="#Диагноз"/>
+    <rdf:Description rdf:about="#ИсторияБолезни"/>
+    <rdf:Description rdf:about="#ИндивидуальнаяОсобенность"/>
+  </owl:members>
+</owl:AllDisjointClasses>
+
+<owl:AllDisjointClasses>
+  <owl:members rdf:parseType="Collection">
+    <rdf:Description rdf:about="#УменьшениеБоли"/>
+    <rdf:Description rdf:about="#ВосстановлениеПослеТравмы"/>
+    <rdf:Description rdf:about="#ПрофилактикаХроническихЗаболеваний"/>
+  </owl:members>
+</owl:AllDisjointClasses>
+
+<owl:AllDisjointClasses>
+  <owl:members rdf:parseType="Collection">
+    <rdf:Description rdf:about="#Эффективность"/>
+    <rdf:Description rdf:about="#УровеньБезопасности"/>
+    <rdf:Description rdf:about="#РеакцияПациента"/>
+  </owl:members>
+</owl:AllDisjointClasses>
+
+<owl:AllDifferent>
+  <owl:distinctMembers rdf:parseType="Collection">
+    <rdf:Description rdf:about="#Статус_Планируется"/>
+    <rdf:Description rdf:about="#Статус_Проводится"/>
+    <rdf:Description rdf:about="#Статус_Завершено"/>
+    <rdf:Description rdf:about="#Статус_Приостановлено"/>
+  </owl:distinctMembers>
+</owl:AllDifferent>
+
+<owl:AllDisjointClasses>
+  <owl:members rdf:parseType="Collection">
+    <rdf:Description rdf:about="#РеабилитационнаяПрограмма"/>
+    <rdf:Description rdf:about="#Упражнение"/>
+    <rdf:Description rdf:about="#СвойствоУпражнения"/>
+    <rdf:Description rdf:about="#Пациент"/>
+    <rdf:Description rdf:about="#ДанныеПациента"/>
+    <rdf:Description rdf:about="#МедицинскаяИнформация"/>
+    <rdf:Description rdf:about="#Специалист"/>
+    <rdf:Description rdf:about="#ЦельРеабилитации"/>
+    <rdf:Description rdf:about="#КлиническоеИспытание"/>
+    <rdf:Description rdf:about="#РезультатИспытания"/>
+    <rdf:Description rdf:about="#СтатусИспытания"/>
+    <rdf:Description rdf:about="#СпортивныйИнвентарь"/>
+    <rdf:Description rdf:about="#Производитель"/>
+    <rdf:Description rdf:about="#Автор"/>
+    <rdf:Description rdf:about="#ХарактеристикаИнвентаря"/>
+    <rdf:Description rdf:about="#ПравилаПользования"/>
+  </owl:members>
+</owl:AllDisjointClasses>
+
+<owl:AllDisjointClasses>
+  <owl:members rdf:parseType="Collection">
+    <rdf:Description rdf:about="#ЛечебныйЭффект"/>
+    <rdf:Description rdf:about="#ПобочныйЭффект"/>
+  </owl:members>
+</owl:AllDisjointClasses>
+
+
+</rdf:RDF>

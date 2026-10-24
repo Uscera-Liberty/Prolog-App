@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% from "_cards.html" import stat_card, query_card %}
+{% block content %}
+<section class="hero">
+    <h1>Подбор оптимальной реабилитационной программы</h1>
+    <p>Рекомендательная система на онтологии OWL: упражнения, программы, специалисты и инвентарь подбираются
+        по диагнозу, возрасту, весу и подготовке пациента с учётом SWRL-правил.</p>
+</section>
+
+<section class="cards stats-row">
+    {% for s in stats %}{{ stat_card(s) }}{% endfor %}
+</section>
+
+<h2>Рекомендации</h2>
+<p class="muted">Каждая кнопка запускает SPARQL-запрос из <code>queries/recommend/</code> — сначала со значениями
+    по умолчанию, параметры можно поменять на следующей странице.</p>
+<section class="cards">
+    {% for q in queries %}{{ query_card(q, q.id == accent) }}{% endfor %}
+</section>
+{% endblock %}
