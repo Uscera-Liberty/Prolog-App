@@ -43,10 +43,10 @@ def assert_matches_expected(query_id, got):
     assert got_rows == exp_rows
 
 
-# ---------------------------------------------------------------- 12 запросов против эталона
+# ---------------------------------------------------------------- все запросы против эталона
 def test_all_expected_queries_registered():
     assert set(registry.by_id) == set(EXPECTED)
-    assert len(registry.queries) == 12
+    assert len(registry.queries) == len(EXPECTED) == 13
 
 
 @pytest.mark.parametrize("query_id", sorted(EXPECTED))
@@ -148,7 +148,7 @@ def test_options_unknown_class_404(client):
 
 def test_queries_metadata(client):
     data = client.get("/api/queries").json()
-    assert len(data) == 12
+    assert len(data) == 13
     by_id = {q["id"]: q for q in data}
     eq = by_id["equipment_for_patient"]
     assert [p["name"] for p in eq["params"]] == ["пациент", "бюджет"]

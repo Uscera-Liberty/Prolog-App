@@ -28,3 +28,7 @@ OWL_PATH = KB_DIR / OWL_RELATIVE
 RULES_PATH = KB_DIR / "rules" / "materialize_rules.ru"
 QUERIES_DIR = KB_DIR / "queries" / "recommend"
 EXPECTED_PATH = KB_DIR / "expected" / "expected_results.json"
+
+# пациенты и программы, добавленные через интерфейс (база знаний остаётся только для чтения)
+DATA_DIR = Path(os.environ.get("REHAB_DATA_DIR") or APP_ROOT / "data").expanduser().resolve()
+USER_DATA_PATH = DATA_DIR / "user_data.json"

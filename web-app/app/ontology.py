@@ -3,7 +3,10 @@
 Граф онтологии (загружается один раз, правила применяются до неподвижной точки) и справочники
 для страниц: пациенты, каталог, статистика, бейджи из выведенных SWRL-правилами классов.
 
-Граф только читается; в .owl ничего не сохраняется — выводы живут в памяти.
+Граф = онтология из .owl + пациенты/программы из пользовательского хранилища (app/store.py),
+к которым применены правила. В .owl ничего не сохраняется — выводы живут в памяти. После каждого
+изменения пользовательских данных граф собирается заново (rebuild): правила только добавляют факты,
+поэтому после удаления пациента или программы выводы нужно пересчитать с нуля.
 """
 import threading
 from datetime import date, datetime
@@ -11,6 +14,7 @@ from datetime import date, datetime
 from rdflib import Graph, URIRef
 from rdflib.namespace import OWL, RDF, RDFS
 
+from . import store
 from .config import KB_DIR, OWL_PATH, RULES_PATH
 from .sparql import LOCAL_NAME_RE, to_py
 
@@ -33,18 +37,30 @@ BADGES = [
 
 SPECIALIST_TYPES = {"Реабилитолог": "Врач-реабилитолог", "Тренер": "Тренер ЛФК"}
 
+_base = None                      # разобранный .owl без выводов — парсится один раз
 _graph = None
+_user = {"patients": {}, "programs": {}}
 _graph_lock = threading.Lock()
 _instances_cache = {}
 
 
 # ---------------------------------------------------------------- граф
-def load_graph():
-    if not OWL_PATH.is_file():
-        raise FileNotFoundError(f"Онтология не найдена: {OWL_PATH}. Укажите каталог базы знаний "
-                                f"в REHAB_KB_DIR (сейчас: {KB_DIR})")
+def _base_graph():
+    global _base
+    if _base is None:
+        if not OWL_PATH.is_file():
+            raise FileNotFoundError(f"Онтология не найдена: {OWL_PATH}. Укажите каталог базы знаний "
+                                    f"в REHAB_KB_DIR (сейчас: {KB_DIR})")
+        g = Graph()
+        g.parse(str(OWL_PATH), format="xml")
+        _base = g
+    return _base
+
+
+def build_graph(user_data):
     g = Graph()
-    g.parse(str(OWL_PATH), format="xml")
+    g += _base_graph()
+    store.add_triples(g, user_data)
     rules = RULES_PATH.read_text(encoding="utf-8")
     before = -1
     while len(g) != before:              # 2–3 прохода до неподвижной точки
@@ -54,13 +70,46 @@ def load_graph():
     return g
 
 
+def load_graph():
+    return build_graph(store.load())
+
+
+def rebuild(user_data=None):
+    """Собрать граф заново (после изменения пользовательских данных) и подменить текущий."""
+    global _graph, _user
+    data = store.load() if user_data is None else user_data
+    new = build_graph(data)
+    with _graph_lock:
+        _graph, _user = new, data
+        _instances_cache.clear()
+    return new
+
+
 def get_graph():
-    global _graph
+    global _graph, _user
     if _graph is None:
         with _graph_lock:
             if _graph is None:
-                _graph = load_graph()
+                data = store.load()
+                _graph, _user = build_graph(data), data
     return _graph
+
+
+def user_data():
+    get_graph()
+    return _user
+
+
+def is_user_patient(name):
+    return name in user_data()["patients"]
+
+
+def is_user_program(name):
+    return name in user_data()["programs"]
+
+
+def name_taken(local_name):
+    return (P(local_name), None, None) in get_graph()
 
 
 def P(name):
@@ -117,14 +166,15 @@ def class_exists(cls):
 
 def instances_of(cls):
     """Локальные имена экземпляров класса с учётом подклассов (rdf:type/rdfs:subClassOf*)."""
-    if cls not in _instances_cache:
-        g = get_graph()
+    g = get_graph()
+    key = (id(g), cls)                # ключ с id графа: после rebuild старый кеш не используется
+    if key not in _instances_cache:
         classes = set(g.transitive_subjects(RDFS.subClassOf, P(cls)))
         found = set()
         for c in classes:
             found.update(local(s) for s in g.subjects(RDF.type, c) if isinstance(s, URIRef))
-        _instances_cache[cls] = frozenset(found)
-    return _instances_cache[cls]
+        _instances_cache[key] = frozenset(found)
+    return _instances_cache[key]
 
 
 def is_instance(name, cls):
@@ -195,6 +245,7 @@ def program_card(pr, patient=None):
         "assigned": fmt_date(value(pr, "датаНазначения")),
         "exercises": exercises,
         "badges": badges(pr),
+        "user_added": is_user_program(local(pr)),
     }
 
 
@@ -227,6 +278,7 @@ def patients():
             "diagnosis": ref(dg),
             "program": ref(pr),
             "badges": badges(p) + (badges(pr) if pr is not None else []),
+            "user_added": is_user_patient(name),
         })
     return sorted(result, key=lambda r: r["fio"])
 
@@ -268,7 +320,23 @@ def patient(name):
         "equipment": refs(objects(p, "нуженИнвентарь")),
         "program": program_card(pr, p) if pr is not None else None,
         "badges": badges(p),
+        "user_added": is_user_patient(name),
     }
+
+
+def diagnoses():
+    """Диагнозы для формы: id, название, код МКБ, нужен ли врач, цель."""
+    result = []
+    for name in instances_of("Диагноз"):
+        d = P(name)
+        result.append({
+            "id": name,
+            "label": label(d),
+            "mkb": value(d, "кодМКБ"),
+            "needs_doctor": bool(value(d, "требуетВрача")),
+            "goals": [g["label"] for g in refs(objects(d, "требуетЦели"))],
+        })
+    return sorted(result, key=lambda r: r["label"])
 
 
 def specialist_type(s):

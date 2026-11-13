@@ -37,7 +37,7 @@
 {% macro patient_card(p) -%}
 <a class="card entity group-patient" href="/patients/{{ p.id }}">
     <h3>{{ p.fio }}</h3>
-    <div class="meta">{{ p.age }} лет · ИМТ {{ num(p.bmi) }}</div>
+    <div class="meta">{{ p.age }} лет · ИМТ {{ num(p.bmi) }}{% if p.user_added %} · <span class="badge badge-user">Добавлен вручную</span>{% endif %}</div>
     <div class="kv"><span>Диагноз</span><b>{{ p.diagnosis.label if p.diagnosis else '—' }}</b></div>
     <div class="kv"><span>Программа</span>
         {% if p.program %}<b>{{ p.program.label }}</b>{% else %}<b class="text-warn">нет — ждёт подбора</b>{% endif %}

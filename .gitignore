@@ -3,6 +3,8 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .env
+# пациенты и программы, добавленные через интерфейс
+web-app/data/
 .claude/
 .idea/
 .vscode/

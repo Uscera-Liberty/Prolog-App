@@ -13,8 +13,14 @@ services:
       - "${PORT:-8000}:8000"
     environment:
       REHAB_KB_DIR: /srv/knowledge-base
+      REHAB_DATA_DIR: /srv/data
     volumes:
       # база знаний подключается только на чтение: правка .rq/.owl → docker compose restart,
       # пересобирать образ не нужно. Выводы правил живут в памяти, .owl не изменяется.
       - ../knowledge-base:/srv/knowledge-base:ro
+      # свои пациенты и программы переживают перезапуск; сбросить — docker compose down -v
+      - rehab-data:/srv/data
     restart: unless-stopped
+
+volumes:
+  rehab-data:

@@ -4,13 +4,32 @@
 {% block content %}
 <a class="back" href="/patients">← Все пациенты</a>
 
+{% if is_new %}
+<div class="success-plate">✔ Готово! Вы добавлены как пациент — ниже персональный подбор: подходящие и противопоказанные
+    упражнения, специалисты, инвентарь и режим занятий. Внизу страницы можно назначить себе программу.</div>
+{% elif saved == 'program' %}
+<div class="success-plate">✔ Программа сохранена, правила пересчитаны{% if p.program and p.program.badges %} —
+    <span class="text-danger">в ней есть не рекомендованные упражнения («Программа с риском»)</span>{% endif %}.</div>
+{% elif saved == 'deleted' %}
+<div class="success-plate">✔ Программа удалена — пациент снова в очереди на подбор.</div>
+{% endif %}
+
 <section class="card profile group-patient">
     <div class="profile-head">
         <div>
             <h1>{{ p.fio }}</h1>
-            <div class="meta">{{ p.sex }} · {{ p.age }} лет · дата рождения {{ p.birth }} · {{ p.phone }}</div>
+            <div class="meta">{{ p.sex }} · {{ p.age }} лет{% if p.birth %} · дата рождения {{ p.birth }}{% endif %}{% if p.phone %} · {{ p.phone }}{% endif %}</div>
         </div>
-        {{ badges(p.badges) }}
+        <div class="profile-side">
+            {{ badges(p.badges) }}
+            {% if p.user_added %}
+            <div class="badges"><span class="badge badge-user">Добавлен вручную</span></div>
+            <div class="toolbar tight">
+                <a class="btn-secondary" href="/patients/{{ p.id }}/edit">✏️ Изменить данные</a>
+                <button type="button" class="btn-danger" id="delete-patient">🗑 Удалить</button>
+            </div>
+            {% endif %}
+        </div>
     </div>
     <div class="profile-grid">
         <div class="kv"><span>Рост / вес</span><b>{{ p.height }} см / {{ num(p.weight) }} кг</b></div>
@@ -26,40 +45,18 @@
     </div>
 </section>
 
-<h2>Что вывели SWRL-правила</h2>
-<section class="cards">
-    <div class="card group-goal">
-        <h3>🎯 Цель реабилитации</h3>
-        <div class="chips">{{ chips(p.goals, 'chip-goal') }}</div>
-        <h3 class="mt">👩‍⚕️ Рекомендуемые специалисты</h3>
-        <div class="chips">{% for s in p.specialists %}<span class="chip chip-patient">{{ s.label }} · {{ s.type }}</span>{% else %}—{% endfor %}</div>
-    </div>
-    <div class="card group-exercise">
-        <h3>✅ Подходит по показанию или цели</h3>
-        <div class="chips">{{ chips(p.suitable, 'chip-exercise') }}</div>
-        <h3 class="mt">⛔ Не рекомендуется</h3>
-        <div class="chips">{{ chips(p.not_recommended, 'chip-danger') }}</div>
-    </div>
-    <div class="card group-program">
-        <h3>📋 Текущая программа</h3>
-        {% if p.program %}
-            <div class="kv"><span>Название</span><b>{{ p.program.label }}</b></div>
-            <div class="kv"><span>Специалист</span><b>{{ p.program.specialist.label if p.program.specialist else '—' }}</b></div>
-            <div class="kv"><span>Режим</span><b>{{ p.program.weeks }} нед. × {{ p.program.per_week }} раз в неделю</b></div>
-            <div class="chips">{% for e in p.program.exercises %}<span class="chip {{ 'chip-danger' if e.bad else 'chip-exercise' }}">{{ '⚠ ' if e.bad }}{{ e.label }}</span>{% endfor %}</div>
-            {{ badges(p.program.badges) }}
-        {% else %}
-            <p class="text-warn"><b>Программа ещё не подобрана.</b></p>
-            <p class="muted">Нажмите «Порекомендовать программу» ниже — система найдёт шаблон среди программ похожих пациентов.</p>
-        {% endif %}
-    </div>
-</section>
+<nav class="anchors">
+    <a href="#summary">🔎 Персональный подбор</a>
+    <a href="#rules">🧠 Выводы правил</a>
+    <a href="#program">📋 {{ 'Программа' if p.program else 'Назначить программу' }}</a>
+</nav>
 
-<h2>Рекомендации для пациента</h2>
-<p class="muted">Пациент подставляется в запрос автоматически. Результаты появятся ниже без перезагрузки страницы.</p>
+<h2 id="summary">Персональный подбор</h2>
+<p class="muted">Рекомендации ниже посчитаны SPARQL-запросами для этого пациента сразу при открытии страницы.
+    Кнопки перезапускают отдельный запрос; остальные проверки — там же.</p>
 <section class="cards action-panel">
     {% for q in queries %}
-    <div class="card action group-{{ 'warn' if q.kind == 'ask' else 'exercise' }}" data-query="{{ q.id }}">
+    <div class="card action group-{{ 'warn' if q.kind == 'ask' else ('danger' if q.id == 'contraindicated_for_patient' else 'exercise') }}" data-query="{{ q.id }}">
         <div class="action-head"><span class="icon-sm">{{ q.icon }}</span><b>{{ q.title }}</b></div>
         {% for prm in q.params if prm.name != patient_param %}
             <label class="mini-field">{{ prm.name|capitalize }}
@@ -82,10 +79,114 @@
 </div>
 <section id="results" class="results"></section>
 
+<h2 id="rules">Что вывели SWRL-правила</h2>
+<section class="cards">
+    <div class="card group-goal">
+        <h3>🎯 Цель реабилитации</h3>
+        <div class="chips">{{ chips(p.goals, 'chip-goal') }}</div>
+        <h3 class="mt">👩‍⚕️ Рекомендуемые специалисты</h3>
+        <div class="chips">{% for s in p.specialists %}<span class="chip chip-patient">{{ s.label }} · {{ s.type }}</span>{% else %}—{% endfor %}</div>
+    </div>
+    <div class="card group-exercise">
+        <h3>✅ Подходит по показанию или цели</h3>
+        <div class="chips">{{ chips(p.suitable, 'chip-exercise') }}</div>
+        <h3 class="mt">⛔ Не рекомендуется</h3>
+        <div class="chips">{{ chips(p.not_recommended, 'chip-danger') }}</div>
+        <h3 class="mt">🏋️ Нужен инвентарь</h3>
+        <div class="chips">{{ chips(p.equipment, 'chip-equipment') }}</div>
+    </div>
+    <div class="card group-program">
+        <h3>📋 Текущая программа</h3>
+        {% if p.program %}
+            <div class="kv"><span>Название</span><b>{{ p.program.label }}</b></div>
+            <div class="kv"><span>Специалист</span><b>{{ p.program.specialist.label if p.program.specialist else '—' }}</b></div>
+            <div class="kv"><span>Режим</span><b>{{ p.program.weeks }} нед. × {{ p.program.per_week }} раз в неделю</b></div>
+            <div class="chips">{% for e in p.program.exercises %}<span class="chip {{ 'chip-danger' if e.bad else 'chip-exercise' }}">{{ '⚠ ' if e.bad }}{{ e.label }}</span>{% endfor %}</div>
+            {{ badges(p.program.badges) }}
+            {% if p.program.user_added %}<div class="badges"><span class="badge badge-user">Назначена через интерфейс</span></div>{% endif %}
+        {% else %}
+            <p class="text-warn"><b>Программа ещё не подобрана.</b></p>
+            <p class="muted">Назначьте её ниже — упражнения, специалист и режим уже предложены системой.</p>
+        {% endif %}
+    </div>
+</section>
+
+<h2 id="program">{{ 'Программа пациента' if p.program else 'Назначить программу' }}</h2>
+{% if form.editable %}
+<p class="muted">Подходящие упражнения уже отмечены (запрос «Упражнения для пациента»), специалист и режим — из запросов
+    «Врач или тренер» и «Длительность и частота». Можно взять за основу программу похожего пациента. Противопоказанное
+    упражнение выбрать можно — тогда правило R16 пометит программу как «Программа с риском».</p>
+<form id="program-form" class="card form-card group-program" novalidate>
+    <div class="form-grid">
+        <div class="field wide">
+            <label for="pr-name">Название программы *</label>
+            <input id="pr-name" name="name" type="text" maxlength="120" required value="{{ form.defaults.name }}">
+        </div>
+        <div class="field wide">
+            <label for="pr-specialist">Специалист *</label>
+            <select id="pr-specialist" name="specialist">
+                {% for s in form.specialists %}
+                <option value="{{ s.id }}" {{ 'selected' if s.id == form.defaults.specialist }}>{{ '★ ' if s.recommended }}{{ s.label }} — {{ s.type }}{{ ' (рекомендован)' if s.recommended }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="field">
+            <label for="pr-weeks">Длительность, недель *</label>
+            <input id="pr-weeks" name="weeks" type="number" min="1" max="52" step="1" value="{{ form.defaults.weeks }}">
+        </div>
+        <div class="field">
+            <label for="pr-per-week">Занятий в неделю *</label>
+            <input id="pr-per-week" name="per_week" type="number" min="1" max="7" step="1" value="{{ form.defaults.per_week }}">
+        </div>
+        {% if form.templates %}
+        <div class="field wide template-row">
+            <label for="pr-template">Взять упражнения из программы похожего пациента</label>
+            <div class="inline">
+                <select id="pr-template">
+                    {% for t in form.templates %}
+                    <option value="{{ t.id }}" data-exercises="{{ t.exercises|join(',') }}">{{ t.label }} — совпадение {{ t.match }} из 3{{ ', не подходит: ' ~ t.unsuitable if t.unsuitable }}</option>
+                    {% endfor %}
+                </select>
+                <button type="button" class="btn-secondary" id="apply-template">Взять из шаблона</button>
+                <button type="button" class="btn-secondary" id="apply-suitable">Только подходящие</button>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <h3 class="mt">Упражнения <span class="muted" id="selected-count"></span></h3>
+    <div class="exercise-list">
+        {% for e in form.exercises %}
+        <label class="ex-item ex-{{ e.status }}">
+            <input type="checkbox" name="exercises" value="{{ e.id }}" data-status="{{ e.status }}" {{ 'checked' if e.id in form.defaults.exercises }}>
+            <span class="ex-body">
+                <span class="ex-name">{{ e.label }}</span>
+                <span class="ex-meta">сложность {{ e.difficulty }} из 4 · {{ e.equipment or 'без инвентаря' }}</span>
+                {% if e.status == 'ok' %}<span class="badge badge-ok">Подходит · рейтинг {{ num(e.rating) }}</span>
+                {% elif e.status == 'bad' %}<span class="badge badge-danger">Не рекомендуется</span>
+                    <span class="ex-reason">{{ e.reasons }}</span>
+                {% else %}<span class="badge badge-neutral">Не по диагнозу</span>{% endif %}
+            </span>
+        </label>
+        {% endfor %}
+    </div>
+    <div id="risk-warning" class="warn-plate" hidden></div>
+    <div id="program-error" class="error-plate" hidden></div>
+    <div class="toolbar">
+        <button type="submit" class="btn-primary btn-lg">{{ 'Сохранить изменения' if p.program else 'Назначить программу' }}</button>
+        {% if p.program %}<button type="button" class="btn-danger" id="delete-program">Удалить программу</button>{% endif %}
+    </div>
+</form>
+{% else %}
+<div class="empty">Программа «{{ p.program.label }}» хранится в базе знаний (OWL) — изменить её из интерфейса нельзя.
+    Если в ней есть неподходящие упражнения, нажмите «Найти замену упражнениям» в персональном подборе выше.</div>
+{% endif %}
+
 <script id="queries-data" type="application/json">{{ queries|tojson }}</script>
 {% endblock %}
 {% block scripts %}
 <script>
-    Rehab.initPatientPage({{ p.id|tojson }}, {{ patient_param|tojson }});
+    Rehab.initPatientPage({{ p.id|tojson }}, {{ patient_param|tojson }}, {{ summary|tojson }});
+    Rehab.initPatientActions({{ p.id|tojson }}, {{ p.fio|tojson }});
 </script>
 {% endblock %}

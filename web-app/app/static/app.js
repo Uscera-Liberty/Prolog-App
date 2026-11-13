@@ -22,6 +22,7 @@
         schedule_for_patient: "Нет программ с целью того же вида — рекомендовать длительность не по чему.",
         top_exercises_for_goal: "Для этой цели пока нет упражнений.",
         waiting_list: "Всем пациентам уже подобрана программа.",
+        contraindicated_for_patient: "Противопоказанных упражнений нет — все упражнения базы этому пациенту по силам.",
     };
     const EMPTY_DEFAULT = "По заданным параметрам ничего не найдено.";
 
@@ -187,11 +188,11 @@
     }
 
     // ------------------------------------------------------------ страница пациента
-    function initPatientPage(patientId, patientParam) {
+    function initPatientPage(patientId, patientParam, summary) {
         const queries = Object.fromEntries(loadQueries().map((q) => [q.id, q]));
         const results = document.getElementById("results");
 
-        async function run(panel) {
+        async function run(panel, append) {
             const meta = queries[panel.dataset.query];
             const btn = panel.querySelector(".run-btn");
             const params = { [patientParam]: patientId };
@@ -211,9 +212,19 @@
             const tmp = document.createElement("div");
             tmp.innerHTML = html;
             const block = tmp.firstElementChild;
-            if (old) old.replaceWith(block); else results.prepend(block);
+            if (old) old.replaceWith(block);
+            else if (append) results.append(block);
+            else results.prepend(block);
             return block;
         }
+
+        // «Персональный подбор»: основные запросы — сразу при открытии страницы, по порядку
+        (async () => {
+            for (const id of summary || []) {
+                const panel = document.querySelector(`.action[data-query="${CSS.escape(id)}"]`);
+                if (panel) await run(panel, true);
+            }
+        })();
 
         document.querySelectorAll(".action[data-query]").forEach((panel) => {
             panel.querySelector(".run-btn").addEventListener("click", async () => {
@@ -345,5 +356,164 @@
         }
     }
 
-    window.Rehab = { initPatientPage, initRecommendPage, initCatalogPage, humanize, formatValue };
+    // ------------------------------------------------------------ свои пациенты и программы
+    async function apiSend(method, url, body) {
+        const resp = await fetch(url, {
+            method,
+            headers: { "Content-Type": "application/json" },
+            body: body === undefined ? undefined : JSON.stringify(body),
+        });
+        let data = null;
+        try { data = await resp.json(); } catch (e) { /* не JSON */ }
+        if (!resp.ok) {
+            const detail = data && data.detail;
+            throw new Error(typeof detail === "string" ? detail : `сервер ответил ${resp.status}`);
+        }
+        return data;
+    }
+
+    function showError(el, message) {
+        el.textContent = message;
+        el.hidden = !message;
+        if (message) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    function bmiCategory(bmi) {
+        if (bmi < 18.5) return ["недостаток массы", "info"];
+        if (bmi < 25) return ["норма", "ok"];
+        if (bmi < 30) return ["избыточный вес — правило R04", "warn"];
+        return ["ожирение — правило R03: только упражнения сложности ≤ 2", "danger"];
+    }
+
+    function initPatientForm() {
+        const form = document.getElementById("patient-form");
+        const error = document.getElementById("form-error");
+        const btn = document.getElementById("submit-btn");
+        const bmiBox = document.getElementById("bmi-box");
+        const hint = document.getElementById("diagnosis-hint");
+        const hintDefault = hint.innerHTML;
+
+        function updateHints() {
+            const h = parseFloat(form.height.value), w = parseFloat(String(form.weight.value).replace(",", "."));
+            const age = parseInt(form.age.value, 10);
+            if (h >= 100 && w >= 20) {
+                const bmi = w / ((h / 100) ** 2);
+                const [text, kind] = bmiCategory(bmi);
+                bmiBox.innerHTML = `ИМТ <b>${esc(NUM.format(bmi))}</b> <span class="badge badge-${kind}">${esc(text)}</span>` +
+                    (age >= 60 ? ` <span class="badge badge-info">возраст 60+ — правило R05: сложность ≤ 2</span>` : "");
+                bmiBox.classList.remove("muted");
+            } else {
+                bmiBox.textContent = "ИМТ появится, когда вы укажете рост и вес";
+                bmiBox.classList.add("muted");
+            }
+            const opt = form.diagnosis.selectedOptions[0];
+            if (opt && opt.value) {
+                hint.innerHTML = `Цель реабилитации: <b>${esc(opt.dataset.goal)}</b> · ведёт ` +
+                    (opt.dataset.doctor === "1" ? "<b>только врач-реабилитолог</b>" : "реабилитолог или тренер ЛФК");
+            } else {
+                hint.innerHTML = hintDefault;
+            }
+        }
+        ["input", "change"].forEach((ev) => form.addEventListener(ev, updateHints));
+        updateHints();
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const body = Object.fromEntries(new FormData(form).entries());
+            btn.disabled = true;
+            btn.classList.add("loading");
+            try {
+                const res = await apiSend(form.dataset.method, form.dataset.url, body);
+                window.location.href = res.url + (form.dataset.method === "POST" ? "?new=1" : "");
+            } catch (err) {
+                showError(error, err.message);
+                btn.disabled = false;
+                btn.classList.remove("loading");
+            }
+        });
+    }
+
+    function initPatientActions(patientId, fio) {
+        const base = `/api/patients/${encodeURIComponent(patientId)}`;
+        const delPatient = document.getElementById("delete-patient");
+        if (delPatient) {
+            delPatient.addEventListener("click", async () => {
+                if (!confirm(`Удалить пациента «${fio}» и его программу?`)) return;
+                try {
+                    await apiSend("DELETE", base);
+                    window.location.href = "/patients";
+                } catch (err) { alert(err.message); }
+            });
+        }
+
+        const form = document.getElementById("program-form");
+        if (!form) return;
+        const error = document.getElementById("program-error");
+        const warning = document.getElementById("risk-warning");
+        const counter = document.getElementById("selected-count");
+        const boxes = Array.from(form.querySelectorAll('input[name="exercises"]'));
+
+        function updateSelection() {
+            const checked = boxes.filter((b) => b.checked);
+            const bad = checked.filter((b) => b.dataset.status === "bad");
+            counter.textContent = `— выбрано ${checked.length}`;
+            warning.hidden = !bad.length;
+            warning.textContent = bad.length
+                ? `⚠ Выбрано не рекомендованных упражнений: ${bad.length}. Программа получит отметку «Программа с риском» (правило R16).`
+                : "";
+            boxes.forEach((b) => b.closest(".ex-item").classList.toggle("checked", b.checked));
+        }
+        form.addEventListener("change", updateSelection);
+        updateSelection();
+
+        const setChecked = (ids) => { boxes.forEach((b) => { b.checked = ids.includes(b.value); }); updateSelection(); };
+        const tpl = document.getElementById("apply-template");
+        if (tpl) {
+            tpl.addEventListener("click", () => {
+                const opt = document.getElementById("pr-template").selectedOptions[0];
+                setChecked((opt.dataset.exercises || "").split(",").filter(Boolean));
+            });
+            document.getElementById("apply-suitable").addEventListener("click", () =>
+                setChecked(boxes.filter((b) => b.dataset.status === "ok").map((b) => b.value)));
+        }
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const submit = form.querySelector('button[type="submit"]');
+            const field = (n) => form.elements.namedItem(n).value;
+            const body = {
+                name: field("name"),
+                specialist: field("specialist"),
+                weeks: field("weeks"),
+                per_week: field("per_week"),
+                exercises: boxes.filter((b) => b.checked).map((b) => b.value),
+            };
+            submit.disabled = true;
+            submit.classList.add("loading");
+            try {
+                await apiSend("POST", `${base}/program`, body);
+                window.location.assign(`/patients/${encodeURIComponent(patientId)}?saved=program#rules`);
+            } catch (err) {
+                showError(error, err.message);
+                submit.disabled = false;
+                submit.classList.remove("loading");
+            }
+        });
+
+        const delProgram = document.getElementById("delete-program");
+        if (delProgram) {
+            delProgram.addEventListener("click", async () => {
+                if (!confirm("Удалить назначенную программу?")) return;
+                try {
+                    await apiSend("DELETE", `${base}/program`);
+                    window.location.assign(`/patients/${encodeURIComponent(patientId)}?saved=deleted#program`);
+                } catch (err) { showError(error, err.message); }
+            });
+        }
+    }
+
+    window.Rehab = {
+        initPatientPage, initRecommendPage, initCatalogPage, initPatientForm, initPatientActions,
+        humanize, formatValue,
+    };
 })();

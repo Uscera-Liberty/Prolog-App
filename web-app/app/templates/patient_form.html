@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Изменить данные' if patient_id else 'Подбор для себя' }} — Реабилитация{% endblock %}
+{% block content %}
+{% if patient_id %}
+<a class="back" href="/patients/{{ patient_id }}">← К профилю</a>
+<h1>Изменить данные пациента</h1>
+<p class="muted">После сохранения правила и рекомендации пересчитаются заново.</p>
+{% else %}
+<h1>Подобрать программу для себя</h1>
+<p class="muted">Введите свои данные — система добавит вас как пациента, применит SWRL-правила (ожирение, возраст,
+    противопоказания) и сразу покажет: какие упражнения подходят, какие противопоказаны и почему, какой инвентарь нужен,
+    к какому врачу или тренеру обратиться и какую программу взять за основу.</p>
+{% endif %}
+
+<form id="patient-form" class="card form-card group-patient" novalidate
+      data-method="{{ 'PUT' if patient_id else 'POST' }}"
+      data-url="{{ '/api/patients/' ~ patient_id if patient_id else '/api/patients' }}">
+    <div class="form-grid">
+        <div class="field wide">
+            <label for="f-fio">ФИО *</label>
+            <input id="f-fio" name="fio" type="text" maxlength="100" required
+                   placeholder="Например: Иванова Мария Петровна" value="{{ patient.fio or '' }}">
+        </div>
+        <div class="field">
+            <label for="f-sex">Пол *</label>
+            <select id="f-sex" name="sex" required>
+                {% for s in sexes %}<option value="{{ s }}" {{ 'selected' if patient.sex == s }}>{{ s }}</option>{% endfor %}
+            </select>
+        </div>
+        <div class="field">
+            <label for="f-age">Возраст, лет *</label>
+            <input id="f-age" name="age" type="number" min="1" max="120" step="1" required value="{{ patient.age or '' }}">
+        </div>
+        <div class="field">
+            <label for="f-height">Рост, см *</label>
+            <input id="f-height" name="height" type="number" min="100" max="230" step="1" required value="{{ patient.height or '' }}">
+        </div>
+        <div class="field">
+            <label for="f-weight">Вес, кг *</label>
+            <input id="f-weight" name="weight" type="number" min="20" max="300" step="0.1" required value="{{ patient.weight or '' }}">
+        </div>
+        <div class="field wide">
+            <div id="bmi-box" class="bmi-box muted">ИМТ появится, когда вы укажете рост и вес</div>
+        </div>
+        <div class="field wide">
+            <label for="f-level">Уровень физической подготовки *</label>
+            <select id="f-level" name="level" required>
+                {% for v, text in levels %}<option value="{{ v }}" {{ 'selected' if (patient.level or 2) == v }}>{{ text }}</option>{% endfor %}
+            </select>
+        </div>
+        <div class="field wide">
+            <label for="f-diagnosis">Заболевание (диагноз) *</label>
+            <select id="f-diagnosis" name="diagnosis" required>
+                <option value="">— выберите —</option>
+                {% for d in diagnoses %}
+                <option value="{{ d.id }}" data-doctor="{{ 1 if d.needs_doctor else 0 }}" data-goal="{{ d.goals|join(', ') }}"
+                        {{ 'selected' if patient.diagnosis == d.id }}>{{ d.label }} ({{ d.mkb }})</option>
+                {% endfor %}
+            </select>
+            <small id="diagnosis-hint" class="muted">Если вашего диагноза нет в списке — база знаний о нём пока не знает
+                (данные добавляются в <code>knowledge-base/scripts/build_ontology.py</code>).</small>
+        </div>
+        <div class="field wide">
+            <label for="f-history">Анамнез — что беспокоит, травмы, операции</label>
+            <textarea id="f-history" name="history" maxlength="300" rows="2"
+                      placeholder="Например: боли в пояснице после нагрузки">{{ patient.history or '' }}</textarea>
+        </div>
+        <div class="field">
+            <label for="f-feature">Образ жизни, особенности</label>
+            <input id="f-feature" name="feature" type="text" maxlength="300" placeholder="Например: сидячая работа"
+                   value="{{ patient.feature or '' }}">
+        </div>
+        <div class="field">
+            <label for="f-phone">Телефон</label>
+            <input id="f-phone" name="phone" type="tel" maxlength="30" placeholder="+7-…" value="{{ patient.phone or '' }}">
+        </div>
+    </div>
+    <div id="form-error" class="error-plate" hidden></div>
+    <div class="toolbar">
+        <button type="submit" class="btn-primary btn-lg" id="submit-btn">
+            {{ 'Сохранить и пересчитать' if patient_id else 'Подобрать программу' }}</button>
+        <a class="btn-secondary" href="{{ '/patients/' ~ patient_id if patient_id else '/' }}">Отмена</a>
+    </div>
+    <p class="muted small">Данные хранятся только на этом сервере, в отдельном файле — онтология OWL не изменяется.
+        Это учебная система, а не медицинская консультация.</p>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>Rehab.initPatientForm();</script>
+{% endblock %}

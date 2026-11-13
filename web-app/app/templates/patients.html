@@ -2,7 +2,10 @@
 {% from "_cards.html" import patient_card %}
 {% block title %}Пациенты — Реабилитация{% endblock %}
 {% block content %}
-<h1>Пациенты</h1>
+<div class="page-head">
+    <h1>Пациенты</h1>
+    <a class="btn-primary" href="/patients/new">➕ Добавить себя / пациента</a>
+</div>
 <p class="muted">Бейджи «Ожирение», «Избыточный вес», «Пожилой», «Программа с риском» выведены SWRL-правилами.
     Нажмите на карточку, чтобы открыть профиль и подобрать рекомендации.</p>
 <p class="counter">Всего: <span>{{ patients|length }}</span> · без программы:

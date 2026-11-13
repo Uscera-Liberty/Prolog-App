@@ -8,5 +8,6 @@
 !knowledge-base/**/*.md
 knowledge-base/docs/diagrams
 web-app/docs
+web-app/data
 web-app/docker-compose.yml
 web-app/Dockerfile

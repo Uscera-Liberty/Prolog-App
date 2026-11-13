@@ -258,7 +258,7 @@ a.card:hover, .query-card:hover {
 .param-fields { display: contents; }
 .rec-form label { font-size: 13px; font-weight: 600; color: #475569; }
 .no-params { justify-content: center; }
-select, input[type="number"] {
+select, input[type="number"], input[type="text"], input[type="tel"], textarea {
     padding: 10px 12px;
     border: 1px solid #cbd5e1;
     border-radius: 8px;
@@ -271,6 +271,75 @@ select, input[type="number"] {
 select:focus, input:focus { outline: 2px solid var(--primary); outline-offset: 1px; }
 .description { margin: 12px 0; }
 .view-toggle + .results .result-block .description { display: none; }   /* на /recommend описание уже над формой */
+textarea { resize: vertical; }
+
+/* свои пациенты и программы */
+.nav a.nav-cta { background: linear-gradient(135deg, var(--primary), var(--cyan)); color: #fff; }
+.nav a.nav-cta:hover, .nav a.nav-cta.active { color: #fff; filter: brightness(1.08); }
+.hero-btn {
+    display: inline-block;
+    margin-top: 18px;
+    padding: 12px 22px;
+    background: #fff;
+    color: var(--primary);
+    border-radius: 999px;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+}
+.hero-btn:hover { transform: translateY(-1px); }
+.hero .hero-hint { margin-top: 10px; font-size: 14px; }
+.page-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.page-head .btn-primary { text-decoration: none; }
+.badge-user { background: #ede9fe; color: #5b21b6; }
+.badge-neutral { background: #f1f5f9; color: #475569; }
+.btn-danger {
+    padding: 10px 16px; border-radius: 8px; border: none; font-size: 14px; font-weight: 600;
+    cursor: pointer; font-family: inherit; background: var(--danger-bg); color: #991b1b;
+}
+.btn-danger:hover { background: #fecaca; }
+.btn-lg { padding: 12px 22px; font-size: 15px; }
+.btn-secondary { text-decoration: none; }
+.toolbar.tight { margin: 8px 0 0; }
+.profile-side { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.small { font-size: 12px; }
+.success-plate {
+    background: #dcfce7; color: #166534; border: 1px solid #86efac;
+    padding: 12px 16px; border-radius: 12px; font-weight: 600; margin-bottom: 16px;
+}
+.anchors { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0 0; }
+.anchors a {
+    background: #fff; border: 1px solid var(--border); border-radius: 999px;
+    padding: 6px 14px; text-decoration: none; font-size: 14px; font-weight: 600; color: #334155;
+}
+.anchors a:hover { border-color: var(--primary); color: var(--primary); }
+h2[id] { scroll-margin-top: 70px; }
+
+.form-card { padding: 22px; }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px 18px; }
+.form-grid .field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.form-grid .field.wide { grid-column: 1 / -1; }
+.form-grid label { font-size: 13px; font-weight: 600; color: #475569; }
+.bmi-box { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px; padding: 10px 14px; }
+.inline { display: flex; gap: 8px; flex-wrap: wrap; }
+.inline select { flex: 1 1 280px; width: auto; }
+
+.exercise-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; margin: 8px 0 12px; }
+.ex-item {
+    display: flex; gap: 10px; align-items: flex-start; padding: 12px;
+    border: 1px solid var(--border); border-left: 4px solid #cbd5e1; border-radius: 12px;
+    background: #fff; cursor: pointer;
+}
+.ex-item input { margin-top: 4px; width: 18px; height: 18px; flex: none; accent-color: var(--primary); }
+.ex-item.ex-ok { border-left-color: var(--patient); }
+.ex-item.ex-bad { border-left-color: var(--danger); background: #fffafa; }
+.ex-item.checked { box-shadow: 0 0 0 2px #c7d2fe; }
+.ex-item.ex-bad.checked { box-shadow: 0 0 0 2px #fca5a5; }
+.ex-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.ex-name { font-weight: 700; color: var(--heading); }
+.ex-meta { font-size: 13px; color: var(--muted); }
+.ex-reason { font-size: 12px; color: #991b1b; }
+.ex-body .badge { align-self: flex-start; white-space: normal; }
 
 /* результаты */
 .results { margin-top: 8px; }
@@ -389,6 +458,9 @@ tbody tr.warn { background: #fef2f2; }
 
 /* телефон */
 @media (max-width: 600px) {
+    .profile-side { align-items: flex-start; }
+    .exercise-list { grid-template-columns: 1fr; }
+    .form-card { padding: 16px; }
     .container { padding: 16px; }
     .topbar-inner { padding: 8px 16px; }
     .nav a { padding: 6px 8px; font-size: 14px; }

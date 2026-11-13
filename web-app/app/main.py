@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any, Optional
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import Body, FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -12,8 +12,9 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from . import ontology
+from . import actions, ontology, store
 from .sparql import ParamError, Registry, local_name, param_class, run_query, validate_params
+from .store import Conflict, NotFound, StoreError
 
 APP_DIR = Path(__file__).resolve().parent
 
@@ -31,10 +32,29 @@ QUERY_ICONS = {
     "top_exercises_for_goal": "🏆",
     "waiting_list": "⏳",
     "can_patient_do": "✅",
+    "contraindicated_for_patient": "⛔",
 }
 DEFAULT_ICON = "🔎"
 ACCENT_QUERY = "waiting_list"
 PATIENT_PARAM = "пациент"
+
+# «Персональный подбор» на странице пациента — запускается сразу при открытии, в этом порядке
+SUMMARY_QUERIES = [
+    "exercises_for_patient",
+    "contraindicated_for_patient",
+    "specialist_for_patient",
+    "equipment_for_patient",
+    "schedule_for_patient",
+    "program_for_patient",
+]
+
+LEVELS = [
+    (1, "1 — минимальная: почти не двигаюсь"),
+    (2, "2 — низкая: короткие прогулки"),
+    (3, "3 — средняя: зарядка, регулярные прогулки"),
+    (4, "4 — хорошая: тренируюсь 2–3 раза в неделю"),
+    (5, "5 — высокая: спорт, активные тренировки"),
+]
 
 STAT_CARDS = [
     ("пациенты", "Пациентов", "🧑", "patient", "/patients"),
@@ -84,8 +104,21 @@ async def http_error(request: Request, exc: StarletteHTTPException):
 
 @app.exception_handler(RequestValidationError)
 async def validation_error(request: Request, exc: RequestValidationError):
-    return JSONResponse({"detail": "Некорректное тело запроса: ожидается {\"params\": {…}}"},
+    return JSONResponse({"detail": "Некорректное тело запроса: ожидается JSON-объект "
+                                   "(для рекомендаций — {\"params\": {…}})"},
                         status_code=422)
+
+
+def _call(fn, *args):
+    """Ошибки хранилища → HTTP: 422 — плохие данные, 409 — данные из OWL, 404 — нет объекта."""
+    try:
+        return fn(*args)
+    except StoreError as e:
+        raise HTTPException(422, str(e))
+    except Conflict as e:
+        raise HTTPException(409, str(e))
+    except NotFound as e:
+        raise HTTPException(404, str(e))
 
 
 # ---------------------------------------------------------------- метаданные запросов
@@ -161,6 +194,101 @@ def api_patient(patient_id: str):
     return data
 
 
+@app.post("/api/patients", status_code=201)
+def api_create_patient(payload: dict[str, Any] = Body(...)):
+    patient_id = _call(actions.create_patient, payload)
+    return {"id": patient_id, "url": f"/patients/{patient_id}"}
+
+
+@app.put("/api/patients/{patient_id}")
+def api_update_patient(patient_id: str, payload: dict[str, Any] = Body(...)):
+    _call(actions.update_patient, patient_id, payload)
+    return {"id": patient_id, "url": f"/patients/{patient_id}"}
+
+
+@app.delete("/api/patients/{patient_id}")
+def api_delete_patient(patient_id: str):
+    _call(actions.delete_patient, patient_id)
+    return {"deleted": patient_id}
+
+
+@app.get("/api/patients/{patient_id}/program-form")
+def api_program_form(patient_id: str):
+    if ontology.patient(patient_id) is None:
+        raise HTTPException(404, f"Пациент «{patient_id}» не найден")
+    return program_form(patient_id)
+
+
+@app.post("/api/patients/{patient_id}/program", status_code=201)
+def api_assign_program(patient_id: str, payload: dict[str, Any] = Body(...)):
+    program_id = _call(actions.assign_program, patient_id, payload)
+    return {"id": program_id, "patient": patient_id}
+
+
+@app.delete("/api/patients/{patient_id}/program")
+def api_delete_program(patient_id: str):
+    _call(actions.delete_program, patient_id)
+    return {"deleted": True}
+
+
+def program_form(patient_id):
+    """Подсказки для формы «Назначить программу» — из рекомендательных запросов 01, 13, 04, 09, 03."""
+    params = {PATIENT_PARAM: patient_id}
+    p = ontology.patient(patient_id)
+    suitable = {r["у"]: r for r in recommend("exercises_for_patient", params)["rows"]}
+    bad = {r["у"]: r for r in recommend("contraindicated_for_patient", params)["rows"]}
+    ranked = [r["с"] for r in recommend("specialist_for_patient", params)["rows"]]
+    schedule = recommend("schedule_for_patient", params)["rows"]
+    templates_rows = recommend("program_for_patient", params)["rows"]
+
+    exercises = []
+    for e in ontology.catalog_exercises():
+        status = "ok" if e["id"] in suitable else ("bad" if e["id"] in bad else "neutral")
+        exercises.append({
+            "id": e["id"], "label": e["label"], "difficulty": e["difficulty"],
+            "equipment": ", ".join(x["label"] for x in e["equipment"]) or None,
+            "status": status,
+            "rating": suitable.get(e["id"], {}).get("рейтинг"),
+            "reasons": bad.get(e["id"], {}).get("причины"),
+        })
+    order = {"ok": 0, "neutral": 1, "bad": 2}
+    exercises.sort(key=lambda e: (order[e["status"]], -(e["rating"] or 0), e["label"]))
+
+    specialists = []
+    for s in ontology.catalog_specialists():
+        specialists.append({"id": s["id"], "label": s["label"], "type": s["type"],
+                            "recommended": s["id"] in ranked})
+    specialists.sort(key=lambda s: (ranked.index(s["id"]) if s["recommended"] else len(ranked), s["label"]))
+
+    programs = {pr["id"]: pr for pr in ontology.catalog_programs()}
+    template_list = [{
+        "id": r["пр"], "label": r["программа"], "match": r["совпадение"], "unsuitable": r["неПодходит"],
+        "exercises": [e["id"] for e in programs.get(r["пр"], {}).get("exercises", [])],
+    } for r in templates_rows if r["пр"] in programs]
+
+    current = p["program"]
+    surname = p["fio"].split()[0]
+    if current:
+        defaults = {"name": current["label"],
+                    "specialist": current["specialist"]["id"] if current["specialist"] else None,
+                    "weeks": current["weeks"], "per_week": current["per_week"],
+                    "exercises": [e["id"] for e in current["exercises"]]}
+    else:
+        defaults = {"name": f"Программа для {surname}",
+                    "specialist": ranked[0] if ranked else (specialists[0]["id"] if specialists else None),
+                    "weeks": round(schedule[0]["недель"]) if schedule else 8,
+                    "per_week": round(schedule[0]["занятийВНеделю"]) if schedule else 3,
+                    "exercises": list(suitable)}
+    return {
+        "editable": current is None or current["user_added"],
+        "current": current,
+        "defaults": defaults,
+        "exercises": exercises,
+        "specialists": specialists,
+        "templates": template_list,
+    }
+
+
 @app.get("/api/catalog/{kind}")
 def api_catalog(kind: str):
     if kind not in ontology.CATALOG:
@@ -197,14 +325,38 @@ def page_patients(request: Request):
     })
 
 
+def _patient_form_page(request, patient=None, patient_id=None):
+    return templates.TemplateResponse(request, "patient_form.html", {
+        "active": "new", "patient": patient or {}, "patient_id": patient_id,
+        "diagnoses": ontology.diagnoses(), "levels": LEVELS, "sexes": store.SEXES,
+    })
+
+
+@app.get("/patients/new", response_class=HTMLResponse)
+def page_patient_new(request: Request):
+    return _patient_form_page(request)
+
+
+@app.get("/patients/{patient_id}/edit", response_class=HTMLResponse)
+def page_patient_edit(request: Request, patient_id: str):
+    data = ontology.user_data()["patients"].get(patient_id)
+    if data is None:
+        if ontology.is_instance(patient_id, "Пациент"):
+            raise HTTPException(409, "Это пациент из базы знаний (OWL) — его данные изменить нельзя")
+        raise HTTPException(404, f"Пациент «{patient_id}» не найден")
+    return _patient_form_page(request, data, patient_id)
+
+
 @app.get("/patients/{patient_id}", response_class=HTMLResponse)
-def page_patient(request: Request, patient_id: str):
+def page_patient(request: Request, patient_id: str, new: Optional[str] = None, saved: Optional[str] = None):
     data = ontology.patient(patient_id)
     if data is None:
         raise HTTPException(404, f"Пациент «{patient_id}» не найден")
     queries = [q for q in all_queries() if any(p["name"] == PATIENT_PARAM for p in q["params"])]
+    summary = [qid for qid in SUMMARY_QUERIES if any(q["id"] == qid for q in queries)]
     return templates.TemplateResponse(request, "patient.html", {
         "active": "patients", "p": data, "queries": queries, "patient_param": PATIENT_PARAM,
+        "summary": summary, "form": program_form(patient_id), "is_new": new == "1", "saved": saved,
     })
 
 
