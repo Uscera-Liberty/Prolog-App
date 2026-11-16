@@ -452,6 +452,8 @@
         const warning = document.getElementById("risk-warning");
         const counter = document.getElementById("selected-count");
         const boxes = Array.from(form.querySelectorAll('input[name="exercises"]'));
+        const confirmWrap = document.getElementById("risk-confirm-wrap");
+        const confirmRisk = document.getElementById("confirm-risk");
 
         function updateSelection() {
             const checked = boxes.filter((b) => b.checked);
@@ -459,8 +461,10 @@
             counter.textContent = `— выбрано ${checked.length}`;
             warning.hidden = !bad.length;
             warning.textContent = bad.length
-                ? `⚠ Выбрано не рекомендованных упражнений: ${bad.length}. Программа получит отметку «Программа с риском» (правило R16).`
+                ? `⚠ Выбраны упражнения с повышенным риском по уровню подготовки, возрасту или ИМТ: ${bad.length}. Сервер потребует отдельного подтверждения.`
                 : "";
+            if (confirmWrap) confirmWrap.hidden = !bad.length;
+            if (!bad.length && confirmRisk) confirmRisk.checked = false;
             boxes.forEach((b) => b.closest(".ex-item").classList.toggle("checked", b.checked));
         }
         form.addEventListener("change", updateSelection);
@@ -487,6 +491,7 @@
                 weeks: field("weeks"),
                 per_week: field("per_week"),
                 exercises: boxes.filter((b) => b.checked).map((b) => b.value),
+                confirm_risky: Boolean(confirmRisk && confirmRisk.checked),
             };
             submit.disabled = true;
             submit.classList.add("loading");

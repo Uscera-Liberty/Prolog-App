@@ -71,6 +71,45 @@ def assign_program(patient_id, raw):
         if not ontology.is_instance(patient_id, "Пациент"):
             raise NotFound(f"Пациент «{patient_id}» не найден")
         program = store.validate_program(raw, ontology.is_instance)
+
+        patient = ontology.P(patient_id)
+        recommended_specialists = {ontology.local(s)
+                                    for s in ontology.objects(patient, "рекомендуемыйСпециалист")}
+        if not recommended_specialists:
+            raise store.StoreError(
+                "В базе знаний нет специалиста, подходящего для этого диагноза. "
+                "Обратитесь к лечащему врачу; программу нельзя назначить автоматически."
+            )
+        if program["specialist"] not in recommended_specialists:
+            raise store.StoreError(
+                "Выбранный специалист не соответствует диагнозу пациента. "
+                "Выберите специалиста из рекомендованного списка."
+            )
+
+        # Жёсткие противопоказания и упражнения с приостановленным испытанием нельзя добавить.
+        diagnosis = ontology.diagnosis_of(patient)
+        hard_blocked = set()
+        risky = {ontology.local(u) for u in ontology.objects(patient, "неРекомендуетсяУпражнение")}
+        for exercise_id in program["exercises"]:
+            exercise = ontology.P(exercise_id)
+            for contraindication in ontology.objects(exercise, "имеетПротивопоказание"):
+                if diagnosis in ontology.objects(contraindication, "противопоказаноПри"):
+                    hard_blocked.add(exercise_id)
+            if ontology.trial_info(exercise).get("status") == "Приостановлено":
+                hard_blocked.add(exercise_id)
+        if hard_blocked:
+            raise store.StoreError(
+                "Нельзя включить упражнения с прямым противопоказанием или приостановленным "
+                "клиническим испытанием: " + ", ".join(sorted(hard_blocked))
+            )
+        risk_exercises = risky.intersection(program["exercises"])
+        if risk_exercises and not program["confirm_risky"]:
+            raise store.StoreError(
+                "Выбраны упражнения, которые система считает неподходящими по уровню подготовки, "
+                "возрасту или ИМТ: " + ", ".join(sorted(risk_exercises)) + ". "
+                "Их нельзя добавлять без явного подтверждения после консультации со специалистом."
+            )
+
         data = store.load()
         program_id = store.program_of_patient(data, patient_id)
         if program_id is None:

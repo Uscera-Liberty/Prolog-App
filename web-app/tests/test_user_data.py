@@ -14,7 +14,7 @@ NEW_PATIENT = {
 }
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def client():
     with TestClient(app) as c:
         yield c
@@ -175,9 +175,29 @@ def test_program_form_suggestions(client, patient_id):
     assert (f["defaults"]["weeks"], f["defaults"]["per_week"]) == (14, 3)
     assert set(f["defaults"]["exercises"]) == {"Упр_Велотренажёр", "Упр_ХодьбаНаДорожке", "Упр_СкандинавскаяХодьба"}
     statuses = {e["id"]: e["status"] for e in f["exercises"]}
+    assert all(statuses[eid] == "ok" for eid in f["defaults"]["exercises"])
     assert len(statuses) == 15
-    assert statuses["Упр_ЯгодичныйМостик"] == "bad" and statuses["Упр_Велотренажёр"] == "ok"
+    assert statuses["Упр_ЯгодичныйМостик"] == "blocked" and statuses["Упр_Велотренажёр"] == "ok"
+    plank = next(e for e in f["exercises"] if e["id"] == "Упр_ПланкаНаФитболе")
+    assert plank["status"] == "bad" and plank["sets"] is not None
     assert {t["id"] for t in f["templates"]} >= {"Программа_Кузнецова"}
+
+
+def test_doctor_required_diagnosis_only_accepts_recommended_rehabilitation_doctor(client):
+    raw = dict(NEW_PATIENT, fio="Связкин Пётр", age=35, height=180, weight=80,
+               level=3, diagnosis="Диагноз_РазрывСвязки")
+    created = client.post("/api/patients", json=raw)
+    assert created.status_code == 201, created.text
+    pid = created.json()["id"]
+    form = client.get(f"/api/patients/{pid}/program-form").json()
+    assert [(s["id"], s["type"]) for s in form["specialists"]] == [
+        ("Реабилитолог_Орлов", "Врач-реабилитолог")
+    ]
+    body = program_body(client, pid)
+    body["specialist"] = "Тренер_Зайцева"
+    response = client.post(f"/api/patients/{pid}/program", json=body)
+    assert response.status_code == 422
+    assert "не соответствует диагнозу" in response.json()["detail"]
 
 
 def test_assign_safe_program(client, patient_id):
@@ -196,7 +216,19 @@ def test_assign_safe_program(client, patient_id):
 
 
 def test_assign_risky_program_then_replace_and_delete(client, patient_id):
-    body = program_body(client, patient_id, extra=["Упр_ЯгодичныйМостик"])
+    # Противопоказание по самому диагнозу (и упражнение с приостановленным испытанием) блокируется сервером.
+    hard_blocked = program_body(client, patient_id, extra=[
+        "Упр_ЯгодичныйМостик", "Упр_СтановаяТягаСГирей",
+    ])
+    hard_blocked_response = client.post(f"/api/patients/{patient_id}/program", json=hard_blocked)
+    assert hard_blocked_response.status_code == 422
+    assert "Упр_ЯгодичныйМостик" in hard_blocked_response.json()["detail"]
+    assert "Упр_СтановаяТягаСГирей" in hard_blocked_response.json()["detail"]
+
+    # Упражнение, не подходящее по нагрузке, требует явного подтверждения и попадает в аудит R16.
+    body = program_body(client, patient_id, extra=["Упр_ПланкаНаФитболе"])
+    assert client.post(f"/api/patients/{patient_id}/program", json=body).status_code == 422
+    body["confirm_risky"] = True
     assert client.post(f"/api/patients/{patient_id}/program", json=body).status_code == 201
     p = client.get(f"/api/patients/{patient_id}").json()
     assert "Программа с риском" in {b["label"] for b in p["program"]["badges"]}        # R16
@@ -204,7 +236,7 @@ def test_assign_risky_program_then_replace_and_delete(client, patient_id):
     audit = rec(client, "audit_programs")["rows"]
     assert len(audit) == 4 and any(r["пр"] == "Программа_Тестова" for r in audit)
     replacements = rec(client, "replace_exercise", пациент=patient_id)["rows"]
-    assert replacements and all(r["проблемное"] == "Ягодичный мостик" for r in replacements)
+    assert replacements and all(r["проблемное"] == "Планка с упором на фитбол" for r in replacements)
 
     # замена программы: та же программа, без опасного упражнения
     r = client.post(f"/api/patients/{patient_id}/program", json=program_body(client, patient_id))

@@ -143,6 +143,8 @@ def validate_program(raw, is_instance):
         "weeks": _number(raw.get("weeks"), "Длительность, недель", 1, 52),
         "per_week": _number(raw.get("per_week"), "Занятий в неделю", 1, 7),
         "exercises": checked,
+        # Явное подтверждение требуется для упражнений, которые модель пометила как рискованные.
+        "confirm_risky": raw.get("confirm_risky") is True,
     }
 
 

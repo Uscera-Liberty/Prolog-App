@@ -241,24 +241,43 @@ def program_form(patient_id):
     schedule = recommend("schedule_for_patient", params)["rows"]
     templates_rows = recommend("program_for_patient", params)["rows"]
 
+    equipment_catalog = {item["id"]: item for item in ontology.catalog_equipment()}
     exercises = []
     for e in ontology.catalog_exercises():
-        status = "ok" if e["id"] in suitable else ("bad" if e["id"] in bad else "neutral")
+        reasons = bad.get(e["id"], {}).get("причины", "")
+        # Жёсткий запрет определяется по графу знаний, а не по тексту пояснения.
+        diagnosis = ontology.diagnosis_of(ontology.P(patient_id))
+        blocked = (any(diagnosis in ontology.objects(c, "противопоказаноПри")
+                       for c in ontology.objects(ontology.P(e["id"]), "имеетПротивопоказание"))
+                   or e["status"] == "Приостановлено")
+        # Любое ограничение имеет приоритет над положительной рекомендацией.
+        status = ("blocked" if blocked else "bad" if e["id"] in bad
+                  else "ok" if e["id"] in suitable else "neutral")
+        equipment_details = []
+        for item in e["equipment"]:
+            detail = equipment_catalog.get(item["id"], {})
+            equipment_details.append({
+                "label": item["label"], "price": detail.get("price"),
+                "rules": detail.get("rules", []),
+            })
         exercises.append({
             "id": e["id"], "label": e["label"], "difficulty": e["difficulty"],
             "equipment": ", ".join(x["label"] for x in e["equipment"]) or None,
+            "equipment_details": equipment_details,
+            "sets": e["sets"], "reps": e["reps"], "minutes": e["minutes"],
+            "technique": e["technique"], "side_effects": e["side_effects"],
             "status": status,
             "rating": suitable.get(e["id"], {}).get("рейтинг"),
-            "reasons": bad.get(e["id"], {}).get("причины"),
+            "reasons": reasons,
         })
-    order = {"ok": 0, "neutral": 1, "bad": 2}
+    order = {"ok": 0, "neutral": 1, "bad": 2, "blocked": 3}
     exercises.sort(key=lambda e: (order[e["status"]], -(e["rating"] or 0), e["label"]))
 
-    specialists = []
-    for s in ontology.catalog_specialists():
-        specialists.append({"id": s["id"], "label": s["label"], "type": s["type"],
-                            "recommended": s["id"] in ranked})
-    specialists.sort(key=lambda s: (ranked.index(s["id"]) if s["recommended"] else len(ranked), s["label"]))
+    all_specialists = {s["id"]: s for s in ontology.catalog_specialists()}
+    # В форме остаются только специалисты, которых вернул SPARQL-запрос для диагноза.
+    specialists = [{"id": sid, "label": all_specialists[sid]["label"],
+                    "type": all_specialists[sid]["type"], "recommended": True}
+                   for sid in ranked if sid in all_specialists]
 
     programs = {pr["id"]: pr for pr in ontology.catalog_programs()}
     template_list = [{
@@ -278,9 +297,11 @@ def program_form(patient_id):
                     "specialist": ranked[0] if ranked else (specialists[0]["id"] if specialists else None),
                     "weeks": round(schedule[0]["недель"]) if schedule else 8,
                     "per_week": round(schedule[0]["занятийВНеделю"]) if schedule else 3,
-                    "exercises": list(suitable)}
+                    # Автоматически включаем только упражнения без противопоказаний и оговорок.
+                    "exercises": [e["id"] for e in exercises if e["status"] == "ok"]}
     return {
-        "editable": current is None or current["user_added"],
+        "editable": (current is None or current["user_added"]) and bool(specialists),
+        "no_specialist": not bool(specialists),
         "current": current,
         "defaults": defaults,
         "exercises": exercises,

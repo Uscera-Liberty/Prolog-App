@@ -14,6 +14,16 @@
 <div class="success-plate">✔ Программа удалена — пациент снова в очереди на подбор.</div>
 {% endif %}
 
+<div class="medical-notice" role="note">
+    Учебная рекомендательная система, а не медицинский сервис. Результат не является диагнозом или назначением лечения;
+    до начала упражнений согласуйте нагрузку с лечащим врачом или врачом ЛФК.
+</div>
+{% if p.diagnosis and p.diagnosis.needs_doctor %}
+<div class="warn-plate">Для этого диагноза база знаний требует сопровождения врача-реабилитолога. Не начинайте программу самостоятельно и не заменяйте врача тренером ЛФК.</div>
+{% elif not p.specialists %}
+<div class="warn-plate">В базе знаний не найден специалист для выбранного диагноза. Обратитесь к лечащему врачу для очной оценки.</div>
+{% endif %}
+
 <section class="card profile group-patient">
     <div class="profile-head">
         <div>
@@ -114,8 +124,9 @@
 <h2 id="program">{{ 'Программа пациента' if p.program else 'Назначить программу' }}</h2>
 {% if form.editable %}
 <p class="muted">Подходящие упражнения уже отмечены (запрос «Упражнения для пациента»), специалист и режим — из запросов
-    «Врач или тренер» и «Длительность и частота». Можно взять за основу программу похожего пациента. Противопоказанное
-    упражнение выбрать можно — тогда правило R16 пометит программу как «Программа с риском».</p>
+    «Врач или тренер» и «Длительность и частота». Можно взять за основу программу похожего пациента. Упражнения с прямым противопоказанием и приостановленным
+    испытанием заблокированы. Упражнения с повышенным риском по возрасту, ИМТ или подготовке требуют отдельного
+    подтверждения и предварительного согласования со специалистом.</p>
 <form id="program-form" class="card form-card group-program" novalidate>
     <div class="form-grid">
         <div class="field wide">
@@ -126,7 +137,7 @@
             <label for="pr-specialist">Специалист *</label>
             <select id="pr-specialist" name="specialist">
                 {% for s in form.specialists %}
-                <option value="{{ s.id }}" {{ 'selected' if s.id == form.defaults.specialist }}>{{ '★ ' if s.recommended }}{{ s.label }} — {{ s.type }}{{ ' (рекомендован)' if s.recommended }}</option>
+                <option value="{{ s.id }}" {{ 'selected' if s.id == form.defaults.specialist }}>★ {{ s.label }} — {{ s.type }} (подходит по диагнозу)</option>
                 {% endfor %}
             </select>
         </div>
@@ -158,25 +169,44 @@
     <div class="exercise-list">
         {% for e in form.exercises %}
         <label class="ex-item ex-{{ e.status }}">
-            <input type="checkbox" name="exercises" value="{{ e.id }}" data-status="{{ e.status }}" {{ 'checked' if e.id in form.defaults.exercises }}>
+            <input type="checkbox" name="exercises" value="{{ e.id }}" data-status="{{ e.status }}"
+                   {{ 'checked' if e.id in form.defaults.exercises }} {{ 'disabled' if e.status == 'blocked' }}>
             <span class="ex-body">
                 <span class="ex-name">{{ e.label }}</span>
                 <span class="ex-meta">сложность {{ e.difficulty }} из 4 · {{ e.equipment or 'без инвентаря' }}</span>
-                {% if e.status == 'ok' %}<span class="badge badge-ok">Подходит · рейтинг {{ num(e.rating) }}</span>
-                {% elif e.status == 'bad' %}<span class="badge badge-danger">Не рекомендуется</span>
+                {% if e.status == 'ok' %}<span class="badge badge-ok">Подходит по правилам модели · рейтинг {{ num(e.rating) }}</span>
+                {% elif e.status == 'blocked' %}<span class="badge badge-danger">Заблокировано: противопоказание</span>
                     <span class="ex-reason">{{ e.reasons }}</span>
-                {% else %}<span class="badge badge-neutral">Не по диагнозу</span>{% endif %}
+                {% elif e.status == 'bad' %}<span class="badge badge-danger">Требует особой оценки специалиста</span>
+                    <span class="ex-reason">{{ e.reasons }}</span>
+                {% else %}<span class="badge badge-neutral">Не выбрано правилами подбора</span>{% endif %}
+                {% if e.technique %}<span class="ex-meta">Техника: {{ e.technique }}</span>{% endif %}
+                {% if e.sets or e.reps or e.minutes %}<span class="ex-meta">В справочнике: {{ e.sets or '—' }} подходов · {{ e.reps or '—' }} повторений · {{ e.minutes or '—' }} мин.</span>{% endif %}
+                {% if e.equipment_details %}
+                <span class="ex-meta">Инвентарь:
+                    {% for item in e.equipment_details %}{{ item.label }}{% if item.price is not none %} — {{ num(item.price) }} ₽{% endif %}{% if not loop.last %}; {% endif %}{% endfor %}
+                </span>
+                {% for item in e.equipment_details if item.rules %}<span class="ex-meta">Правила использования {{ item.label }}: {{ item.rules|join('; ') }}</span>{% endfor %}
+                {% endif %}
+                {% if e.side_effects %}<span class="ex-reason">Возможные побочные эффекты: {{ e.side_effects|map(attribute='label')|join(', ') }}</span>{% endif %}
             </span>
         </label>
         {% endfor %}
     </div>
     <div id="risk-warning" class="warn-plate" hidden></div>
+    <label id="risk-confirm-wrap" class="risk-confirm" hidden>
+        <input type="checkbox" id="confirm-risk">
+        Я понимаю, что отмеченные упражнения система считает неподходящими по нагрузке. Их включение допустимо только после отдельного согласования с врачом/специалистом.
+    </label>
     <div id="program-error" class="error-plate" hidden></div>
     <div class="toolbar">
         <button type="submit" class="btn-primary btn-lg">{{ 'Сохранить изменения' if p.program else 'Назначить программу' }}</button>
         {% if p.program %}<button type="button" class="btn-danger" id="delete-program">Удалить программу</button>{% endif %}
     </div>
 </form>
+{% elif form.no_specialist %}
+<div class="empty">Нельзя сформировать программу: для этого диагноза в базе знаний не найден подходящий специалист.
+    Сначала обратитесь к лечащему врачу. Не выбирайте случайного специалиста из каталога.</div>
 {% else %}
 <div class="empty">Программа «{{ p.program.label }}» хранится в базе знаний (OWL) — изменить её из интерфейса нельзя.
     Если в ней есть неподходящие упражнения, нажмите «Найти замену упражнениям» в персональном подборе выше.</div>
