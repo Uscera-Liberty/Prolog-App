@@ -489,3 +489,7 @@ tbody tr.warn { background: #fef2f2; }
 .ex-item.ex-blocked input { cursor: not-allowed; }
 .risk-confirm { display: flex; gap: 10px; align-items: flex-start; margin: 10px 0 14px; padding: 12px; border: 1px solid #f59e0b; border-radius: 10px; background: #fffbeb; color: #78350f; font-size: 13px; }
 .risk-confirm input { margin-top: 3px; }
+.diagnosis-create { margin-top: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: #f8fafc; }
+.diagnosis-create summary { cursor: pointer; color: var(--primary-dark); font-weight: 600; }
+.diagnosis-create-fields { display: grid; gap: 8px; margin-top: 12px; }
+.diagnosis-create-fields label { font-size: 13px; font-weight: 600; color: var(--heading); }

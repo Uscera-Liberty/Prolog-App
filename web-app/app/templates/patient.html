@@ -18,7 +18,9 @@
     Учебная рекомендательная система, а не медицинский сервис. Результат не является диагнозом или назначением лечения;
     до начала упражнений согласуйте нагрузку с лечащим врачом или врачом ЛФК.
 </div>
-{% if p.diagnosis and p.diagnosis.needs_doctor %}
+{% if p.diagnosis and not p.diagnosis.has_recommendations %}
+<div class="warn-plate">Для диагноза «{{ p.diagnosis.label }}» в базе знаний пока нет проверенных рекомендаций. Не начинайте упражнения по автоматическому подбору; обратитесь к лечащему врачу для индивидуального плана.</div>
+{% elif p.diagnosis and p.diagnosis.needs_doctor %}
 <div class="warn-plate">Для этого диагноза база знаний требует сопровождения врача-реабилитолога. Не начинайте программу самостоятельно и не заменяйте врача тренером ЛФК.</div>
 {% elif not p.specialists %}
 <div class="warn-plate">В базе знаний не найден специалист для выбранного диагноза. Обратитесь к лечащему врачу для очной оценки.</div>
@@ -116,7 +118,11 @@
             {% if p.program.user_added %}<div class="badges"><span class="badge badge-user">Назначена через интерфейс</span></div>{% endif %}
         {% else %}
             <p class="text-warn"><b>Программа ещё не подобрана.</b></p>
+            {% if p.diagnosis.has_recommendations %}
             <p class="muted">Назначьте её ниже — упражнения, специалист и режим уже предложены системой.</p>
+            {% else %}
+            <p class="muted">Для этого диагноза автоматический подбор и назначение программы недоступны: сначала нужен индивидуальный план от врача.</p>
+            {% endif %}
         {% endif %}
     </div>
 </section>
@@ -204,6 +210,8 @@
         {% if p.program %}<button type="button" class="btn-danger" id="delete-program">Удалить программу</button>{% endif %}
     </div>
 </form>
+{% elif p.diagnosis and not p.diagnosis.has_recommendations %}
+<div class="empty">Для диагноза «{{ p.diagnosis.label }}» пока нет проверенных правил подбора. Автоматически назначить программу нельзя; обратитесь к лечащему врачу.</div>
 {% elif form.no_specialist %}
 <div class="empty">Нельзя сформировать программу: для этого диагноза в базе знаний не найден подходящий специалист.
     Сначала обратитесь к лечащему врачу. Не выбирайте случайного специалиста из каталога.</div>

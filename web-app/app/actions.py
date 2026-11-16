@@ -10,7 +10,7 @@ from datetime import datetime
 from . import ontology, store
 from .store import Conflict, NotFound
 
-PREFIXES = ("Пациент", "Данные", "Анамнез", "Особенность", "Программа")
+PREFIXES = ("Пациент", "Данные", "Анамнез", "Особенность", "Программа", "Диагноз")
 
 
 def _now():
@@ -42,6 +42,25 @@ def create_patient(raw):
         data["patients"][patient_id] = dict(patient, key=key, created=_now())
         _commit(data)
         return patient_id
+
+
+def create_diagnosis(raw):
+    """Добавить диагноз в пользовательский слой без выдуманных клинических связей."""
+    with store.lock:
+        diagnosis = store.validate_diagnosis(raw)
+        data = store.load()
+        normalized = " ".join(diagnosis["label"].casefold().split())
+        if any(" ".join(item["label"].casefold().split()) == normalized
+               for item in ontology.diagnoses()):
+            raise Conflict("Такой диагноз уже есть в списке")
+        key = store.make_key(diagnosis["label"], lambda candidate: any(
+            ontology.name_taken(f"{prefix}_{candidate}")
+            or f"{prefix}_{candidate}" in data.get("diagnoses", {})
+            for prefix in PREFIXES))
+        diagnosis_id = f"Диагноз_{key}"
+        data["diagnoses"][diagnosis_id] = dict(diagnosis, key=key, created=_now())
+        _commit(data)
+        return diagnosis_id
 
 
 def update_patient(patient_id, raw):

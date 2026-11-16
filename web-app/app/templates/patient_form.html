@@ -53,12 +53,25 @@
             <select id="f-diagnosis" name="diagnosis" required>
                 <option value="">— выберите —</option>
                 {% for d in diagnoses %}
-                <option value="{{ d.id }}" data-doctor="{{ 1 if d.needs_doctor else 0 }}" data-goal="{{ d.goals|join(', ') }}"
-                        {{ 'selected' if patient.diagnosis == d.id }}>{{ d.label }} ({{ d.mkb }})</option>
+                <option value="{{ d.id }}" data-doctor="{{ 1 if d.needs_doctor else 0 }}"
+                        data-has-rules="{{ 1 if d.has_recommendations else 0 }}"
+                        data-goal="{{ d.goals|join(', ') }}"
+                        {{ 'selected' if patient.diagnosis == d.id }}>{{ d.label }}{% if d.mkb %} ({{ d.mkb }}){% endif %}{% if not d.has_recommendations %} — нужна оценка врача{% endif %}</option>
                 {% endfor %}
             </select>
-            <small id="diagnosis-hint" class="muted">Если вашего диагноза нет в списке — база знаний о нём пока не знает
-                (данные добавляются в <code>knowledge-base/scripts/build_ontology.py</code>).</small>
+            <small id="diagnosis-hint" class="muted">Для диагнозов без настроенных правил система не формирует автоматические рекомендации и назначение программы.</small>
+            <details class="diagnosis-create">
+                <summary>Нет моего диагноза — добавить свой</summary>
+                <div class="diagnosis-create-fields">
+                    <label for="new-diagnosis-name">Название диагноза *</label>
+                    <input id="new-diagnosis-name" type="text" maxlength="120" placeholder="Например: диагноз по заключению врача">
+                    <label for="new-diagnosis-code">Код МКБ-10, если известен</label>
+                    <input id="new-diagnosis-code" type="text" maxlength="10" placeholder="Например: M16.9">
+                    <button type="button" id="add-diagnosis-btn" class="btn-secondary">Добавить в список</button>
+                    <div id="diagnosis-add-error" class="error-plate" hidden></div>
+                    <small class="muted">Пользовательский диагноз сохранится для следующих анкет, но не получит автоматических рекомендаций. При добавлении программа будет недоступна, пока для диагноза нет проверенных правил.</small>
+                </div>
+            </details>
         </div>
         <div class="field wide">
             <label for="f-history">Анамнез — что беспокоит, травмы, операции</label>

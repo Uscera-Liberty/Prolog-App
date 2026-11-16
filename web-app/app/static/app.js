@@ -391,6 +391,9 @@
         const btn = document.getElementById("submit-btn");
         const bmiBox = document.getElementById("bmi-box");
         const hint = document.getElementById("diagnosis-hint");
+        const diagnosisSelect = form.elements.diagnosis;
+        const addDiagnosisBtn = document.getElementById("add-diagnosis-btn");
+        const addDiagnosisError = document.getElementById("diagnosis-add-error");
         const hintDefault = hint.innerHTML;
 
         function updateHints() {
@@ -406,16 +409,46 @@
                 bmiBox.textContent = "ИМТ появится, когда вы укажете рост и вес";
                 bmiBox.classList.add("muted");
             }
-            const opt = form.diagnosis.selectedOptions[0];
+            const opt = diagnosisSelect.selectedOptions[0];
             if (opt && opt.value) {
-                hint.innerHTML = `Цель реабилитации: <b>${esc(opt.dataset.goal)}</b> · ведёт ` +
-                    (opt.dataset.doctor === "1" ? "<b>только врач-реабилитолог</b>" : "реабилитолог или тренер ЛФК");
+                if (opt.dataset.hasRules === "0") {
+                    hint.textContent = "Для этого диагноза в базе знаний пока нет проверенных правил. Автоматический подбор недоступен — обратитесь к лечащему врачу.";
+                } else {
+                    hint.innerHTML = `Цель реабилитации: <b>${esc(opt.dataset.goal)}</b> · ведёт ` +
+                        (opt.dataset.doctor === "1" ? "<b>только врач-реабилитолог</b>" : "реабилитолог или тренер ЛФК");
+                }
             } else {
                 hint.innerHTML = hintDefault;
             }
         }
         ["input", "change"].forEach((ev) => form.addEventListener(ev, updateHints));
         updateHints();
+
+        addDiagnosisBtn.addEventListener("click", async () => {
+            const name = document.getElementById("new-diagnosis-name").value.trim();
+            const code = document.getElementById("new-diagnosis-code").value.trim();
+            addDiagnosisBtn.disabled = true;
+            addDiagnosisBtn.classList.add("loading");
+            showError(addDiagnosisError, "");
+            try {
+                const diagnosis = await apiSend("POST", "/api/diagnoses", { name, code });
+                const label = `${diagnosis.label}${diagnosis.mkb ? ` (${diagnosis.mkb})` : ""} — нужна оценка врача`;
+                const option = new Option(label, diagnosis.id);
+                option.dataset.doctor = "1";
+                option.dataset.hasRules = "0";
+                option.dataset.goal = "";
+                diagnosisSelect.add(option);
+                diagnosisSelect.value = diagnosis.id;
+                document.getElementById("new-diagnosis-name").value = "";
+                document.getElementById("new-diagnosis-code").value = "";
+                updateHints();
+            } catch (err) {
+                showError(addDiagnosisError, err.message);
+            } finally {
+                addDiagnosisBtn.disabled = false;
+                addDiagnosisBtn.classList.remove("loading");
+            }
+        });
 
         form.addEventListener("submit", async (e) => {
             e.preventDefault();

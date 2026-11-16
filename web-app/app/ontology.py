@@ -39,7 +39,7 @@ SPECIALIST_TYPES = {"Реабилитолог": "Врач-реабилитоло
 
 _base = None                      # разобранный .owl без выводов — парсится один раз
 _graph = None
-_user = {"patients": {}, "programs": {}}
+_user = {"patients": {}, "programs": {}, "diagnoses": {}}
 _graph_lock = threading.Lock()
 _instances_cache = {}
 
@@ -102,6 +102,10 @@ def user_data():
 
 def is_user_patient(name):
     return name in user_data()["patients"]
+
+
+def is_user_diagnosis(name):
+    return name in user_data().get("diagnoses", {})
 
 
 def is_user_program(name):
@@ -310,7 +314,9 @@ def patient(name):
         "weight_bmi30": value(p, "весПриИМТ30"),
         "level": value(p, "уровеньПодготовки"),
         "diagnosis": dict(ref(dg), mkb=value(dg, "кодМКБ"),
-                          needs_doctor=bool(value(dg, "требуетВрача"))) if dg is not None else None,
+                          needs_doctor=bool(value(dg, "требуетВрача")),
+                          has_recommendations=diagnosis_has_recommendations(dg),
+                          user_added=is_user_diagnosis(local(dg))) if dg is not None else None,
         "history": label(history),
         "feature": label(feature),
         "goals": refs(objects(p, "рекомендуемаяЦель")),
@@ -324,6 +330,14 @@ def patient(name):
     }
 
 
+def diagnosis_has_recommendations(diagnosis):
+    if diagnosis is None:
+        return False
+    return bool(objects(diagnosis, "требуетЦели")
+                or any(diagnosis in objects(indication, "показаноПри")
+                       for indication in map(P, instances_of("Показание"))))
+
+
 def diagnoses():
     """Диагнозы для формы: id, название, код МКБ, нужен ли врач, цель."""
     result = []
@@ -335,6 +349,8 @@ def diagnoses():
             "mkb": value(d, "кодМКБ"),
             "needs_doctor": bool(value(d, "требуетВрача")),
             "goals": [g["label"] for g in refs(objects(d, "требуетЦели"))],
+            "has_recommendations": diagnosis_has_recommendations(d),
+            "user_added": is_user_diagnosis(name),
         })
     return sorted(result, key=lambda r: r["label"])
 

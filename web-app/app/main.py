@@ -200,6 +200,13 @@ def api_create_patient(payload: dict[str, Any] = Body(...)):
     return {"id": patient_id, "url": f"/patients/{patient_id}"}
 
 
+@app.post("/api/diagnoses", status_code=201)
+def api_create_diagnosis(payload: dict[str, Any] = Body(...)):
+    diagnosis_id = _call(actions.create_diagnosis, payload)
+    diagnosis = next(d for d in ontology.diagnoses() if d["id"] == diagnosis_id)
+    return diagnosis
+
+
 @app.put("/api/patients/{patient_id}")
 def api_update_patient(patient_id: str, payload: dict[str, Any] = Body(...)):
     _call(actions.update_patient, patient_id, payload)

@@ -16,7 +16,7 @@ from datetime import datetime
 from decimal import Decimal
 
 from rdflib import Literal, URIRef
-from rdflib.namespace import OWL, RDF, XSD
+from rdflib.namespace import OWL, RDF, RDFS, XSD
 
 from .config import USER_DATA_PATH
 from .sparql import LOCAL_NAME_RE
@@ -53,6 +53,7 @@ def load():
         data = {}
     data.setdefault("patients", {})
     data.setdefault("programs", {})
+    data.setdefault("diagnoses", {})
     return data
 
 
@@ -125,6 +126,17 @@ def validate_patient(raw, is_instance):
     return patient
 
 
+def validate_diagnosis(raw):
+    raw = raw or {}
+    name = _text(raw.get("name"), "Название диагноза", 3, 120)
+    code = _text(raw.get("code"), "Код МКБ-10", 1, 10, required=False)
+    if code:
+        code = code.upper()
+        if not re.fullmatch(r"[A-Z][0-9]{2}(?:\.[0-9]{1,2})?", code):
+            raise StoreError("Поле «Код МКБ-10»: укажите код вида M16 или M16.9 либо оставьте поле пустым")
+    return {"label": name, "mkb": code}
+
+
 def validate_program(raw, is_instance):
     raw = raw or {}
     exercises = raw.get("exercises")
@@ -164,6 +176,15 @@ def make_key(fio, taken):
 # ---------------------------------------------------------------- тройки для графа
 def add_triples(g, data):
     """Добавляет пациентов и программы из хранилища в граф (до применения правил)."""
+    for diagnosis_id, diagnosis in data.get("diagnoses", {}).items():
+        diagnosis_uri = P(diagnosis_id)
+        g.add((diagnosis_uri, RDF.type, P("Диагноз")))
+        g.add((diagnosis_uri, RDF.type, OWL.NamedIndividual))
+        g.add((diagnosis_uri, RDFS.label, Literal(diagnosis["label"], datatype=XSD.string)))
+        if diagnosis.get("mkb"):
+            g.add((diagnosis_uri, P("кодМКБ"), Literal(diagnosis["mkb"], datatype=XSD.string)))
+        g.add((diagnosis_uri, P("требуетВрача"), Literal(True, datatype=XSD.boolean)))
+
     for pid, p in data["patients"].items():
         key = p["key"]
         patient, pdata = P(pid), P(f"Данные_{key}")

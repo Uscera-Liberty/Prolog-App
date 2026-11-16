@@ -24,7 +24,7 @@ def client():
 def clean_store(client):
     """После каждого теста хранилище пустое — порядок тестов не важен."""
     yield
-    store.save({"patients": {}, "programs": {}})
+    store.save({"patients": {}, "programs": {}, "diagnoses": {}})
     ontology.rebuild()
 
 
@@ -65,6 +65,52 @@ def test_create_patient_and_rules(client, patient_id):
     assert (s["пациенты"], s["безПрограммы"]) == (12, 5)
     assert any(x["id"] == patient_id and x["user_added"] for x in client.get("/api/patients").json())
     assert patient_id in {o["id"] for o in client.get("/api/options/Пациент").json()}
+
+
+def test_diagnosis_catalog_has_ten_additional_conditions(client):
+    diagnoses = {item["id"]: item for item in ontology.diagnoses()}
+    assert len(diagnoses) == 18
+    new_ids = {
+        "Диагноз_Коксартроз", "Диагноз_АдгезивныйКапсулит", "Диагноз_РотаторнаяМанжета",
+        "Диагноз_Остеопороз", "Диагноз_РевматоидныйАртрит", "Диагноз_БолезньПаркинсона",
+        "Диагноз_РассеянныйСклероз", "Диагноз_Диабет2Типа", "Диагноз_ХОБЛ",
+        "Диагноз_РастяжениеГоленостопа",
+    }
+    assert new_ids <= diagnoses.keys()
+    assert all(not diagnoses[item]["has_recommendations"] and diagnoses[item]["needs_doctor"]
+               for item in new_ids)
+
+
+def test_add_custom_diagnosis_and_create_patient(client):
+    response = client.post("/api/diagnoses", json={"name": "Мой диагноз", "code": "m54.1"})
+    assert response.status_code == 201, response.text
+    diagnosis = response.json()
+    assert diagnosis["label"] == "Мой диагноз" and diagnosis["mkb"] == "M54.1"
+    assert diagnosis["user_added"] and diagnosis["needs_doctor"]
+    assert diagnosis["has_recommendations"] is False
+
+    patient = client.post("/api/patients", json=dict(NEW_PATIENT, diagnosis=diagnosis["id"]))
+    assert patient.status_code == 201, patient.text
+    patient_id = patient.json()["id"]
+    profile = client.get(f"/api/patients/{patient_id}").json()
+    assert profile["diagnosis"]["id"] == diagnosis["id"]
+    assert profile["diagnosis"]["has_recommendations"] is False
+    assert profile["specialists"] == [] and profile["suitable"] == []
+    form = client.get(f"/api/patients/{patient_id}/program-form").json()
+    assert form["no_specialist"] and not form["editable"]
+    assert diagnosis["id"] in {item["id"] for item in client.get("/api/options/Диагноз").json()}
+    assert "нет проверенных рекомендаций" in client.get(f"/patients/{patient_id}").text
+    ontology.rebuild()
+    assert diagnosis["id"] in {item["id"] for item in client.get("/api/options/Диагноз").json()}
+
+
+def test_custom_diagnosis_validation_and_duplicate(client):
+    assert client.post("/api/diagnoses", json={"name": "xx", "code": "M16.9"}).status_code == 422
+    assert client.post("/api/diagnoses", json={"name": "Диагноз без кода", "code": "not-a-code"}).status_code == 422
+    assert client.post("/api/diagnoses", json={"name": "Гонартроз (артроз коленного сустава)"}).status_code == 409
+    assert client.post("/api/diagnoses", json={"name": "Новая болезнь"}).status_code == 201
+    duplicate = client.post("/api/diagnoses", json={"name": "  новая   болезнь "})
+    assert duplicate.status_code == 409
 
 
 def test_recommendations_for_new_patient(client, patient_id):
@@ -286,7 +332,7 @@ def test_deleting_patient_removes_program(client, patient_id):
     client.delete(f"/api/patients/{patient_id}")
     s = client.get("/api/stats").json()
     assert (s["пациенты"], s["программы"]) == (11, 7)
-    assert store.load() == {"patients": {}, "programs": {}}
+    assert store.load() == {"patients": {}, "programs": {}, "diagnoses": {}}
 
 
 # ---------------------------------------------------------------- хранение
@@ -313,4 +359,6 @@ def test_pages(client, patient_id):
     assert "Добавлен вручную" in html and 'id="program-form"' in html and 'id="delete-patient"' in html
     assert 'id="program-form"' not in client.get("/patients/Пациент_Иванов").text
     assert "Подобрать программу для себя" in client.get("/").text
+    form_html = client.get("/patients/new").text
+    assert 'id="new-diagnosis-name"' in form_html and 'id="add-diagnosis-btn"' in form_html
     assert client.get("/patients/Пациент_Никто/edit").status_code == 404
